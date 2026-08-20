@@ -30,10 +30,7 @@ export default function AppNavbar({ currentActive = 'landing' }) {
           </div>
           <div>
             <span className="font-extrabold text-white text-sm sm:text-base tracking-tight group-hover:text-indigo-300 transition-colors">
-              Interview<span className="text-indigo-400">Pro</span>
-            </span>
-            <span className="hidden sm:inline-block ml-2 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-950/60 border border-indigo-500/30 text-indigo-300">
-              AI STUDIO
+              AI Interview<span className="text-indigo-400"> Evaluator</span>
             </span>
           </div>
         </div>

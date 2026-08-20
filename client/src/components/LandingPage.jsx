@@ -274,16 +274,13 @@ export default function LandingPage() {
         </div>
       </main>
 
-      {/* ── Clean Human Footer ── */}
-      <footer className="border-t border-slate-900 bg-slate-950/80 py-6 px-6 text-center text-xs text-slate-500">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p>© {new Date().getFullYear()} InterviewPro AI. Designed for high-impact engineering careers.</p>
-          <div className="flex items-center gap-4 text-slate-400">
-            <button onClick={() => setPhase('setup')} className="hover:text-white transition-colors">Mock Studio</button>
-            <button onClick={() => setPhase('hype-lab')} className="hover:text-white transition-colors">Hype Lab</button>
-            <button onClick={() => setPhase('dsa')} className="hover:text-white transition-colors">DSA</button>
-            <button onClick={() => setPhase('negotiate')} className="hover:text-white transition-colors">Salary Sparring</button>
-          </div>
+      {/* ── Footer ── */}
+      <footer className="border-t border-slate-900 bg-slate-950/80 py-4 px-6 text-center text-xs text-slate-500">
+        <div className="max-w-6xl mx-auto flex items-center justify-center gap-6 text-slate-500">
+          <button onClick={() => setPhase('setup')} className="hover:text-white transition-colors">Mock Studio</button>
+          <button onClick={() => setPhase('hype-lab')} className="hover:text-white transition-colors">Hype Lab</button>
+          <button onClick={() => setPhase('dsa')} className="hover:text-white transition-colors">DSA</button>
+          <button onClick={() => setPhase('negotiate')} className="hover:text-white transition-colors">Salary Sparring</button>
         </div>
       </footer>
     </div>
