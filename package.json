@@ -1,0 +1,15 @@
+-{
+  "name": "ai-interview-evaluator",
+  "version": "1.0.0",
+  "description": "Full-Stack AI Mock Interview & Bar Raiser Platform",
+  "main": "server/server.js",
+  "scripts": {
+    "build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install",
+    "start": "node server/server.js",
+    "server": "node server/server.js",
+    "client": "npm --prefix client run dev"
+  },
+  "keywords": ["ai", "mock-interview", "gemini", "react", "vite"],
+  "author": "",
+  "license": "ISC"
+}
