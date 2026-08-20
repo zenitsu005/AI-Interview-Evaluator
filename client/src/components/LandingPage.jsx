@@ -63,10 +63,7 @@ export default function LandingPage() {
             <p className="text-xl sm:text-2xl font-black text-cyan-400 font-mono">6 Personas</p>
             <p className="text-[11px] text-slate-400 font-medium">Top Bar Raisers</p>
           </div>
-          <div className="space-y-0.5">
-            <p className="text-xl sm:text-2xl font-black text-amber-300 font-mono">₹42 LPA</p>
-            <p className="text-[11px] text-slate-400 font-medium">Avg Target CTC</p>
-          </div>
+
         </div>
 
         {/* ── All 8 Specialized Practice Studios Grid ── */}
