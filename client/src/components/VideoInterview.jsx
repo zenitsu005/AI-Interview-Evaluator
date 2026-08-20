@@ -516,36 +516,36 @@ export default function VideoInterview() {
       )}
 
       {/* ── Top Bar ── */}
-      <header className="bg-slate-900/90 border-b border-slate-800/80 px-6 py-3.5 flex items-center justify-between sticky top-0 z-40 backdrop-blur-xl shadow-md flex-wrap gap-2">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-blue-600 flex items-center justify-center text-sm shadow-md">
+      <header className="bg-slate-900/90 border-b border-slate-800/80 px-4 py-3 flex items-center justify-between sticky top-0 z-40 backdrop-blur-xl shadow-md gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-blue-600 flex items-center justify-center text-sm shadow-md flex-shrink-0">
             🎯
           </div>
-          <div>
+          <div className="min-w-0">
             <span className="font-bold text-slate-100 text-sm tracking-tight">AI Interview Studio</span>
-            <span className="hidden sm:inline-block ml-2 text-[11px] text-slate-400 font-mono">
-              Role: <strong className="text-slate-200">{targetRole}</strong> ({companyTrack} • {difficultyLevel})
+            <span className="hidden sm:inline-block ml-2 text-[11px] text-slate-500">
+              {targetRole} · {companyTrack}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Feature 3: Ambient Soundscape Selector */}
-          <div className="flex items-center gap-1 bg-slate-950 px-2 py-1 rounded-xl border border-slate-800 text-[11px]">
-            <span className="text-slate-500">🎧 Ambiance:</span>
+        <div className="flex items-center gap-2">
+          {/* Ambiance Selector */}
+          <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-800 text-[11px]">
+            <span className="text-slate-500">🎧</span>
             <select
               value={soundscape}
               onChange={(e) => setAmbientSoundscape(e.target.value)}
-              className="bg-transparent text-slate-300 focus:outline-none cursor-pointer"
+              className="bg-transparent text-slate-400 focus:outline-none cursor-pointer"
             >
-              <option value="none">Off</option>
+              <option value="none">Quiet</option>
               <option value="boardroom">Boardroom</option>
-              <option value="open_office">Open Office</option>
-              <option value="focus">Focus Rain</option>
+              <option value="open_office">Office</option>
+              <option value="focus">Rain</option>
             </select>
           </div>
 
-          {/* Tool Switcher Tabs */}
+          {/* Tool Tabs */}
           <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
             <button
               onClick={() => setActiveTab('text')}
@@ -553,7 +553,7 @@ export default function VideoInterview() {
                 activeTab === 'text' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
-              📝 Answer
+              Answer
             </button>
             <button
               onClick={() => setActiveTab('sandbox')}
@@ -561,7 +561,7 @@ export default function VideoInterview() {
                 activeTab === 'sandbox' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
-              💻 Code & Tests
+              Code
             </button>
             <button
               onClick={() => setActiveTab('whiteboard')}
@@ -569,13 +569,13 @@ export default function VideoInterview() {
                 activeTab === 'whiteboard' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'
               }`}
             >
-              📐 System Design
+              Design
             </button>
           </div>
 
-          {/* Question Counter Pill */}
+          {/* Question Counter */}
           <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-indigo-400 font-mono">
-            Q {Math.min(answeredCount + 1, totalQuestions)} / {totalQuestions}
+            {Math.min(answeredCount + 1, totalQuestions)}/{totalQuestions}
           </span>
         </div>
       </header>
@@ -856,10 +856,7 @@ export default function VideoInterview() {
             <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-800/80">
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-slate-600'}`} />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Your Answer
-                </span>
-                <span className="text-[10px] text-slate-500">Voice or Text</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Your Answer</span>
               </div>
 
               {/* Live Analytics Pills */}
@@ -869,16 +866,16 @@ export default function VideoInterview() {
                     ? 'bg-amber-950/60 text-amber-300 border-amber-700/60 animate-pulse'
                     : 'bg-slate-900 text-slate-500 border-slate-800'
                 }`}>
-                  🎙️ Fillers: {detectedFillers} {detectedFillers > 2 ? '⚠️' : '✓'}
+                  Fillers: {detectedFillers} {detectedFillers > 2 ? '⚠️' : '✓'}
                 </span>
                 {estimatedWpm > 0 && (
                   <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-slate-900 text-indigo-300 border border-slate-800">
-                    ⚡ {estimatedWpm} WPM
+                    {estimatedWpm} WPM
                   </span>
                 )}
                 {hintsUsed > 0 && (
                   <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-amber-950 text-amber-300 border border-amber-800/50">
-                    💡 -{hintsUsed * 5}pts
+                    -{hintsUsed * 5}pts
                   </span>
                 )}
               </div>
@@ -891,7 +888,7 @@ export default function VideoInterview() {
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="🎙️ Tap 'Speak Answer' to record your voice, or type directly here...&#10;&#10;Pro tip: Press Enter to submit your answer quickly."
+                placeholder="Type your answer here, or use the mic below..."
                 rows={activeTab !== 'text' ? 4 : 7}
                 disabled={isLoading || isTranscribing}
                 className="w-full bg-slate-950/80 border border-slate-800 hover:border-slate-700 focus:border-indigo-500/60 rounded-xl p-4 text-sm text-slate-200 placeholder-slate-600 resize-none outline-none transition-all leading-relaxed"
@@ -902,70 +899,64 @@ export default function VideoInterview() {
                 <div className="flex-1 h-0.5 bg-slate-800 rounded-full mr-3">
                   <div
                     className={`h-full rounded-full transition-all duration-300 ${
-                      wordCount < 30 ? 'bg-slate-600' : wordCount < 80 ? 'bg-indigo-500' : wordCount < 150 ? 'bg-emerald-500' : 'bg-amber-400'
+                      wordCount < 30 ? 'bg-slate-700' : wordCount < 80 ? 'bg-indigo-500' : wordCount < 150 ? 'bg-emerald-500' : 'bg-amber-400'
                     }`}
                     style={{ width: `${Math.min((wordCount / 150) * 100, 100)}%` }}
                   />
                 </div>
                 <span className={`text-[10px] font-mono ${
-                  wordCount < 30 ? 'text-slate-600' : wordCount < 80 ? 'text-indigo-400' : wordCount < 150 ? 'text-emerald-400' : 'text-amber-400'
+                  wordCount < 30 ? 'text-slate-600' : wordCount < 80 ? 'text-indigo-400' : 'text-emerald-400'
                 }`}>
-                  {wordCount} words {wordCount >= 50 && '✓'}
+                  {wordCount}w
                 </span>
               </div>
 
               {statusMessage && (
                 <div className="text-[11px] text-cyan-400 mt-2 flex items-center gap-1.5 animate-pulse">
-                  <span>✨</span>
-                  <span>{statusMessage}</span>
+                  <span>✨</span><span>{statusMessage}</span>
                 </div>
               )}
             </div>
 
             {/* Controls Row */}
-            <div className="flex items-center justify-between gap-3 pt-1 flex-wrap">
-              <div className="flex items-center gap-2 flex-wrap">
-                {!isRecording ? (
-                  <button
-                    onClick={startRecording}
-                    disabled={isLoading || isTranscribing}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-indigo-900/40 transition-all disabled:opacity-40"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-white/80" />
-                    🎙️ Speak Answer
-                  </button>
-                ) : (
-                  <button
-                    onClick={stopRecording}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-red-900/40 animate-pulse transition-all"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                    ⏹️ Stop ({formatSeconds(recordingSeconds)})
-                  </button>
-                )}
+            <div className="flex items-center gap-2 pt-1 flex-wrap">
+              {!isRecording ? (
+                <button
+                  onClick={startRecording}
+                  disabled={isLoading || isTranscribing}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-indigo-900/40 transition-all disabled:opacity-40"
+                >
+                  <span className="w-2 h-2 rounded-full bg-white/80" />
+                  🎙️ Speak
+                </button>
+              ) : (
+                <button
+                  onClick={stopRecording}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-red-900/40 animate-pulse transition-all"
+                >
+                  <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+                  ⏹ Stop · {formatSeconds(recordingSeconds)}
+                </button>
+              )}
 
-                {transcript.length > 20 && !probeQuestion && (
-                  <button
-                    type="button"
-                    onClick={handleRequestProbe}
-                    disabled={isProbing}
-                    className="text-[11px] text-amber-400 hover:text-white bg-amber-950/40 border border-amber-800/50 hover:border-amber-600 px-3 py-2.5 rounded-xl transition-all font-semibold"
-                  >
-                    {isProbing ? '⏳ Generating...' : '⚡ Cross-Examine Me'}
-                  </button>
-                )}
+              {transcript.length > 20 && !probeQuestion && (
+                <button
+                  type="button"
+                  onClick={handleRequestProbe}
+                  disabled={isProbing}
+                  className="text-[11px] text-slate-400 hover:text-white bg-slate-900 border border-slate-700 hover:border-slate-500 px-3 py-2.5 rounded-xl transition-all font-semibold"
+                >
+                  {isProbing ? '⏳...' : '⚡ Cross-Examine'}
+                </button>
+              )}
 
-                {isRecording && (
-                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono">
-                    <span className={`w-2 h-2 rounded-full ${
-                      recordingSeconds <= 60 ? 'bg-emerald-400 animate-pulse' : recordingSeconds <= 90 ? 'bg-amber-400 animate-pulse' : 'bg-red-500 animate-bounce'
-                    }`} />
-                    <span className={recordingSeconds <= 60 ? 'text-emerald-300' : recordingSeconds <= 90 ? 'text-amber-300' : 'text-red-400 font-bold'}>
-                      {recordingSeconds <= 60 ? 'Concise ✓' : recordingSeconds <= 90 ? 'Wrap Up' : 'Too Long!'}
-                    </span>
-                  </div>
-                )}
-              </div>
+              {isRecording && (
+                <span className={`text-[11px] font-mono px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 ${
+                  recordingSeconds <= 60 ? 'text-emerald-400' : recordingSeconds <= 90 ? 'text-amber-400' : 'text-red-400 font-bold'
+                }`}>
+                  {recordingSeconds <= 60 ? '● Good' : recordingSeconds <= 90 ? '● Wrap up' : '● Too long'}
+                </span>
+              )}
             </div>
 
             {error && (
@@ -977,8 +968,8 @@ export default function VideoInterview() {
             {/* Submit Button */}
             <button
               onClick={handleSubmit}
-              disabled={isLoading || isRecording || isTranscribing || !transcript.trim()}
-              className="w-full py-4 rounded-xl text-sm font-bold tracking-wide transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed
+              disabled={isLoading || isRecording || isTranscribing}
+              className="w-full py-4 rounded-xl text-sm font-bold tracking-wide transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed
                 bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:from-indigo-500 hover:via-blue-500 hover:to-cyan-400
                 text-white shadow-indigo-900/40 active:scale-[0.98]"
             >
@@ -988,18 +979,17 @@ export default function VideoInterview() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                   </svg>
-                  AI is evaluating your answer...
+                  Evaluating...
                 </span>
               ) : isRecording ? (
-                '⏹️ Stop Recording First'
+                '⏹ Stop Recording First'
               ) : isTranscribing ? (
-                '✨ Transcribing your speech...'
-              ) : !transcript.trim() ? (
-                'Type or speak your answer above'
+                '✨ Transcribing...'
               ) : (
-                `Submit Answer →`
+                'Submit'
               )}
             </button>
+
           </div>
         </div>
       </main>
