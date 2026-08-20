@@ -76,25 +76,40 @@ export default function AiInterviewerAvatar({
       </div>
 
       {/* Top Header Controls within Avatar Tile */}
-      <div className="w-full flex items-center justify-between z-20 text-[11px] gap-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/90 border border-slate-800 text-slate-200 shadow-md">
-          <span className="text-sm">{personaAvatar}</span>
-          <span className="font-bold">{personaName}</span>
-          <span className="text-slate-500">•</span>
-          <span className="text-amber-400 font-semibold text-[10px]">{companyTrack} Bar Raiser</span>
+      <div className="w-full flex items-center justify-between z-20 gap-2">
+        {/* Interviewer ID Badge */}
+        <div className="flex items-center gap-2 min-w-0">
+          <div className={`relative flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-lg shadow-lg border ${
+            isSpeaking ? 'border-indigo-500/60 bg-indigo-950/60 shadow-indigo-900/40' : 'border-slate-700/60 bg-slate-900/80'
+          } transition-all`}>
+            {personaAvatar}
+            {/* Live speaking indicator */}
+            {isSpeaking && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-slate-950 animate-pulse" />
+            )}
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-bold text-white leading-tight truncate">{personaName}</p>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-900/60 text-amber-300 border border-amber-700/40 uppercase tracking-wide whitespace-nowrap">
+                {companyTrack}
+              </span>
+              <span className="text-[9px] text-slate-500 truncate">Bar Raiser</span>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           {/* Replay Audio Button */}
           {onReplaySpeech && (
             <button
               type="button"
               onClick={onReplaySpeech}
-              className="px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-700 text-slate-300 hover:text-white hover:border-indigo-500 transition-all font-semibold flex items-center gap-1 shadow-sm"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-300 hover:text-white hover:border-indigo-500/60 hover:bg-slate-700/80 transition-all text-[11px] font-semibold shadow-sm"
               title="Re-listen to question"
             >
               <span>🔊</span>
-              <span className="hidden sm:inline">Re-Listen</span>
+              <span className="hidden sm:inline">Replay</span>
             </button>
           )}
 
@@ -102,8 +117,8 @@ export default function AiInterviewerAvatar({
           <button
             type="button"
             onClick={() => setShowCaptions(!showCaptions)}
-            className={`px-2 py-1 rounded-lg border font-mono font-bold text-[10px] transition-all ${
-              showCaptions ? 'bg-indigo-950/80 border-indigo-600 text-indigo-300' : 'bg-slate-900 border-slate-800 text-slate-500'
+            className={`px-2 py-1.5 rounded-xl border font-mono font-bold text-[10px] transition-all ${
+              showCaptions ? 'bg-indigo-950/80 border-indigo-600/60 text-indigo-300' : 'bg-slate-900 border-slate-800 text-slate-600'
             }`}
             title="Toggle Live Subtitles"
           >
