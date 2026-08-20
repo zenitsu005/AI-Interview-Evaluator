@@ -767,47 +767,53 @@ export default function VideoInterview() {
           </div>
 
           {/* Current Question Card */}
-          <div className="card-dark border-indigo-900/50 bg-gradient-to-b from-slate-900 to-slate-950 space-y-3 p-5 shadow-lg">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border uppercase tracking-wider ${roundCfg?.color || ''}`}>
-                {roundCfg?.emoji} {roundCfg?.label} • Q{questionIndexInRound}
-              </span>
+          <div className="relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/30 shadow-2xl shadow-indigo-900/20 p-5 space-y-3">
+            {/* Ambient glow */}
+            <div className="absolute top-0 left-0 w-40 h-40 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
 
+            <div className="flex items-center justify-between flex-wrap gap-2 relative z-10">
               <div className="flex items-center gap-2">
-                {/* Feature 1: Socratic Hint Button */}
+                <span className={`text-[10px] font-bold px-3 py-1 rounded-full border uppercase tracking-widest ${roundCfg?.color || ''}`}>
+                  {roundCfg?.emoji} {roundCfg?.label}
+                </span>
+                <span className="text-[10px] font-mono text-slate-500 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
+                  Q{questionIndexInRound}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={handleRequestHint}
                   disabled={isHintLoading || hint}
-                  className="text-xs text-amber-300 hover:text-white bg-amber-950/60 border border-amber-800/80 hover:border-amber-500 px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 font-semibold"
+                  className="text-[11px] text-amber-300 hover:text-white bg-amber-950/50 border border-amber-800/60 hover:border-amber-500/80 px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 font-semibold disabled:opacity-40"
                   title="Receive a subtle hint (-5 pts penalty)"
                 >
                   <span>💡</span>
-                  <span>{isHintLoading ? 'Thinking...' : hint ? 'Hint Unlocked' : 'Hint (-5 pts)'}</span>
+                  <span>{isHintLoading ? '...' : hint ? 'Revealed' : 'Hint (-5pts)'}</span>
                 </button>
 
                 <button
                   onClick={() => currentQuestion?.question && speakText(currentQuestion.question)}
-                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800/80 transition-colors"
-                  title="Replay Audio"
+                  className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/60 hover:bg-slate-700 transition-all border border-slate-700/50"
+                  title="Replay Question Audio"
                 >
-                  <span>🔊 Replay</span>
+                  🔊 Replay
                 </button>
               </div>
             </div>
 
-            <p className="text-sm sm:text-base font-semibold text-slate-100 leading-relaxed">
+            <p className="text-sm sm:text-[15px] font-semibold text-white leading-relaxed tracking-wide relative z-10 pt-1">
               {currentQuestion?.question || 'Loading question...'}
             </p>
 
-            {/* Socratic Hint Display */}
             {hint && (
-              <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-800/60 text-xs text-amber-200 animate-fade-in space-y-1">
-                <p className="font-bold flex items-center gap-1">
-                  <span>💡 Socratic Guide:</span>
-                  <span className="text-[10px] font-mono text-amber-400">(-5 points applied)</span>
+              <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-700/40 text-xs text-amber-200 animate-fade-in space-y-1 relative z-10">
+                <p className="font-bold flex items-center gap-1.5">
+                  <span>💡 Socratic Guide</span>
+                  <span className="text-[10px] font-mono text-amber-400/70">(-5 pts)</span>
                 </p>
-                <p className="text-slate-300">{hint}</p>
+                <p className="text-slate-300 leading-relaxed">{hint}</p>
               </div>
             )}
           </div>
@@ -845,44 +851,68 @@ export default function VideoInterview() {
           ) : null}
 
           {/* Response Box & Live Speech Analytics */}
-          <div className="card-dark border-slate-800 p-5 space-y-4 shadow-xl flex flex-col justify-between">
-            <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-slate-800/80">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Your Answer (Voice or Text)
-              </span>
-
-              {/* Live Verbal Tic & WPM Counter */}
+          <div className="relative overflow-hidden rounded-2xl border border-slate-700/50 bg-gradient-to-br from-slate-900 to-slate-950 shadow-2xl p-5 space-y-4 flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-800/80">
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
-                  detectedFillers > 2 ? 'bg-amber-950/60 text-amber-300 border-amber-800/80 animate-pulse' : 'bg-slate-900 text-slate-400 border-slate-800'
+                <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-slate-600'}`} />
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  Your Answer
+                </span>
+                <span className="text-[10px] text-slate-500">Voice or Text</span>
+              </div>
+
+              {/* Live Analytics Pills */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border transition-all ${
+                  detectedFillers > 2
+                    ? 'bg-amber-950/60 text-amber-300 border-amber-700/60 animate-pulse'
+                    : 'bg-slate-900 text-slate-500 border-slate-800'
                 }`}>
                   🎙️ Fillers: {detectedFillers} {detectedFillers > 2 ? '⚠️' : '✓'}
                 </span>
                 {estimatedWpm > 0 && (
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-900 text-slate-300 border border-slate-800">
+                  <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-slate-900 text-indigo-300 border border-slate-800">
                     ⚡ {estimatedWpm} WPM
                   </span>
                 )}
                 {hintsUsed > 0 && (
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-950 text-amber-300 border border-amber-800/60">
-                    💡 Hints: {hintsUsed} (-{hintsUsed * 5}pts)
+                  <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-amber-950 text-amber-300 border border-amber-800/50">
+                    💡 -{hintsUsed * 5}pts
                   </span>
                 )}
               </div>
             </div>
 
-            {/* Response Area */}
+            {/* Textarea */}
             <div className="flex-1 min-h-[140px] flex flex-col relative">
               <textarea
                 ref={textareaRef}
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Tap mic to speak, or type directly here (Press Enter to submit)..."
-                rows={activeTab !== 'text' ? 4 : 6}
+                placeholder="🎙️ Tap 'Speak Answer' to record your voice, or type directly here...&#10;&#10;Pro tip: Press Enter to submit your answer quickly."
+                rows={activeTab !== 'text' ? 4 : 7}
                 disabled={isLoading || isTranscribing}
-                className="input-field-dark flex-1 text-xs leading-relaxed"
+                className="w-full bg-slate-950/80 border border-slate-800 hover:border-slate-700 focus:border-indigo-500/60 rounded-xl p-4 text-sm text-slate-200 placeholder-slate-600 resize-none outline-none transition-all leading-relaxed"
               />
+
+              {/* Word count bar */}
+              <div className="flex items-center justify-between mt-2 px-1">
+                <div className="flex-1 h-0.5 bg-slate-800 rounded-full mr-3">
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      wordCount < 30 ? 'bg-slate-600' : wordCount < 80 ? 'bg-indigo-500' : wordCount < 150 ? 'bg-emerald-500' : 'bg-amber-400'
+                    }`}
+                    style={{ width: `${Math.min((wordCount / 150) * 100, 100)}%` }}
+                  />
+                </div>
+                <span className={`text-[10px] font-mono ${
+                  wordCount < 30 ? 'text-slate-600' : wordCount < 80 ? 'text-indigo-400' : wordCount < 150 ? 'text-emerald-400' : 'text-amber-400'
+                }`}>
+                  {wordCount} words {wordCount >= 50 && '✓'}
+                </span>
+              </div>
 
               {statusMessage && (
                 <div className="text-[11px] text-cyan-400 mt-2 flex items-center gap-1.5 animate-pulse">
@@ -892,23 +922,25 @@ export default function VideoInterview() {
               )}
             </div>
 
-            {/* Audio Controls & Adaptive Probe Trigger */}
-            <div className="flex items-center justify-between gap-3 pt-2">
-              <div className="flex items-center gap-2">
+            {/* Controls Row */}
+            <div className="flex items-center justify-between gap-3 pt-1 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
                 {!isRecording ? (
                   <button
                     onClick={startRecording}
                     disabled={isLoading || isTranscribing}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-semibold shadow-md transition-all"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-indigo-900/40 transition-all disabled:opacity-40"
                   >
-                    <span>🎙️ Speak Answer</span>
+                    <span className="w-2 h-2 rounded-full bg-white/80" />
+                    🎙️ Speak Answer
                   </button>
                 ) : (
                   <button
                     onClick={stopRecording}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-semibold shadow-md animate-pulse transition-all"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-red-900/40 animate-pulse transition-all"
                   >
-                    <span>⏹️ Stop Speaking ({formatSeconds(recordingSeconds)})</span>
+                    <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+                    ⏹️ Stop ({formatSeconds(recordingSeconds)})
                   </button>
                 )}
 
@@ -917,32 +949,27 @@ export default function VideoInterview() {
                     type="button"
                     onClick={handleRequestProbe}
                     disabled={isProbing}
-                    className="text-[11px] text-amber-400 hover:text-amber-300 bg-amber-950/40 border border-amber-800/60 px-3 py-2 rounded-xl transition-colors font-semibold"
-                    title="Challenge yourself with an instant follow-up probe"
+                    className="text-[11px] text-amber-400 hover:text-white bg-amber-950/40 border border-amber-800/50 hover:border-amber-600 px-3 py-2.5 rounded-xl transition-all font-semibold"
                   >
-                    {isProbing ? '⏳ Generating probe...' : '⚡ AI Cross-Examine Me'}
+                    {isProbing ? '⏳ Generating...' : '⚡ Cross-Examine Me'}
                   </button>
                 )}
-                {/* Feature 3: Visual Response Pacing Ring */}
+
                 {isRecording && (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-[11px] font-mono">
+                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono">
                     <span className={`w-2 h-2 rounded-full ${
                       recordingSeconds <= 60 ? 'bg-emerald-400 animate-pulse' : recordingSeconds <= 90 ? 'bg-amber-400 animate-pulse' : 'bg-red-500 animate-bounce'
                     }`} />
                     <span className={recordingSeconds <= 60 ? 'text-emerald-300' : recordingSeconds <= 90 ? 'text-amber-300' : 'text-red-400 font-bold'}>
-                      {recordingSeconds <= 60 ? '🟢 Concise' : recordingSeconds <= 90 ? '🟡 Wrap Up' : '🔴 Rambling Alert'}
+                      {recordingSeconds <= 60 ? 'Concise ✓' : recordingSeconds <= 90 ? 'Wrap Up' : 'Too Long!'}
                     </span>
                   </div>
                 )}
               </div>
-
-              <span className="text-[11px] text-slate-500 font-mono">
-                {wordCount} words
-              </span>
             </div>
 
             {error && (
-              <p className="text-red-400 text-xs bg-red-950/50 p-2.5 rounded-lg border border-red-800/50">
+              <p className="text-red-400 text-xs bg-red-950/50 p-3 rounded-xl border border-red-800/40">
                 ❌ {error}
               </p>
             )}
@@ -950,8 +977,10 @@ export default function VideoInterview() {
             {/* Submit Button */}
             <button
               onClick={handleSubmit}
-              disabled={isLoading || isRecording || isTranscribing}
-              className="btn-primary w-full py-3.5 text-xs font-bold shadow-lg btn-glow"
+              disabled={isLoading || isRecording || isTranscribing || !transcript.trim()}
+              className="w-full py-4 rounded-xl text-sm font-bold tracking-wide transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed
+                bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:from-indigo-500 hover:via-blue-500 hover:to-cyan-400
+                text-white shadow-indigo-900/40 active:scale-[0.98]"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -959,14 +988,16 @@ export default function VideoInterview() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                   </svg>
-                  Processing Answer...
+                  AI is evaluating your answer...
                 </span>
               ) : isRecording ? (
                 '⏹️ Stop Recording First'
               ) : isTranscribing ? (
-                '✨ Transcribing speech...'
+                '✨ Transcribing your speech...'
+              ) : !transcript.trim() ? (
+                'Type or speak your answer above'
               ) : (
-                'Submit'
+                `Submit Answer →`
               )}
             </button>
           </div>

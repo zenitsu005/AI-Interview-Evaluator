@@ -1,6 +1,7 @@
 import React from 'react';
 import { AuthProvider } from './context/AuthContext';
 import { InterviewProvider, useInterview } from './context/InterviewContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import LandingPage from './components/LandingPage';
 import ResumeSetup from './components/ResumeSetup';
 import AnalysisCard from './components/AnalysisCard';
@@ -54,11 +55,13 @@ const AppContent = () => {
 };
 
 const App = () => (
-  <AuthProvider>
-    <InterviewProvider>
-      <AppContent />
-    </InterviewProvider>
-  </AuthProvider>
+  <ErrorBoundary>
+    <AuthProvider>
+      <InterviewProvider>
+        <AppContent />
+      </InterviewProvider>
+    </AuthProvider>
+  </ErrorBoundary>
 );
 
 export default App;
