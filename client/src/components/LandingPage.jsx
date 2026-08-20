@@ -17,7 +17,7 @@ export default function LandingPage() {
         {/* Animated Badge */}
         <div className="inline-flex items-center gap-2 bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 px-4 py-1.5 rounded-full text-xs font-bold mb-6 shadow-inner animate-fade-in">
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          <span>⚡ The #1 AI Mock Interview & Bar Raiser Simulator</span>
+          <span>⚡ Ek Baar Aaoge, Job Paoge</span>
         </div>
 
         {/* Main Headline */}

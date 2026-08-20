@@ -4,7 +4,7 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE,
-  timeout: 120000,
+  timeout: 180000, // 3 minutes for Railway cold starts
 });
 
 api.interceptors.request.use((config) => {
@@ -14,6 +14,20 @@ api.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Auto-retry on network errors (handles Railway cold starts)
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const config = error.config;
+    if (!config || config._retryCount >= 3) return Promise.reject(error);
+    const isNetworkError = !error.response || error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK';
+    if (!isNetworkError) return Promise.reject(error);
+    config._retryCount = (config._retryCount || 0) + 1;
+    await new Promise((res) => setTimeout(res, 3000 * config._retryCount));
+    return api(config);
+  }
+);
 
 export const uploadResume = async (file) => {
   const formData = new FormData();
