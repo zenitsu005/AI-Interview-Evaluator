@@ -29,6 +29,20 @@ api.interceptors.response.use(
   }
 );
 
+export const checkServerHealth = async () => {
+  try {
+    const { data } = await api.get('/health', { timeout: 15000 });
+    return data;
+  } catch (e) {
+    return null;
+  }
+};
+
+// Automatic silent background warm-up ping for Railway cold starts
+setTimeout(() => {
+  checkServerHealth().catch(() => {});
+}, 100);
+
 export const uploadResume = async (file) => {
   const formData = new FormData();
   formData.append('resume', file);

@@ -1,11 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import { useAuth } from '../context/AuthContext';
 import AppNavbar from './AppNavbar';
+import { checkServerHealth } from '../services/api';
 
 export default function LandingPage() {
   const { setPhase } = useInterview();
   const { isAuthenticated, openAuth } = useAuth();
+  const [serverState, setServerState] = useState('checking'); // 'checking' | 'ready' | 'warming'
+
+  useEffect(() => {
+    let isMounted = true;
+    const ping = async () => {
+      const res = await checkServerHealth();
+      if (isMounted) {
+        if (res) {
+          setServerState('ready');
+        } else {
+          setServerState('warming');
+          // Retry in 3s to confirm when warm
+          setTimeout(async () => {
+            const res2 = await checkServerHealth();
+            if (isMounted && res2) setServerState('ready');
+          }, 3000);
+        }
+      }
+    };
+    ping();
+    return () => { isMounted = false; };
+  }, []);
+
+  const handleWakeUp = async () => {
+    setServerState('warming');
+    const res = await checkServerHealth();
+    if (res) setServerState('ready');
+  };
 
   return (
     <div className="min-h-screen flex flex-col justify-between bg-[#070a12] text-slate-100 selection:bg-indigo-500 selection:text-white">
@@ -14,10 +43,26 @@ export default function LandingPage() {
 
       {/* ── Hero Section ── */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 flex-1 flex flex-col items-center text-center">
-        {/* Animated Badge */}
-        <div className="inline-flex items-center gap-2 bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 px-4 py-1.5 rounded-full text-xs font-bold mb-6 shadow-inner animate-fade-in">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-          <span>⚡ Ek Baar Aaoge, Job Paoge</span>
+        {/* Animated Badge & Free Server Warm-Up Status */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-6 animate-fade-in">
+          <div className="inline-flex items-center gap-2 bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 px-4 py-1.5 rounded-full text-xs font-bold shadow-inner">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+            <span>⚡ Ek Baar Aaoge, Job Paoge</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleWakeUp}
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold border transition-all cursor-pointer ${
+              serverState === 'ready'
+                ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-300'
+                : 'bg-amber-950/70 border-amber-500/40 text-amber-300 animate-pulse'
+            }`}
+            title="Click to manually send a warm-up signal to the server"
+          >
+            <span className={`w-2 h-2 rounded-full ${serverState === 'ready' ? 'bg-emerald-400' : 'bg-amber-400 animate-ping'}`} />
+            <span>{serverState === 'ready' ? '⚡ AI Server Ready' : '⏳ Warming Up Server...'}</span>
+          </button>
         </div>
 
         {/* Main Headline */}
