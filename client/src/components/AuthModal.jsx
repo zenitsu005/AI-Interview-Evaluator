@@ -41,19 +41,14 @@ export default function AuthModal() {
     setError(null);
     setIsLoading(true);
     try {
-      // Fast simulated Google sign-in profile for development/production
-      const promptEmail = prompt('Enter your Google Account email:', email || 'candidate@gmail.com');
-      if (!promptEmail) {
-        setIsLoading(false);
-        return;
-      }
-      const promptName = promptEmail.split('@')[0].replace('.', ' ');
-      const formattedName = promptName.charAt(0).toUpperCase() + promptName.slice(1);
+      const userEmail = email.trim() || 'candidate.akshay@gmail.com';
+      const rawName = userEmail.split('@')[0].replace(/[._]/g, ' ');
+      const formattedName = name.trim() || (rawName.charAt(0).toUpperCase() + rawName.slice(1));
       
       await loginWithGoogle({
-        email: promptEmail,
-        name: formattedName,
-        picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(promptEmail)}`,
+        email: userEmail,
+        name: formattedName || 'Verified Candidate',
+        picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userEmail)}`,
       });
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Google Sign-In failed.');
