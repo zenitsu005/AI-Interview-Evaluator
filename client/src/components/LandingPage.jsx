@@ -49,9 +49,9 @@ export default function LandingPage({ onNavigate }) {
           {/* Left Column: Headline & CTAs (Vertically Offset) */}
           <div className="lg:col-span-7 space-y-7 lg:pt-4">
             
-            {/* Single Clean Text Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-950/30 border border-amber-800/40 text-amber-400 text-xs font-semibold tracking-wide font-mono shadow-sm">
-              <span>✦ Powered by Proven Engineering Benchmarks</span>
+            {/* 1. Refined Badge Pill */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/10 px-3.5 py-1 text-xs font-medium text-amber-300">
+              <span>✦</span> Powered by Proven Engineering Benchmarks
             </div>
 
             {/* Headline with Gold Highlight */}
@@ -84,9 +84,11 @@ export default function LandingPage({ onNavigate }) {
                 </button>
               </div>
 
-              <p className="text-xs text-zinc-500 font-mono">
-                🔒 No hiring decisions. Coaching feedback only.
-              </p>
+              {/* 2. Adjusted Disclaimer Spacing */}
+              <div className="pt-4 flex items-center gap-2 text-xs text-zinc-500">
+                <span>🔒</span>
+                <span>Coaching feedback only. Not an employment evaluation.</span>
+              </div>
             </div>
           </div>
 
@@ -109,12 +111,14 @@ export default function LandingPage({ onNavigate }) {
               </div>
 
               <div className="space-y-3 font-mono text-xs">
-                <div className="rounded-xl bg-black/40 p-3.5 border border-white/5 space-y-1">
-                  <p className="text-teal-300 font-bold">Role: Senior Distributed Systems Engineer</p>
-                  <p className="text-zinc-300 leading-relaxed">
-                    "How would you ensure zero message loss during a 100x traffic surge on a Kafka ingestion pipeline?"
+                {/* 3. Refined Question Block inside the Preview Card */}
+                <div className="rounded-lg bg-zinc-950/60 p-4 border border-zinc-800/80">
+                  <span className="text-xs font-mono text-teal-400 font-medium">Role: Senior Distributed Systems Engineer</span>
+                  <p className="mt-2 text-sm text-zinc-200 font-sans leading-relaxed">
+                    "How would you ensure zero message loss during a 100× traffic surge on a Kafka ingestion pipeline?"
                   </p>
                 </div>
+
 
                 <div className="grid grid-cols-2 gap-3 text-[11px]">
                   <div className="bg-[#0B0B0E] p-3 rounded-xl border border-white/5 space-y-0.5">
