@@ -50,14 +50,23 @@ router.post('/get-question', async (req, res) => {
       jobDescription = '',
     } = req.body;
 
-    if (!resumeAnalysis || !targetRole || !round || !questionIndex) {
+    const effectiveResumeAnalysis = resumeAnalysis || {
+      targetRole: targetRole || 'Software Engineer',
+      domainFocus: targetRole || 'Engineering',
+      technicalSkills: [targetRole],
+      strengths: ['Analytical problem solving', 'Clean modular design'],
+      weaknesses: [],
+    };
+
+    if (!targetRole || !round || !questionIndex) {
       return res.status(400).json({ error: 'Missing required fields.' });
     }
 
     let prompt;
     if (round === 'aptitude') {
       prompt = aptitudeQuestionPrompt(
-        resumeAnalysis,
+        effectiveResumeAnalysis,
+
         targetRole,
         questionIndex,
         difficultyLevel,
@@ -66,7 +75,7 @@ router.post('/get-question', async (req, res) => {
       );
     } else if (round === 'technical') {
       prompt = technicalQuestionPrompt(
-        resumeAnalysis,
+        effectiveResumeAnalysis,
         targetRole,
         questionIndex,
         previousQuestions,
@@ -77,14 +86,15 @@ router.post('/get-question', async (req, res) => {
       );
     } else if (round === 'hr') {
       prompt = hrQuestionPrompt(
-        resumeAnalysis,
+        effectiveResumeAnalysis,
         targetRole,
         questionIndex,
         difficultyLevel,
         companyTrack,
         persona
       );
-    } else {
+    }
+ else {
       return res.status(400).json({ error: `Unknown round: ${round}` });
     }
 
