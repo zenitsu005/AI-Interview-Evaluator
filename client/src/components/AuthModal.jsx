@@ -13,32 +13,56 @@ export default function AuthModal() {
   const [googleName, setGoogleName] = useState('');
   const [googleEmail, setGoogleEmail] = useState('');
 
+  const [fieldError, setFieldError] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null);
+
   if (!authModalOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setFieldError(false);
+    setSuccessMessage(null);
+
+    if (authMode === 'signup' && !name.trim()) {
+      setError('Please enter your full name.');
+      setFieldError(true);
+      return;
+    }
+    if (!email.trim() || !email.includes('@')) {
+      setError('Please enter a valid email address.');
+      setFieldError(true);
+      return;
+    }
+    if (!password || password.length < 4) {
+      setError('Password must be at least 4 characters.');
+      setFieldError(true);
+      return;
+    }
+
     setIsLoading(true);
     try {
       if (authMode === 'login') {
         await login(email, password);
       } else {
-        if (!name.trim()) {
-          setError('Please enter your name.');
-          setIsLoading(false);
-          return;
-        }
         await signup(name, email, password);
       }
-      setName('');
-      setEmail('');
-      setPassword('');
+      setSuccessMessage('✅ Signed in successfully!');
+      setTimeout(() => {
+        setSuccessMessage(null);
+        setName('');
+        setEmail('');
+        setPassword('');
+        closeAuth();
+      }, 900);
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Authentication failed.');
+      setFieldError(true);
     } finally {
       setIsLoading(false);
     }
   };
+
 
   const handleGoogleSignIn = async (e) => {
     e.preventDefault();
@@ -231,10 +255,10 @@ export default function AuthModal() {
                   <input
                     type="text"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => { setName(e.target.value); setFieldError(false); }}
                     placeholder="e.g. Alex Johnson"
                     required
-                    className="input-field-dark text-xs"
+                    className={fieldError && !name ? 'input-field-dark text-xs input-error' : 'input-field-dark text-xs'}
                   />
                 </div>
               )}
@@ -246,10 +270,10 @@ export default function AuthModal() {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); setFieldError(false); }}
                   placeholder="alex@example.com"
                   required
-                  className="input-field-dark text-xs"
+                  className={fieldError && !email ? 'input-field-dark text-xs input-error' : 'input-field-dark text-xs'}
                 />
               </div>
 
@@ -260,19 +284,27 @@ export default function AuthModal() {
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); setFieldError(false); }}
                   placeholder="••••••••"
                   required
-                  className="input-field-dark text-xs"
+                  className={fieldError && !password ? 'input-field-dark text-xs input-error' : 'input-field-dark text-xs'}
                 />
               </div>
 
               {error && (
-                <div className="bg-red-950/50 border border-red-800/80 rounded-xl p-3 text-red-300 text-xs flex items-center gap-2">
+                <div className="bg-red-950/60 border border-red-800/80 rounded-xl p-3 text-red-300 text-xs flex items-center gap-2 animate-shake">
                   <span>⚠️</span>
                   <span>{error}</span>
                 </div>
               )}
+
+              {successMessage && (
+                <div className="bg-emerald-950/70 border border-emerald-700/80 rounded-xl p-3 text-emerald-300 text-xs flex items-center gap-2 animate-fade-in font-bold">
+                  <span>✅</span>
+                  <span>{successMessage}</span>
+                </div>
+              )}
+
 
               <button
                 type="submit"

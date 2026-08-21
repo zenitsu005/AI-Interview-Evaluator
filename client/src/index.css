@@ -11,6 +11,16 @@
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     @apply antialiased selection:bg-indigo-600 selection:text-white bg-[#09090b] text-zinc-100;
   }
+  button, a, [role="button"] {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  button:active:not(:disabled), a:active, [role="button"]:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+  button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+  }
 }
 
 .font-editorial {
@@ -22,13 +32,12 @@
   -webkit-transform: scaleX(-1);
 }
 
-
 @layer components {
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:via-indigo-400 hover:to-cyan-400 text-white font-bold py-2.5 px-5 rounded-xl transition-all duration-200 shadow-md shadow-indigo-600/30 hover:shadow-indigo-500/50 hover:scale-[1.02] active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none disabled:hover:scale-100;
+    @apply relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:via-indigo-400 hover:to-cyan-400 text-white font-bold py-2.5 px-5 rounded-xl transition-all duration-200 shadow-md shadow-indigo-600/30 hover:shadow-indigo-500/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:hover:scale-100;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 bg-slate-900/80 hover:bg-slate-800/90 text-slate-200 font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 border border-slate-800 hover:border-slate-700 shadow-sm backdrop-blur-md active:scale-[0.97];
+    @apply inline-flex items-center justify-center gap-2 bg-slate-900/80 hover:bg-slate-800/90 text-slate-200 font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 border border-slate-800 hover:border-slate-700 shadow-sm backdrop-blur-md active:scale-[0.98];
   }
   .btn-glow {
     @apply relative overflow-hidden transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/20 before:to-white/0 before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700;
@@ -42,18 +51,30 @@
   .input-field-dark {
     @apply w-full bg-slate-950/90 border border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none transition-all duration-200 resize-none shadow-inner;
   }
+  .input-error {
+    @apply border-red-500/80 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 bg-red-950/20 animate-shake;
+  }
   .pill-badge {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide border;
   }
 }
 
-/* Smooth Entrance Animations */
+/* Smooth Entrance Animations & Shake Validation */
 @keyframes fadeInScale {
   from { opacity: 0; transform: scale(0.98) translateY(6px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 .animate-fade-in {
-  animation: fadeInScale 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInScale 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+.animate-shake {
+  animation: shakeError 0.35s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
 @keyframes subtleFloat {
@@ -63,6 +84,7 @@
 .animate-float {
   animation: subtleFloat 5s ease-in-out infinite;
 }
+
 
 /* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
