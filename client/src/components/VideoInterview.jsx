@@ -967,33 +967,26 @@ export default function VideoInterview() {
               </p>
             )}
 
-            {/* Submit Button & Shortcut Hint */}
-            <div className="space-y-2 pt-1">
-              <button
-                onClick={handleSubmit}
-                disabled={isLoading || isRecording || isTranscribing}
-                className="w-full py-4 rounded-xl text-sm font-bold tracking-wide transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed
-                  bg-teal-600 hover:bg-teal-500 text-white shadow-teal-950/50 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                    </svg>
-                    <span>Evaluating Response & Loading Next...</span>
-                  </span>
-                ) : (
-                  <span>Submit & Next Question → (Enter ↵)</span>
-                )}
-              </button>
-
-              <div className="text-center">
-                <span className="text-[11px] text-zinc-500 font-mono">
-                  ⌨️ Press <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300 text-[10px]">Enter ↵</kbd> to submit automatically · <kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300 text-[10px]">Shift+Enter</kbd> for new line
+            {/* Submit Button */}
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading || isRecording || isTranscribing}
+              className="w-full py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed
+                bg-teal-600 hover:bg-teal-500 text-white shadow-teal-950/50 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                  </svg>
+                  <span>Submitting...</span>
                 </span>
-              </div>
-            </div>
+              ) : (
+                <span>Submit</span>
+              )}
+            </button>
+
 
           </div>
         </div>
