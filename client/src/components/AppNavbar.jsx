@@ -46,6 +46,14 @@ export default function AppNavbar({ currentActive = 'landing' }) {
 
         {/* Desktop SaaS Navigation */}
         <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-zinc-400">
+          <button
+            onClick={() => handleSelectModule('landing')}
+            className={`transition hover:text-white font-medium ${
+              currentActive === 'landing' ? 'text-indigo-400 font-bold' : 'text-zinc-300'
+            }`}
+          >
+            Home
+          </button>
           <DropdownMenu
             label="Features"
             items={featureItems}
@@ -63,6 +71,7 @@ export default function AppNavbar({ currentActive = 'landing' }) {
             Past Mocks
           </button>
         </nav>
+
 
 
         {/* Desktop Right Actions */}
@@ -117,7 +126,15 @@ export default function AppNavbar({ currentActive = 'landing' }) {
       {/* Mobile Drawer Navigation Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-b border-zinc-800 bg-zinc-950 p-4 space-y-4 animate-fade-in text-left">
+          <button
+            onClick={() => handleSelectModule('landing')}
+            className="block w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-indigo-400 bg-indigo-950/40 border border-indigo-800/40"
+          >
+            🏠 Home Page
+          </button>
+
           <div className="space-y-2">
+
             <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-400">Features</p>
             {featureItems.map((f) => (
               <button
