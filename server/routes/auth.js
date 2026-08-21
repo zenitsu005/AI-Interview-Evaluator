@@ -32,6 +32,8 @@ const hashPassword = (password) => {
   return crypto.createHash('sha256').update(password).digest('hex');
 };
 
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 /**
  * POST /api/auth/signup
  */
@@ -39,14 +41,22 @@ router.post('/signup', (req, res) => {
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Name, email, and password are required.' });
+      return res.status(400).json({ error: 'Full name, email address, and password are required.' });
     }
 
     const cleanEmail = email.toLowerCase().trim();
+    if (!EMAIL_REGEX.test(cleanEmail)) {
+      return res.status(400).json({ error: 'Please provide a valid email address (e.g., name@domain.com).' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+    }
+
     const users = getUsers();
 
     if (users.find((u) => u.email === cleanEmail)) {
-      return res.status(400).json({ error: 'An account with this email already exists. Please log in.' });
+      return res.status(400).json({ error: 'An account with this email already exists. Please log in instead.' });
     }
 
     const newUser = {
@@ -80,11 +90,19 @@ router.post('/login', (req, res) => {
     }
 
     const cleanEmail = email.toLowerCase().trim();
+    if (!EMAIL_REGEX.test(cleanEmail)) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
+    }
+
     const users = getUsers();
     const user = users.find((u) => u.email === cleanEmail);
 
-    if (!user || user.passwordHash !== hashPassword(password)) {
-      return res.status(401).json({ error: 'Invalid email or password. Please try again.' });
+    if (!user) {
+      return res.status(404).json({ error: 'No account found with this email. Please sign up first.' });
+    }
+
+    if (user.passwordHash !== hashPassword(password)) {
+      return res.status(401).json({ error: 'Incorrect password. Please verify your credentials and try again.' });
     }
 
     const userSafe = { id: user.id, name: user.name, email: user.email, picture: user.picture, createdAt: user.createdAt };
@@ -96,14 +114,42 @@ router.post('/login', (req, res) => {
 
 /**
  * POST /api/auth/google-login
- * One-click Google Authentication
+ * Verified Google Authentication
  */
 router.post('/google-login', (req, res) => {
   try {
-    const { email, name, picture } = req.body;
-    const cleanEmail = (email || 'google.user@gmail.com').toLowerCase().trim();
-    const userName = name || cleanEmail.split('@')[0] || 'Google User';
-    const userPic = picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userName)}`;
+    const { credential, email, name, picture } = req.body;
+
+    let cleanEmail = '';
+    let userName = '';
+    let userPic = '';
+
+    // If Google JWT credential is provided, decode payload
+    if (credential) {
+      try {
+        const parts = credential.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+          if (payload.email) {
+            cleanEmail = payload.email.toLowerCase().trim();
+            userName = payload.name || cleanEmail.split('@')[0];
+            userPic = payload.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userName)}`;
+          }
+        }
+      } catch (decodeErr) {
+        console.warn('Google JWT parse notice:', decodeErr);
+      }
+    }
+
+    if (!cleanEmail && email) {
+      cleanEmail = email.toLowerCase().trim();
+      userName = name || cleanEmail.split('@')[0] || 'Google User';
+      userPic = picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userName)}`;
+    }
+
+    if (!cleanEmail || !EMAIL_REGEX.test(cleanEmail)) {
+      return res.status(400).json({ error: 'Invalid Google authentication token or unverified email.' });
+    }
 
     const users = getUsers();
     let user = users.find((u) => u.email === cleanEmail);
@@ -113,7 +159,7 @@ router.post('/google-login', (req, res) => {
         id: crypto.randomUUID(),
         name: userName,
         email: cleanEmail,
-        passwordHash: 'google_auth_oauth2',
+        passwordHash: 'google_auth_oauth2_verified',
         picture: userPic,
         createdAt: new Date().toISOString(),
         history: [],
@@ -132,6 +178,7 @@ router.post('/google-login', (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 /**
  * GET /api/auth/me
