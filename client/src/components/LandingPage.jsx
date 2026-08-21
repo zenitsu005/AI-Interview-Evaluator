@@ -34,8 +34,8 @@ export default function LandingPage({ onNavigate }) {
 
           {/* Headline with Gold Highlight */}
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-slate-900 leading-[1.14]">
-            Practice the interview.{" "}
-            <span className="text-amber-600 font-extrabold">Understand the signal.</span>
+            Fail safely in simulation.{" "}
+            <span className="text-amber-600 font-extrabold block sm:inline">Ace the actual loop.</span>
           </h1>
 
           <p className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed text-pretty font-normal">
