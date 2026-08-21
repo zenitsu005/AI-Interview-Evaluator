@@ -740,7 +740,7 @@ export default function DsaPractice() {
                     disabled={isRunning}
                     className="btn-primary py-1.5 px-4 text-xs font-bold shadow-md flex items-center gap-1.5 btn-glow"
                   >
-                    <span>{isRunning ? '⏳ Testing Solution...' : '▶ Run & Submit Test Suite'}</span>
+                    <span>{isRunning ? '⏳ Testing...' : 'Submit'}</span>
                   </button>
                 </div>
               </div>
@@ -782,9 +782,10 @@ export default function DsaPractice() {
                   </div>
                 ) : (
                   <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs text-slate-500 min-h-[60px] flex items-center justify-center">
-                    Click "▶ Run & Submit Test Suite" to execute your solution against all assertion test cases.
+                    Click "Submit" to run tests against your solution.
                   </div>
                 )}
+
               </div>
             </div>
           </div>

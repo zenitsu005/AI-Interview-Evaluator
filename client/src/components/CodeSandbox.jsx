@@ -158,7 +158,7 @@ export default function CodeSandbox({ code, onChange, onRun }) {
             disabled={isRunning}
             className="text-[11px] font-semibold text-cyan-300 bg-cyan-950/60 border border-cyan-800/80 hover:border-cyan-500 px-2.5 py-1 rounded transition-all font-sans"
           >
-            🧪 Run Tests
+            Run Tests
           </button>
           <button
             type="button"
@@ -166,8 +166,9 @@ export default function CodeSandbox({ code, onChange, onRun }) {
             disabled={isRunning}
             className="btn-primary py-1 px-3 text-[11px] font-bold font-sans shadow-md flex items-center gap-1"
           >
-            <span>{isRunning ? '⏳ Running...' : '▶ Run Code'}</span>
+            <span>{isRunning ? 'Running...' : 'Submit'}</span>
           </button>
+
         </div>
       </div>
 
