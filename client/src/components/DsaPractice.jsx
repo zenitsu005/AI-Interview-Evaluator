@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import { generateDsaProblem } from '../services/api';
 import AppNavbar from './AppNavbar';
+import DopamineCelebrationModal from './DopamineCelebrationModal';
+
 
 const DIFFICULTY_CONFIG = [
   {
@@ -433,6 +435,7 @@ An Anagram is a word or phrase formed by rearranging the letters of a different 
 ];
 
 export default function DsaPractice() {
+
   const { setPhase } = useInterview();
 
   const [problemsList, setProblemsList] = useState(DEFAULT_DSA_PROBLEMS);
@@ -443,7 +446,9 @@ export default function DsaPractice() {
   const [testResults, setTestResults] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
-  const [activeTab, setActiveTab] = useState('spec'); // 'spec' | 'hints' | 'solution'
+  const [activeTab, setActiveTab] = useState('spec');
+  const [showDopamineModal, setShowDopamineModal] = useState(false);
+ // 'spec' | 'hints' | 'solution'
 
   // Filter problems by selected difficulty
   const problemsInTier = problemsList.filter((p) => p.difficulty === selectedDifficulty);
@@ -531,8 +536,10 @@ export default function DsaPractice() {
           time: `${8 + idx * 4}ms`,
         })),
       });
+      setShowDopamineModal(true);
     }, 550);
   };
+
 
   return (
     <div className="min-h-screen bg-[#070a12] text-slate-100 flex flex-col justify-between">
@@ -792,7 +799,15 @@ export default function DsaPractice() {
         </div>
       </main>
 
+      <DopamineCelebrationModal
+        isOpen={showDopamineModal}
+        onClose={() => setShowDopamineModal(false)}
+        overallScore={92}
+        targetRole={activeProblem.title}
+      />
+
       <footer className="py-4 border-t border-slate-900 bg-slate-950/80 text-center" />
     </div>
   );
 }
+
