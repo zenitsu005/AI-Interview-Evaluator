@@ -498,27 +498,27 @@ export default function PreInterviewHypeLab() {
 
             {/* Posture Video Camera Mirror / Silhouette Guide */}
             <div className="relative max-w-md mx-auto aspect-video rounded-2xl overflow-hidden border-2 border-emerald-500/40 bg-black shadow-xl flex items-center justify-center">
-              {cameraActive ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                  style={{ transform: 'scaleX(-1)', WebkitTransform: 'scaleX(-1)' }}
-                />
-              ) : (
-                <div className="p-6 text-center space-y-3">
-                  <div className="text-5xl animate-pulse">🧘</div>
-                  <p className="text-xs text-zinc-300 font-medium">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className={`w-full h-full object-cover ${cameraActive ? 'block' : 'hidden'}`}
+                style={{ transform: 'scaleX(-1)', WebkitTransform: 'scaleX(-1)' }}
+              />
+
+              {!cameraActive && (
+                <div className="p-6 text-center space-y-3 z-10">
+                  <div className="text-5xl animate-bounce">🧘</div>
+                  <p className="text-xs text-zinc-300 font-medium max-w-xs mx-auto">
                     {cameraError ? cameraError : 'Camera Mirror Mode'}
                   </p>
                   <button
                     type="button"
                     onClick={startCamera}
-                    className="py-1.5 px-4 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-xs font-semibold hover:bg-emerald-900/50 transition-all cursor-pointer"
+                    className="py-2 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5 mx-auto"
                   >
-                    📹 Enable Camera Mirror
+                    <span>📹 Enable Live Camera</span>
                   </button>
                 </div>
               )}
@@ -535,12 +535,12 @@ export default function PreInterviewHypeLab() {
 
               <div className="absolute bottom-2 left-2 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-lg text-[10px] text-emerald-300 font-mono flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                <span>Eye-Level Alignment Grid</span>
+                <span>{cameraActive ? 'Live Eye-Level Grid' : 'Alignment Guide Active'}</span>
               </div>
             </div>
 
             {/* Interactive Posture Checkboxes */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 max-w-xl mx-auto text-left text-xs">
+            <div className="w-full max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 text-left text-xs">
               <button
                 type="button"
                 onClick={() => toggleChecklistItem('shoulders')}
@@ -580,6 +580,7 @@ export default function PreInterviewHypeLab() {
                 <span>Spine tall & upright</span>
               </button>
             </div>
+
 
             <div className="flex justify-center gap-3">
               <button
