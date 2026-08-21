@@ -17,6 +17,11 @@
   font-family: 'Instrument Serif', 'Newsreader', Georgia, serif;
 }
 
+.mirror-mode {
+  transform: scaleX(-1);
+  -webkit-transform: scaleX(-1);
+}
+
 
 @layer components {
   .btn-primary {

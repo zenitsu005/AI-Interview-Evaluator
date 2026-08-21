@@ -129,10 +129,15 @@ export default function PreInterviewHypeLab() {
     }
   }, [activeStep]);
 
+  const streamRef = useRef(null);
+  const checkIntervalRef = useRef(null);
+
   const handleStartVocalTest = async () => {
     setIsMicTesting(true);
+    setVocalCheckDone(false);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const source = audioCtx.createMediaStreamSource(stream);
       const analyser = audioCtx.createAnalyser();
@@ -142,19 +147,16 @@ export default function PreInterviewHypeLab() {
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       let checks = 0;
 
-      const checkInterval = setInterval(() => {
+      checkIntervalRef.current = setInterval(() => {
         analyser.getByteFrequencyData(dataArray);
         const avg = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
         setVocalVolume(Math.min(100, Math.round(avg * 2.5)));
 
         if (avg > 15) {
           checks++;
-          if (checks > 12) {
-            clearInterval(checkInterval);
-            stream.getTracks().forEach((t) => t.stop());
-            setIsMicTesting(false);
-            setVocalCheckDone(true);
-            playTriumphantChime();
+          // Require at least 6 seconds of speaking (60 checks) before auto-completing, or user can click Stop anytime
+          if (checks > 60) {
+            handleStopVocalTest();
           }
         }
       }, 100);
@@ -163,6 +165,17 @@ export default function PreInterviewHypeLab() {
       setVocalCheckDone(true);
     }
   };
+
+  const handleStopVocalTest = () => {
+    if (checkIntervalRef.current) clearInterval(checkIntervalRef.current);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+    }
+    setIsMicTesting(false);
+    setVocalCheckDone(true);
+    playTriumphantChime();
+  };
+
 
   const handleAnswerPuzzle = (idx) => {
     setSelectedOption(idx);
@@ -294,25 +307,44 @@ export default function PreInterviewHypeLab() {
               </div>
             </div>
 
-            <div className="flex justify-center gap-3">
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
               {!vocalCheckDone ? (
-                <button
-                  type="button"
-                  onClick={handleStartVocalTest}
-                  disabled={isMicTesting}
-                  className="btn-primary py-3 px-8 text-xs font-black uppercase tracking-wider shadow-lg bg-cyan-600 hover:bg-cyan-500"
-                >
-                  {isMicTesting ? '🎙️ Listening to Your Voice...' : '🎙️ Test Voice Resonance'}
-                </button>
+                !isMicTesting ? (
+                  <button
+                    type="button"
+                    onClick={handleStartVocalTest}
+                    className="btn-primary py-3.5 px-8 text-xs font-black uppercase tracking-wider shadow-lg bg-cyan-600 hover:bg-cyan-500"
+                  >
+                    🎙️ Start Voice Test (Read Sentence Aloud)
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleStopVocalTest}
+                    className="btn-primary py-3.5 px-8 text-xs font-black uppercase tracking-wider shadow-lg bg-emerald-600 hover:bg-emerald-500 animate-pulse"
+                  >
+                    ⏹️ Finished Reading — Ground Voice & Proceed →
+                  </button>
+                )
               ) : (
-                <button
-                  onClick={() => setActiveStep(3)}
-                  className="btn-primary py-3 px-8 text-xs font-black uppercase tracking-wider shadow-lg btn-glow"
-                >
-                  ✅ Voice Grounded! Next: Posture Check →
-                </button>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                  <button
+                    onClick={() => setActiveStep(3)}
+                    className="btn-primary py-3.5 px-8 text-xs font-black uppercase tracking-wider shadow-lg btn-glow"
+                  >
+                    ✅ Voice Grounded! Next: Posture Check →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setVocalCheckDone(false); handleStartVocalTest(); }}
+                    className="btn-secondary py-3 px-4 text-xs font-semibold text-slate-400 hover:text-white"
+                  >
+                    🔄 Re-test Voice
+                  </button>
+                </div>
               )}
             </div>
+
           </div>
         )}
 
@@ -333,7 +365,14 @@ export default function PreInterviewHypeLab() {
 
             {/* Posture Video Camera Mirror */}
             <div className="relative max-w-md mx-auto aspect-video rounded-2xl overflow-hidden border-2 border-emerald-500/40 bg-black shadow-xl">
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover mirror-mode" />
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-full h-full object-cover mirror-mode"
+                style={{ transform: 'scaleX(-1)', WebkitTransform: 'scaleX(-1)' }}
+              />
               <div className="absolute inset-0 border border-emerald-500/20 pointer-events-none grid grid-cols-3 grid-rows-3 opacity-40">
                 <div className="border-r border-b border-emerald-500/30" />
                 <div className="border-r border-b border-emerald-500/30" />

@@ -564,8 +564,9 @@ export default function DsaPractice() {
                 disabled={isGeneratingAi}
                 className="text-xs bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white font-bold px-3.5 py-1.5 rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95"
               >
-                <span>{isGeneratingAi ? '⏳ Crafting New Problem...' : '✨ Generate Fresh AI Challenge'}</span>
+                <span>{isGeneratingAi ? '⏳ Generating...' : '🔄 Refresh Question'}</span>
               </button>
+
             </div>
           </div>
 

@@ -698,7 +698,9 @@ export default function VideoInterview() {
                     playsInline
                     muted
                     className="w-full h-full object-cover mirror-mode"
+                    style={{ transform: 'scaleX(-1)', WebkitTransform: 'scaleX(-1)' }}
                   />
+
                 )}
 
                 {!camReady && !cameraError && !virtualMode && (

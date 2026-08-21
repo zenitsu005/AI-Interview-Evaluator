@@ -350,9 +350,10 @@ export default function RapidFireBlitz() {
                 onClick={fetchAiQuestions}
                 className="btn-secondary py-3 px-6 text-xs font-semibold w-full sm:w-auto flex items-center justify-center gap-2"
               >
-                <span>✨</span>
-                <span>Generate Fresh AI Blitz Set</span>
+                <span>🔄</span>
+                <span>Refresh Questions</span>
               </button>
+
               <button
                 onClick={() => setPhase('setup')}
                 className="btn-primary py-3 px-8 text-xs font-bold btn-glow shadow-xl w-full sm:w-auto"
