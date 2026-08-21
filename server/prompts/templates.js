@@ -354,6 +354,14 @@ EVALUATION GUIDELINES (4 Core Dimensions + Bar Raiser Persona Rubric):
    - If Microsoft: Enterprise multi-region cloud resilience, security, backward compatibility, and cross-team alignment.
    - If Meta: Real-time pipelines, live A/B experimentation, high-throughput caching, and rapid user impact.
 
+CRITICAL ACCURACY & INTEGRITY RULES (STRICT):
+- STRICT ZERO-TOLERANCE FOR REPEATING/PARROTING: If candidate merely repeats, echoes, copies, reads aloud, or rephrases the question words without providing the actual mathematical answer/calculation, code solution, or technical explanation, mark status STRICTLY as "Incorrect" (0 points) with feedback "Candidate repeated or rephrased the question prompt instead of providing an actual solution."
+- "status" MUST be strictly one of:
+  * "Correct": Substantive, mathematically/technically accurate solution.
+  * "Partially Correct": Genuine conceptual attempt with reasoning, but missed edge cases or calculations. (NEVER use for parroted questions).
+  * "Incorrect": Wrong answer, gibberish, empty/no response, or question echo.
+
+
 Return EXACTLY this JSON structure (keep descriptions concise & high-signal for fast rendering):
 {
   "aptitudeScore": <integer 0-100>,

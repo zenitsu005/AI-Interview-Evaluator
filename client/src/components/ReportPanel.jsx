@@ -127,6 +127,28 @@ export default function ReportPanel() {
 
   const overallScoreVal = Number(report.overallScore) || 0;
 
+  // Echo & Parrot detection
+  const isEchoOrParrot = (ans, qText) => {
+    if (!ans || typeof ans !== 'string') return true;
+    const cleanAns = ans.trim().toLowerCase().replace(/[^a-z0-9 ]/g, '');
+    const cleanQ = (qText || '').trim().toLowerCase().replace(/[^a-z0-9 ]/g, '');
+    if (cleanAns.length < 10) return true;
+    if (cleanQ.includes(cleanAns) || cleanAns.includes(cleanQ)) {
+      if (Math.abs(cleanAns.length - cleanQ.length) < 50 || cleanQ.startsWith(cleanAns)) {
+        return true;
+      }
+    }
+    const ansWords = cleanAns.split(/\s+/).filter((w) => w.length > 2);
+    const qWords = new Set(cleanQ.split(/\s+/).filter((w) => w.length > 2));
+    if (ansWords.length > 0) {
+      const overlap = ansWords.filter((w) => qWords.has(w)).length / ansWords.length;
+      if (overlap > 0.8 && ansWords.length < 35) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   // Guarantee all questions from the session are presented in the report breakdown
   let evalList = [];
   if (Array.isArray(report.questionEvaluations) && report.questionEvaluations.length > 0) {
@@ -147,13 +169,16 @@ export default function ReportPanel() {
             round: matchingEval.round || resp.roundLabel || resp.round || 'Technical',
           };
         }
+        const isParrot = isEchoOrParrot(resp.answer, resp.question);
         return {
           questionNumber: resp.questionNumber || i + 1,
           round: resp.roundLabel || resp.round || 'Technical',
           question: resp.question,
           candidateAnswer: resp.answer || '(No response provided)',
-          status: (resp.answer && resp.answer.trim().length > 25) ? 'Partially Correct' : 'Incorrect',
-          feedback: (resp.answer && resp.answer.trim().length > 25)
+          status: (!isParrot && resp.answer && resp.answer.trim().length > 30) ? 'Partially Correct' : 'Incorrect',
+          feedback: isParrot
+            ? 'Candidate repeated or rephrased the question prompt instead of providing an actual solution.'
+            : (resp.answer && resp.answer.trim().length > 30)
             ? 'Candidate provided relevant technical reasoning and addressed the core engineering components.'
             : 'No substantive answer provided during this question.',
           expectedAnswer: 'Optimal approach decomposes the problem into modular components, addresses concurrency invariants, and guarantees high availability.',
@@ -164,6 +189,7 @@ export default function ReportPanel() {
       });
     }
   }
+
 
   const studyPlan = Array.isArray(report.studyRoadmap) && report.studyRoadmap.length > 0 ? report.studyRoadmap : DEFAULT_ROADMAP;
   const activeDay = studyPlan.find((d) => d.day === selectedDayNumber) || studyPlan[0] || DEFAULT_ROADMAP[0];
@@ -782,10 +808,13 @@ export default function ReportPanel() {
             </div>
           ) : (
             evalList.map((q, idx) => {
-              const status = (q.status || '').toLowerCase();
-              const isCorrect = status.includes('correct') && !status.includes('in') && !status.includes('not');
-              const isPartial = status.includes('partial');
+              const isParrot = isEchoOrParrot(q.candidateAnswer, q.question);
+              const rawStatus = (q.status || '').toLowerCase().trim();
+              const isIncorrect = isParrot || rawStatus.includes('incorrect') || rawStatus.includes('wrong') || rawStatus.includes('fail') || rawStatus.includes('not');
+              const isPartial = !isIncorrect && rawStatus.includes('partial');
+              const isCorrect = !isIncorrect && !isPartial && rawStatus.includes('correct');
               const activeTab = activeTierTabs[idx] || 'yours';
+              const displayFeedback = isParrot ? 'Candidate repeated or rephrased the question prompt without providing an actual substantive solution.' : q.feedback;
 
               return (
                 <div
@@ -820,6 +849,7 @@ export default function ReportPanel() {
                       {isCorrect ? '✅ Correct' : isPartial ? '⚠️ Partially Correct' : '❌ Incorrect'}
                     </span>
                   </div>
+
 
                   <p className="font-semibold text-slate-100 text-xs sm:text-sm mb-3">
                     {q.question}
@@ -933,12 +963,13 @@ export default function ReportPanel() {
                     )}
 
 
-                    {q.feedback && (
+                    {(displayFeedback || q.feedback) && (
                       <div className="pt-2 border-t border-slate-800/60">
                         <span className="text-indigo-400 font-bold uppercase text-[10px] block">AI Assessment</span>
-                        <p className="text-slate-300 text-xs mt-0.5">{q.feedback}</p>
+                        <p className="text-slate-300 text-xs mt-0.5">{displayFeedback || q.feedback}</p>
                       </div>
                     )}
+
                   </div>
                 </div>
               );
