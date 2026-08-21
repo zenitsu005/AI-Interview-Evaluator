@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useInterview } from '../context/InterviewContext';
+import AnalyticsTrendSection from './AnalyticsTrendSection';
+import ShareReportCardModal from './ShareReportCardModal';
 
 export default function ProfilePage() {
   const { user, history, logout } = useAuth();
   const { viewPastReport, setPhase } = useInterview();
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [selectedShareReport, setSelectedShareReport] = useState(null);
 
   const totalInterviews = history.length;
+
   
   // Calculate average overall score
   const avgOverallScore = totalInterviews > 0
@@ -171,13 +176,37 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* ── Historical Performance Trendlines & Topic Mastery ── */}
+        <AnalyticsTrendSection
+          history={history}
+          currentReport={history.length > 0 ? history[history.length - 1].report : null}
+          targetRole={history.length > 0 ? history[history.length - 1].targetRole : 'Software Engineer'}
+        />
+
         {/* ── Complete Interview History Table ── */}
         <div className="card-dark">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800 flex-wrap gap-2">
             <h2 className="text-sm font-bold text-white flex items-center gap-2">
               <span>📜</span> All Completed Mock Interviews
             </h2>
-            <span className="text-xs text-slate-400 font-mono">{totalInterviews} Recorded</span>
+            <div className="flex items-center gap-2">
+              {totalInterviews > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedShareReport(history[history.length - 1]);
+                    setShowShareModal(true);
+                  }}
+                  className="py-1.5 px-3 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md shadow-teal-950/40 transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>🛡️</span>
+                  <span>Share Latest Scorecard</span>
+                </button>
+              )}
+              <span className="text-xs text-slate-400 font-mono bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+                {totalInterviews} Recorded
+              </span>
+            </div>
           </div>
 
           {totalInterviews === 0 ? (
@@ -197,7 +226,7 @@ export default function ProfilePage() {
               {history.map((record, i) => (
                 <div
                   key={record.id || i}
-                  className="bg-slate-950/70 hover:bg-slate-900 border border-slate-800 hover:border-indigo-500/50 p-4 rounded-xl transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
+                  className="bg-slate-950/70 hover:bg-slate-900 border border-slate-800 hover:border-teal-500/50 p-4 rounded-xl transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group"
                 >
                   <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -222,13 +251,24 @@ export default function ProfilePage() {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-3 self-end sm:self-center">
+                  <div className="flex items-center gap-2.5 self-end sm:self-center flex-wrap">
                     <div className={`px-3.5 py-1.5 rounded-xl border text-center font-black text-sm ${getScoreColor(record.overallScore)}`}>
                       {record.overallScore}<span className="text-[10px] font-normal opacity-70">/100</span>
                     </div>
                     <button
+                      onClick={() => {
+                        setSelectedShareReport(record);
+                        setShowShareModal(true);
+                      }}
+                      className="py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-teal-300 hover:text-white text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer"
+                      title="Share / Download Social Scorecard"
+                    >
+                      <span>🛡️</span>
+                      <span>Share Card</span>
+                    </button>
+                    <button
                       onClick={() => viewPastReport(record)}
-                      className="btn-secondary py-2 px-3.5 text-xs font-semibold hover:border-indigo-500"
+                      className="btn-secondary py-2 px-3.5 text-xs font-semibold hover:border-teal-500"
                     >
                       View Report →
                     </button>
@@ -239,6 +279,18 @@ export default function ProfilePage() {
           )}
         </div>
       </main>
+
+      {/* ── Share Report Card Modal ── */}
+      <ShareReportCardModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        report={selectedShareReport?.report || selectedShareReport}
+        targetRole={selectedShareReport?.targetRole || 'Software Engineer'}
+        companyTrack={selectedShareReport?.companyTrack || 'General'}
+        difficultyLevel={selectedShareReport?.difficultyLevel || 'Intermediate'}
+        user={user}
+      />
+
 
       <footer className="py-4 border-t border-slate-900 bg-slate-950/80" />
     </div>

@@ -5,6 +5,9 @@ import { useAuth } from '../context/AuthContext';
 import DopamineCelebrationModal from './DopamineCelebrationModal';
 import AiInterviewCoach from './AiInterviewCoach';
 import SkillPassportModal from './SkillPassportModal';
+import AnalyticsTrendSection from './AnalyticsTrendSection';
+import ShareReportCardModal from './ShareReportCardModal';
+
 
 const READINESS = {
   'Not Ready': { color: 'text-red-400', bg: 'bg-red-950/40', border: 'border-red-800/80', emoji: '❌', barColor: 'bg-red-500' },
@@ -54,15 +57,28 @@ const ScoreCard = ({ icon, label, score = 0, feedback = '', barColor = 'bg-blue-
 };
 
 export default function ReportPanel() {
-  const { report, resumeAnalysis, targetRole, restart, allResponses, difficultyLevel, companyTrack, interviewerPersona, setPhase } = useInterview();
-  const { user, openHistory } = useAuth();
+  const {
+    report,
+    resumeAnalysis,
+    targetRole,
+    restart,
+    retakeSameExam,
+    allResponses,
+    difficultyLevel,
+    companyTrack,
+    interviewerPersona,
+    setPhase,
+  } = useInterview();
+  const { user, history, openHistory } = useAuth();
 
   const [completedDays, setCompletedDays] = useState([]);
   const [showCertificate, setShowCertificate] = useState(false);
   const [showCheatSheet, setShowCheatSheet] = useState(false);
   const [showDopamineModal, setShowDopamineModal] = useState(true);
   const [showPassportModal, setShowPassportModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [copiedLinkedIn, setCopiedLinkedIn] = useState(false);
+
   const [activeTierTabs, setActiveTierTabs] = useState({});
   const [selectedDayNumber, setSelectedDayNumber] = useState(1);
   const [playingVoiceIdx, setPlayingVoiceIdx] = useState(null);
@@ -308,6 +324,14 @@ export default function ReportPanel() {
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <button
+            onClick={() => setShowShareModal(true)}
+            className="btn-secondary py-2 px-3.5 text-xs font-bold text-teal-300 border-teal-500/80 bg-teal-950/40 hover:bg-teal-900/60 flex items-center gap-1.5 shadow-md cursor-pointer"
+            title="Download or Share Verified Social Scorecard (PNG)"
+          >
+            <span>🛡️</span>
+            <span>Share Scorecard</span>
+          </button>
+          <button
             onClick={() => setShowPassportModal(true)}
             className="btn-secondary py-2 px-3.5 text-xs font-bold text-cyan-300 border-cyan-500/80 bg-cyan-950/40 hover:bg-cyan-900/60 flex items-center gap-1.5 shadow-md"
             title="View Verifiable Anti-Bias Skill Passport"
@@ -315,6 +339,7 @@ export default function ReportPanel() {
             <span>🌐</span>
             <span>Skill Passport</span>
           </button>
+
           <button
             onClick={() => setShowCheatSheet(true)}
             className="btn-secondary py-2 px-3.5 text-xs font-semibold text-cyan-300 border-cyan-800/80 hover:border-cyan-500 flex items-center gap-1.5"
@@ -344,12 +369,22 @@ export default function ReportPanel() {
             🖨️ Export PDF
           </button>
           <button
-            onClick={restart}
-            className="btn-primary py-2 px-3.5 text-xs font-semibold"
+            onClick={retakeSameExam}
+            className="btn-primary py-2 px-3.5 text-xs font-bold flex items-center gap-1.5 shadow-md bg-teal-600 hover:bg-teal-500 text-white shadow-teal-950/50 cursor-pointer"
+            title="Retake this exact exam track with same role, difficulty, and persona"
           >
-            🔄 Retake
+            <span>🔄</span>
+            <span>Retake Same Exam</span>
+          </button>
+          <button
+            onClick={restart}
+            className="btn-secondary py-2 px-3.5 text-xs font-semibold text-slate-300 hover:text-white"
+            title="Start from role setup"
+          >
+            ⚙️ New Setup
           </button>
         </div>
+
 
       </header>
 
@@ -571,6 +606,14 @@ export default function ReportPanel() {
             </ul>
           </div>
         </div>
+
+        {/* ── Historical Performance Trendlines & Topic Mastery Matrix ── */}
+        <AnalyticsTrendSection
+          history={history}
+          currentReport={report}
+          targetRole={targetRole}
+        />
+
 
         {/* ── 24/7 Interactive AI Interview Coach & Motivator ── */}
         <AiInterviewCoach
@@ -882,7 +925,39 @@ export default function ReportPanel() {
             })
           )}
         </div>
+
+        {/* ── Retake Same Exam Action Banner ── */}
+        <div className="card-dark border-teal-500/30 bg-gradient-to-r from-teal-950/40 via-slate-900 to-slate-950 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-5 rounded-3xl shadow-2xl">
+          <div className="space-y-1 text-center sm:text-left">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/80 border border-teal-500/40 text-teal-300 text-[11px] font-mono font-bold uppercase">
+              <span>🎯</span> Instant Re-Test & Skill Calibration
+            </div>
+            <h3 className="text-base sm:text-lg font-extrabold text-white">
+              Ready to improve your score for {targetRole || 'Software Engineer'}?
+            </h3>
+            <p className="text-xs text-zinc-400 max-w-xl">
+              Retake this exact interview exam track ({difficultyLevel || 'Intermediate'} Level • {companyTrack || 'General'} Track) to apply your feedback, eliminate filler words, and boost your score.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 flex-shrink-0 flex-wrap justify-center">
+            <button
+              onClick={retakeSameExam}
+              className="py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs sm:text-sm font-bold shadow-xl shadow-teal-950/60 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
+            >
+              <span>🔄</span>
+              <span>Retake Same Exam Now</span>
+            </button>
+            <button
+              onClick={restart}
+              className="py-3.5 px-5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-xs font-semibold cursor-pointer transition-all"
+            >
+              Start New Role Setup →
+            </button>
+          </div>
+        </div>
       </main>
+
 
       {/* ── Feature 11: 1-Page Printable Cheat Sheet Modal ── */}
       {showCheatSheet && (
@@ -970,7 +1045,19 @@ export default function ReportPanel() {
         difficultyLevel={difficultyLevel}
       />
 
+      {/* ── 1-Click Share Report Card Modal ── */}
+      <ShareReportCardModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        report={report}
+        targetRole={targetRole}
+        companyTrack={companyTrack}
+        difficultyLevel={difficultyLevel}
+        user={user}
+      />
+
       <footer className="py-4 border-t border-slate-900 bg-slate-950/80 text-center" />
     </div>
   );
 }
+

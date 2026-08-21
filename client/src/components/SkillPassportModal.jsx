@@ -131,32 +131,16 @@ export default function SkillPassportModal({ isOpen, onClose, report, user, targ
 
         {/* Action Buttons */}
         <div className="space-y-2.5">
-          <div className="flex gap-2">
-            <button
-              onClick={handleCopyLink}
-              className="btn-primary flex-1 py-3 text-xs font-bold shadow-md bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 flex items-center justify-center gap-1.5"
-            >
-              <span>📋</span>
-              <span>{copiedLink ? '✅ Recruiter Link Copied!' : 'Copy Direct Recruiter Link'}</span>
-            </button>
-
-            <button
-              onClick={handleShareLinkedIn}
-              className="btn-secondary py-3 px-4 text-xs font-semibold text-amber-300 border-amber-800/80 hover:border-amber-500 flex items-center gap-1.5"
-            >
-              <span>💼</span>
-              <span>{copiedLinkedIn ? 'Copied!' : 'LinkedIn Share'}</span>
-            </button>
-          </div>
-
           <button
             onClick={() => window.print()}
-            className="w-full py-2.5 text-xs text-slate-400 hover:text-white bg-slate-950 border border-slate-800 rounded-xl font-semibold transition-colors"
+            className="w-full py-3 text-xs text-slate-300 hover:text-white bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
           >
-            🖨️ Export / Print High-Resolution Skill Passport PDF
+            <span>🖨️</span>
+            <span>Export / Print High-Resolution Skill Passport PDF</span>
           </button>
         </div>
       </div>
     </div>
   );
 }
+

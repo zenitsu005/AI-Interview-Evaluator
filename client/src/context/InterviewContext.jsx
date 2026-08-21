@@ -575,6 +575,32 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
     isSubmittingRef.current = false;
   }, []);
 
+  /** Retake the exact same interview exam with current parameters */
+  const retakeSameExam = useCallback(() => {
+    setIsLoading(false);
+    setError(null);
+    setReport(null);
+    setAllResponses([]);
+    setActiveFollowUp(null);
+    isSubmittingRef.current = false;
+
+    // Instant opening question generation
+    const instantQ = generateInstantOpeningQuestion(
+      targetRole,
+      difficultyLevel,
+      interviewerPersona
+    );
+
+
+    setCurrentRoundIndex(0);
+    setQuestionIndexInRound(1);
+    setCurrentQuestion(instantQ);
+    setPreviousQuestions([instantQ.question]);
+
+    // Instant launch back into interview
+    setPhase('interview');
+  }, [targetRole, difficultyLevel, interviewerPersona]);
+
   const answeredCount = allResponses.length;
   const progressPercent = Math.round((answeredCount / TOTAL_QUESTIONS) * 100);
 
@@ -620,9 +646,11 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
         triggerFollowUpProbe,
         viewPastReport,
         restart,
+        retakeSameExam,
       }}
     >
       {children}
     </InterviewContext.Provider>
   );
 };
+
