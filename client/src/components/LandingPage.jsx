@@ -8,6 +8,7 @@ export default function LandingPage() {
   const { setPhase } = useInterview();
   const { isAuthenticated, openAuth } = useAuth();
   const [serverState, setServerState] = useState('checking'); // 'checking' | 'ready' | 'warming'
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -18,7 +19,6 @@ export default function LandingPage() {
           setServerState('ready');
         } else {
           setServerState('warming');
-          // Retry in 3s to confirm when warm
           setTimeout(async () => {
             const res2 = await checkServerHealth();
             if (isMounted && res2) setServerState('ready');
@@ -36,295 +36,426 @@ export default function LandingPage() {
     if (res) setServerState('ready');
   };
 
+  const toggleFaq = (index) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index);
+  };
+
+  const faqs = [
+    {
+      q: "How realistic are the AI Bar Raiser personas?",
+      a: "Our personas are modeled directly on published interview loops from Google L7, Amazon Bar Raisers, and YC founders. They evaluate your answers against explicit technical rubrics, STAR framework completeness, and system scalability metrics."
+    },
+    {
+      q: "Does the platform evaluate live audio and speech pace?",
+      a: "Yes. Using real-time audio analytics, the studio measures your Words Per Minute (WPM), filler word frequency (e.g. 'um', 'basically'), and vocal composure during live questioning."
+    },
+    {
+      q: "Is any payment or credit card required?",
+      a: "No. You can run full mock interview sessions, practice DSA coding, test system design architectures, and optimize your ATS resume for free."
+    },
+    {
+      q: "Can I practice specific modules without taking a 15-question mock?",
+      a: "Absolutely. Choose any of our 8 specialized studios—like 60s Blitz, DSA Code Sandbox, Bug Hunter, or Salary Sparring—directly from the studio selector."
+    }
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#070a12] text-slate-100 selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen flex flex-col justify-between bg-[#09090b] text-zinc-100 selection:bg-indigo-600 selection:text-white font-sans">
       {/* Universal Top Navbar */}
       <AppNavbar currentActive="landing" />
 
-      {/* ── Hero Section ── */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 flex-1 flex flex-col items-center text-center">
-        {/* Animated Badge & Free Server Warm-Up Status */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-6 animate-fade-in">
-          <div className="inline-flex items-center gap-2 bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 px-4 py-1.5 rounded-full text-xs font-bold shadow-inner">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-            <span>⚡ Ek Baar Aaoge, Job Paoge</span>
-          </div>
+      {/* ── Main Container ── */}
+      <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-20 flex-1">
+        
+        {/* ── SECTION 1: HERO (Asymmetric & Editorial) ── */}
+        <section className="mb-20 sm:mb-28 text-center sm:text-left grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          
+          {/* Left Hero Column */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Status Pills */}
+            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+              <span className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-zinc-300 px-3.5 py-1 rounded-full text-xs font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                Ek Baar Aaoge, Job Paoge
+              </span>
 
-          <button
-            type="button"
-            onClick={handleWakeUp}
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold border transition-all cursor-pointer ${
-              serverState === 'ready'
-                ? 'bg-emerald-950/70 border-emerald-500/40 text-emerald-300'
-                : 'bg-amber-950/70 border-amber-500/40 text-amber-300 animate-pulse'
-            }`}
-            title="Click to manually send a warm-up signal to the server"
-          >
-            <span className={`w-2 h-2 rounded-full ${serverState === 'ready' ? 'bg-emerald-400' : 'bg-amber-400 animate-ping'}`} />
-            <span>{serverState === 'ready' ? '⚡ AI Server Ready' : '⏳ Warming Up Server...'}</span>
-          </button>
-        </div>
-
-        {/* Main Headline */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-400 tracking-tight leading-[1.1] mb-6 max-w-4xl">
-          Meet the Interview Before You Meet the Recruiter
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-sm sm:text-lg text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
-          Face realistic <strong className="text-slate-200 font-semibold">Amazon, Google & YC Bar Raisers</strong> in a full Google Meet video studio. Get instant deterministic scores on your code, system design, and STAR behavioral answers.
-        </p>
-
-        {/* CTA Button Group */}
-        <div className="flex flex-col sm:flex-row items-center gap-3.5 mb-14 w-full sm:w-auto justify-center">
-          <button
-            onClick={() => setPhase('setup')}
-            className="btn-primary text-sm px-8 py-3.5 w-full sm:w-auto btn-glow shadow-xl shadow-indigo-600/30 font-extrabold"
-          >
-            <span>🚀 Start Full Mock Interview</span>
-            <span className="text-xs opacity-75 font-normal ml-1.5">(Instant & Free)</span>
-          </button>
-
-          <button
-            onClick={() => setPhase('hype-lab')}
-            className="btn-secondary text-sm px-6 py-3.5 w-full sm:w-auto text-emerald-300 border-emerald-800/80 hover:border-emerald-500 font-bold flex items-center justify-center gap-2"
-          >
-            <span>🧘</span>
-            <span>3-Min Anxiety Hype Lab</span>
-          </button>
-        </div>
-
-        {/* ── Real-Time Metrics & Trust Bar ── */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-6 w-full max-w-3xl mb-14 p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 backdrop-blur-md text-center divide-x divide-slate-800/60">
-          <div className="space-y-0.5 px-1">
-            <p className="text-lg sm:text-2xl font-black text-white font-mono">100,000+</p>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium">Questions Evaluated</p>
-          </div>
-          <div className="space-y-0.5 px-1">
-            <p className="text-lg sm:text-2xl font-black text-emerald-400 font-mono">98.4%</p>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium">Confidence Boost</p>
-          </div>
-          <div className="space-y-0.5 px-1">
-            <p className="text-lg sm:text-2xl font-black text-cyan-400 font-mono">6 Personas</p>
-            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium">Top Bar Raisers</p>
-          </div>
-        </div>
-
-        {/* ── All 8 Specialized Practice Studios Grid ── */}
-        <div className="w-full text-left space-y-4 mb-14">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-black uppercase tracking-widest text-indigo-400 flex items-center gap-2">
-                <span>⚡</span> Specialized Interactive Studios
-              </h2>
-              <p className="text-xs text-slate-400 mt-0.5">Pick any module to practice specific skills without doing a full 15-question interview.</p>
+              <button
+                type="button"
+                onClick={handleWakeUp}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium border transition-all ${
+                  serverState === 'ready'
+                    ? 'bg-emerald-950/40 border-emerald-800/60 text-emerald-400'
+                    : 'bg-amber-950/40 border-amber-800/60 text-amber-300 animate-pulse'
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${serverState === 'ready' ? 'bg-emerald-400' : 'bg-amber-400 animate-ping'}`} />
+                <span>{serverState === 'ready' ? 'Server Active' : 'Warming AI Server...'}</span>
+              </button>
             </div>
-            <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">100% Free & Interactive</span>
+
+            {/* Editorial Headline */}
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-white">
+              Stop guessing how you perform in <span className="font-editorial italic font-normal text-indigo-300">high-stakes</span> tech interviews.
+            </h1>
+
+            {/* Subhead */}
+            <p className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed font-normal">
+              Simulate actual Google L7 and Amazon Bar Raiser rounds. Receive real-time deterministic feedback on code efficiency, system architecture, and verbal composure.
+            </p>
+
+            {/* CTA Group */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-3.5 justify-center sm:justify-start">
+              <button
+                onClick={() => setPhase('setup')}
+                className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 active:scale-[0.98] text-white text-sm font-bold px-7 py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-950/60 flex items-center justify-center gap-2"
+              >
+                <span>Start Free Mock Interview</span>
+                <span className="text-indigo-200">→</span>
+              </button>
+
+              <button
+                onClick={() => setPhase('hype-lab')}
+                className="w-full sm:w-auto bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white text-sm font-semibold px-6 py-3.5 rounded-xl border border-zinc-800 transition-all flex items-center justify-center gap-2"
+              >
+                <span>🧘 3-Min Hype Lab</span>
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 w-full">
-            {/* Studio 1: Mock Studio */}
+          {/* Right Hero Column: Concrete Visual Interactive Simulator Tile */}
+          <div className="lg:col-span-5">
+            <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-5 shadow-2xl space-y-4 text-left relative overflow-hidden">
+              <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-indigo-950 border border-indigo-700/50 flex items-center justify-center text-xs">
+                    👔
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white">Marcus Vance</p>
+                    <p className="text-[10px] text-zinc-500 font-mono">Amazon Bar Raiser · L7</p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-800/60 text-emerald-400">
+                  LIVE INTERROGATION
+                </span>
+              </div>
+
+              {/* Active Bar Raiser Question Preview */}
+              <div className="space-y-2">
+                <p className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Round 2 · System Architecture</p>
+                <p className="text-xs text-zinc-200 leading-relaxed font-medium">
+                  "How would you guarantee zero message loss during a 100x traffic surge on your Kafka ingestion stream?"
+                </p>
+              </div>
+
+              {/* Candidate Audio & Composure Gauges */}
+              <div className="bg-zinc-950 p-3 rounded-xl border border-zinc-800/80 space-y-2 text-[11px]">
+                <div className="flex items-center justify-between text-zinc-400">
+                  <span>Candidate Composure</span>
+                  <span className="font-mono text-emerald-400 font-bold">96% Steady</span>
+                </div>
+                <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
+                  <div className="h-full bg-emerald-500 w-[96%]" />
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono pt-1">
+                  <span>Pacing: 132 WPM</span>
+                  <span>Fillers: 0 detected</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION 2: CONCRETE METRICS BAR ── */}
+        <section className="mb-24">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-zinc-800/60 border border-zinc-800 rounded-2xl overflow-hidden shadow-xl">
+            <div className="bg-zinc-950 p-6 text-center space-y-1">
+              <p className="text-2xl sm:text-3xl font-extrabold text-white font-mono">100,000+</p>
+              <p className="text-xs text-zinc-400 font-medium">Questions Evaluated</p>
+            </div>
+            <div className="bg-zinc-950 p-6 text-center space-y-1">
+              <p className="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono">98.4%</p>
+              <p className="text-xs text-zinc-400 font-medium">Assessment Accuracy</p>
+            </div>
+            <div className="bg-zinc-950 p-6 text-center space-y-1">
+              <p className="text-2xl sm:text-3xl font-extrabold text-cyan-400 font-mono">6 Personas</p>
+              <p className="text-xs text-zinc-400 font-medium">Specialized Bar Raisers</p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SECTION 3: ASYMMETRIC BENTO GRID (8 SPECIALIZED STUDIOS) ── */}
+        <section className="mb-28 space-y-6">
+          <div className="text-left space-y-1">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Specialized Interactive Studios
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-400">
+              Practice targeted skills independently or launch a complete multi-round evaluation.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+            
+            {/* Bento Tile 1: Full Mock Studio (Large Hero Bento - 8 cols) */}
             <div
               onClick={() => setPhase('setup')}
-              className="card-dark border-indigo-500/40 bg-gradient-to-b from-slate-900 to-slate-950 p-5 rounded-2xl hover:border-indigo-400 hover:scale-[1.02] cursor-pointer transition-all flex flex-col justify-between group shadow-lg"
+              className="md:col-span-8 bg-gradient-to-br from-zinc-900 via-zinc-900 to-indigo-950/40 border border-indigo-500/30 rounded-2xl p-6 hover:border-indigo-500/60 cursor-pointer transition-all flex flex-col justify-between group shadow-xl"
             >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl">👥</span>
-                  <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-indigo-300">
-                    FLAGSHIP
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800/60 uppercase tracking-wider">
+                    FEATURED STUDIO
                   </span>
+                  <span className="text-xs text-zinc-500 font-mono group-hover:text-indigo-400 transition-colors">Launch Studio →</span>
                 </div>
-                <h3 className="font-extrabold text-white text-sm group-hover:text-indigo-300 transition-colors">
-                  Dual Meet Studio
+                <h3 className="text-xl sm:text-2xl font-extrabold text-white group-hover:text-indigo-200 transition-colors">
+                  🎯 Full Mock Interview Studio
                 </h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  Real-time video call with spoken lip-sync Bar Raiser avatars, audio waveforms, code sandbox, and deterministic grading.
+                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-xl">
+                  Simulate all 3 core rounds: Aptitude & Logic, Technical Depth, and STAR Behavioral Fit with AI Bar Raiser feedback.
                 </p>
               </div>
-              <span className="text-xs font-bold text-indigo-400 mt-4 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                Launch Mock Studio →
-              </span>
-            </div>
-
-            {/* Studio 2: Hype Lab */}
-            <div
-              onClick={() => setPhase('hype-lab')}
-              className="card-dark border-emerald-500/40 bg-gradient-to-b from-slate-900 to-slate-950 p-5 rounded-2xl hover:border-emerald-400 hover:scale-[1.02] cursor-pointer transition-all flex flex-col justify-between group shadow-lg"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl">🧘</span>
-                  <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-500/40 text-emerald-300">
-                    NERVOUS RESET
-                  </span>
-                </div>
-                <h3 className="font-extrabold text-white text-sm group-hover:text-emerald-300 transition-colors">
-                  3-Min Hype Lab
-                </h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  Vagus nerve box-breathing, microphone vocal grounding, webcam posture mirror, and 1-min dopamine quick-win puzzle.
-                </p>
+              <div className="pt-6 flex items-center gap-3 text-xs text-zinc-400 font-mono">
+                <span>✓ Audio Analytics</span>
+                <span>•</span>
+                <span>✓ Socratic Hints</span>
+                <span>•</span>
+                <span>✓ Transcripts</span>
               </div>
-              <span className="text-xs font-bold text-emerald-400 mt-4 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                Start Hype Routine →
-              </span>
             </div>
 
-            {/* Studio 3: DSA Studio */}
+            {/* Bento Tile 2: DSA Code Sandbox (4 cols) */}
             <div
               onClick={() => setPhase('dsa')}
-              className="card-dark border-cyan-500/40 bg-gradient-to-b from-slate-900 to-slate-950 p-5 rounded-2xl hover:border-cyan-400 hover:scale-[1.02] cursor-pointer transition-all flex flex-col justify-between group shadow-lg"
+              className="md:col-span-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 cursor-pointer transition-all flex flex-col justify-between group shadow-xl"
             >
-              <div>
-                <div className="flex items-center justify-between mb-3">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
                   <span className="text-2xl">💻</span>
-                  <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-500/40 text-cyan-300">
-                    SANDBOX
-                  </span>
+                  <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
                 </div>
-                <h3 className="font-extrabold text-white text-sm group-hover:text-cyan-300 transition-colors">
-                  DSA & Algorithms
+                <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">
+                  DSA Practice Studio
                 </h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  Practice Easy to Hard algorithmic problems with live test runners, hints, and Big-O asymptotic analysis.
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Solve algorithms in Python, JS, or C++ with automated test runner and complexity analysis.
                 </p>
               </div>
-              <span className="text-xs font-bold text-cyan-400 mt-4 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                Solve Problems →
-              </span>
+              <span className="text-[11px] text-zinc-500 font-mono pt-4">Time & Space Complexity</span>
             </div>
 
-            {/* Studio 4: Salary Negotiator */}
+            {/* Bento Tile 3: System Design Whiteboard (4 cols) */}
             <div
-              onClick={() => setPhase('negotiate')}
-              className="card-dark border-amber-500/40 bg-gradient-to-b from-slate-900 to-slate-950 p-5 rounded-2xl hover:border-amber-400 hover:scale-[1.02] cursor-pointer transition-all flex flex-col justify-between group shadow-lg"
+              onClick={() => setPhase('video')}
+              className="md:col-span-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 cursor-pointer transition-all flex flex-col justify-between group shadow-xl"
             >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl">💼</span>
-                  <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-950 border border-amber-500/40 text-amber-300">
-                    CTC BOOST
-                  </span>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">📐</span>
+                  <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
                 </div>
-                <h3 className="font-extrabold text-white text-sm group-hover:text-amber-300 transition-colors">
-                  Salary Sparring
+                <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">
+                  System Design Whiteboard
                 </h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  Practice countering lowball offers, down-level pushes, and negotiating joining bonuses & RSUs with realistic AI recruiters.
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Architect distributed systems, load balancers, and caches with interactive node diagramming.
                 </p>
               </div>
-              <span className="text-xs font-bold text-amber-400 mt-4 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                Negotiate Package →
-              </span>
+              <span className="text-[11px] text-zinc-500 font-mono pt-4">Distributed Systems</span>
             </div>
 
-            {/* Studio 5: ATS Resume Optimizer */}
-            <div
-              onClick={() => setPhase('resume-builder')}
-              className="card-dark border-indigo-500/40 bg-gradient-to-b from-slate-900 to-slate-950 p-5 rounded-2xl hover:border-indigo-400 hover:scale-[1.02] cursor-pointer transition-all flex flex-col justify-between group shadow-lg"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl">📄</span>
-                  <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-indigo-300">
-                    ATS PROOF
-                  </span>
-                </div>
-                <h3 className="font-extrabold text-white text-sm group-hover:text-indigo-300 transition-colors">
-                  ATS Resume Optimizer
-                </h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  100-point ATS benchmark score, missing keyword analyzer, power action verbs, and instant clean resume export.
-                </p>
-              </div>
-              <span className="text-xs font-bold text-indigo-400 mt-4 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                Optimize Resume →
-              </span>
-            </div>
-
-            {/* Studio 6: Bug Hunter */}
+            {/* Bento Tile 4: Bug Hunter (4 cols) */}
             <div
               onClick={() => setPhase('bug-hunter')}
-              className="card-dark border-red-500/40 bg-gradient-to-b from-slate-900 to-slate-950 p-5 rounded-2xl hover:border-red-400 hover:scale-[1.02] cursor-pointer transition-all flex flex-col justify-between group shadow-lg"
+              className="md:col-span-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 cursor-pointer transition-all flex flex-col justify-between group shadow-xl"
             >
-              <div>
-                <div className="flex items-center justify-between mb-3">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
                   <span className="text-2xl">🐛</span>
-                  <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-red-950 border border-red-500/40 text-red-300">
-                    CODE REVIEW
-                  </span>
+                  <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
                 </div>
-                <h3 className="font-extrabold text-white text-sm group-hover:text-red-300 transition-colors">
-                  Bug Hunter Drills
+                <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">
+                  Bug Hunter Studio
                 </h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  Catch SQL injections, race conditions, memory leaks, and authentication bypasses in timed production code snippets.
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Identify race conditions, memory leaks, and logic flaws under time pressure.
                 </p>
               </div>
-              <span className="text-xs font-bold text-red-400 mt-4 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                Hunt Bugs →
-              </span>
+              <span className="text-[11px] text-zinc-500 font-mono pt-4">Debugging & Auditing</span>
             </div>
 
-            {/* Studio 7: 60s Blitz */}
+            {/* Bento Tile 5: 60s Rapid Blitz (4 cols) */}
             <div
               onClick={() => setPhase('blitz')}
-              className="card-dark border-amber-500/40 bg-gradient-to-b from-slate-900 to-slate-950 p-5 rounded-2xl hover:border-amber-400 hover:scale-[1.02] cursor-pointer transition-all flex flex-col justify-between group shadow-lg"
+              className="md:col-span-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 cursor-pointer transition-all flex flex-col justify-between group shadow-xl"
             >
-              <div>
-                <div className="flex items-center justify-between mb-3">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
                   <span className="text-2xl">⚡</span>
-                  <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-950 border border-amber-500/40 text-amber-300">
-                    RAPID FIRE
-                  </span>
+                  <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
                 </div>
-                <h3 className="font-extrabold text-white text-sm group-hover:text-amber-300 transition-colors">
-                  60-Second Blitz
+                <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">
+                  60s Rapid Blitz
                 </h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  High-speed trivia drills on core CS fundamentals, SQL clauses, HTTP status codes, and data structures.
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Answer quick technical questions under 60-second timers to sharpen recall speed.
                 </p>
               </div>
-              <span className="text-xs font-bold text-amber-400 mt-4 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                Start Blitz Timer →
-              </span>
+              <span className="text-[11px] text-zinc-500 font-mono pt-4">Speed & Accuracy</span>
             </div>
 
-            {/* Studio 8: Bar Raiser Matcher */}
+            {/* Bento Tile 6: ATS Resume Optimizer (4 cols) */}
             <div
-              onClick={() => setPhase('setup')}
-              className="card-dark border-purple-500/40 bg-gradient-to-b from-slate-900 to-slate-950 p-5 rounded-2xl hover:border-purple-400 hover:scale-[1.02] cursor-pointer transition-all flex flex-col justify-between group shadow-lg"
+              onClick={() => setPhase('resume-builder')}
+              className="md:col-span-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 cursor-pointer transition-all flex flex-col justify-between group shadow-xl"
             >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl">🏢</span>
-                  <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-purple-950 border border-purple-500/40 text-purple-300">
-                    CULTURE MATCH
-                  </span>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">📄</span>
+                  <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
                 </div>
-                <h3 className="font-extrabold text-white text-sm group-hover:text-purple-300 transition-colors">
-                  Bar Raiser Matcher
+                <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">
+                  ATS Resume Optimizer
                 </h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  Target specific hiring bars at Amazon, Google, YC, Wall Street, Microsoft, or Meta with tailored evaluation rubrics.
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Analyze your resume against target job descriptions and fix keyword gaps.
                 </p>
               </div>
-              <span className="text-xs font-bold text-purple-400 mt-4 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                Pick Persona →
-              </span>
+              <span className="text-[11px] text-zinc-500 font-mono pt-4">Resume Parsing</span>
             </div>
+
+            {/* Bento Tile 7: Anxiety Hype Lab (4 cols) */}
+            <div
+              onClick={() => setPhase('hype-lab')}
+              className="md:col-span-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 cursor-pointer transition-all flex flex-col justify-between group shadow-xl"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">🧘</span>
+                  <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
+                </div>
+                <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">
+                  3-Min Anxiety Hype Lab
+                </h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Guided box breathing and vocal priming to settle nerves before your interview.
+                </p>
+              </div>
+              <span className="text-[11px] text-zinc-500 font-mono pt-4">Vocal & Mental Readiness</span>
+            </div>
+
+            {/* Bento Tile 8: Salary Sparring (4 cols) */}
+            <div
+              onClick={() => setPhase('negotiate')}
+              className="md:col-span-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 cursor-pointer transition-all flex flex-col justify-between group shadow-xl"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">💼</span>
+                  <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
+                </div>
+                <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors">
+                  Salary Sparring Studio
+                </h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Roleplay compensation negotiations with tough HR leads to maximize your offer.
+                </p>
+              </div>
+              <span className="text-[11px] text-zinc-500 font-mono pt-4">Offer Negotiation</span>
+            </div>
+
           </div>
-        </div>
+        </section>
+
+        {/* ── SECTION 4: INTERACTIVE ACCORDION FAQ ── */}
+        <section className="mb-24 max-w-3xl mx-auto space-y-6">
+          <div className="text-center space-y-1">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-xs text-zinc-400">Everything you need to know about the interview studio.</p>
+          </div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, idx) => {
+              const isOpen = openFaqIndex === idx;
+              return (
+                <div
+                  key={idx}
+                  className="bg-zinc-900/80 border border-zinc-800 rounded-xl overflow-hidden transition-all"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    aria-expanded={isOpen}
+                    className="w-full p-4 sm:p-5 text-left text-sm font-semibold text-zinc-100 flex items-center justify-between gap-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                  >
+                    <span>{faq.q}</span>
+                    <span className="text-zinc-500 font-mono text-base">{isOpen ? '−' : '+'}</span>
+                  </button>
+
+                  {isOpen && (
+                    <div className="px-4 sm:px-5 pb-5 text-xs sm:text-sm text-zinc-400 leading-relaxed border-t border-zinc-800/60 pt-3">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
       </main>
 
-      {/* ── Footer ── */}
-      <footer className="border-t border-slate-900 bg-slate-950/80 py-4 px-6 text-center text-xs text-slate-500">
-        <div className="max-w-6xl mx-auto flex items-center justify-center gap-6 text-slate-500">
-          <button onClick={() => setPhase('setup')} className="hover:text-white transition-colors">Mock Studio</button>
-          <button onClick={() => setPhase('hype-lab')} className="hover:text-white transition-colors">Hype Lab</button>
-          <button onClick={() => setPhase('dsa')} className="hover:text-white transition-colors">DSA</button>
-          <button onClick={() => setPhase('negotiate')} className="hover:text-white transition-colors">Salary Sparring</button>
+      {/* ── SECTION 5: MINIMAL MULTI-COLUMN FOOTER ── */}
+      <footer className="border-t border-zinc-800/80 bg-zinc-950 py-10 px-4 sm:px-6 text-xs text-zinc-400">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-8 mb-8 text-left">
+          
+          <div className="space-y-2 sm:col-span-1">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center text-xs text-white">
+                🎯
+              </div>
+              <span className="font-extrabold text-white text-sm">AI Interview Evaluator</span>
+            </div>
+            <p className="text-[11px] text-zinc-500 leading-relaxed">
+              Production-grade mock interview evaluation platform for software engineers.
+            </p>
+          </div>
+
+          <div>
+            <p className="font-bold text-zinc-200 mb-2">Studios</p>
+            <ul className="space-y-1.5 text-zinc-400">
+              <li><button onClick={() => setPhase('setup')} className="hover:text-white transition-colors">Mock Studio</button></li>
+              <li><button onClick={() => setPhase('dsa')} className="hover:text-white transition-colors">DSA Sandbox</button></li>
+              <li><button onClick={() => setPhase('video')} className="hover:text-white transition-colors">System Design</button></li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-bold text-zinc-200 mb-2">Practice Tools</p>
+            <ul className="space-y-1.5 text-zinc-400">
+              <li><button onClick={() => setPhase('blitz')} className="hover:text-white transition-colors">60s Blitz</button></li>
+              <li><button onClick={() => setPhase('bug-hunter')} className="hover:text-white transition-colors">Bug Hunter</button></li>
+              <li><button onClick={() => setPhase('resume-builder')} className="hover:text-white transition-colors">ATS Resume</button></li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-bold text-zinc-200 mb-2">Readiness</p>
+            <ul className="space-y-1.5 text-zinc-400">
+              <li><button onClick={() => setPhase('hype-lab')} className="hover:text-white transition-colors">Anxiety Hype Lab</button></li>
+              <li><button onClick={() => setPhase('negotiate')} className="hover:text-white transition-colors">Salary Sparring</button></li>
+              <li><button onClick={() => setPhase('profile')} className="hover:text-white transition-colors">Score Analytics</button></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div className="max-w-6xl mx-auto border-t border-zinc-900 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-zinc-500">
+          <p>© {new Date().getFullYear()} AI Interview Evaluator. Open-source mock studio platform.</p>
+          <p className="font-mono">Built for engineers by engineers.</p>
         </div>
       </footer>
     </div>
