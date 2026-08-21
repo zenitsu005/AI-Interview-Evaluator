@@ -86,16 +86,8 @@ export default function AppNavbar({ currentActive = 'landing' }) {
           >
             Progress
           </button>
-
-          <button
-            onClick={() => handleSelectModule('how-it-works')}
-            className={`transition hover:text-white font-medium ${
-              currentActive === 'how-it-works' ? 'text-indigo-400 font-bold' : 'text-zinc-300'
-            }`}
-          >
-            How It Works
-          </button>
         </nav>
+
 
         {/* Desktop Right Actions */}
         <div className="hidden lg:flex items-center gap-3">
@@ -202,12 +194,6 @@ export default function AppNavbar({ currentActive = 'landing' }) {
               Progress & Analytics
             </button>
 
-            <button
-              onClick={() => handleSelectModule('how-it-works')}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-zinc-300 hover:bg-zinc-900 hover:text-white"
-            >
-              How It Works
-            </button>
 
             {!isAuthenticated ? (
               <div className="flex gap-2 pt-2">

@@ -67,46 +67,12 @@ export default function LandingPage({ onNavigate }) {
         </section>
 
 
-        {/* ── 3-STEP PRACTICE WORKFLOW SECTION ── */}
-        <section className="space-y-8 pt-4">
-          <div className="space-y-1">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              How It Works
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div className="bg-[#131318] border border-white/5 p-5 rounded-2xl space-y-2">
-              <span className="text-xs font-mono font-bold text-teal-400 uppercase tracking-widest">01</span>
-              <h3 className="text-base font-bold text-white">Choose Role & Seniority</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
-                Select your target level from Mid-Level to Staff Engineer.
-              </p>
-            </div>
-
-            <div className="bg-[#131318] border border-white/5 p-5 rounded-2xl space-y-2">
-              <span className="text-xs font-mono font-bold text-teal-400 uppercase tracking-widest">02</span>
-              <h3 className="text-base font-bold text-white">Complete Live Rounds</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
-                Answer technical questions with live speech, code, or text.
-              </p>
-            </div>
-
-            <div className="bg-[#131318] border border-white/5 p-5 rounded-2xl space-y-2">
-              <span className="text-xs font-mono font-bold text-teal-400 uppercase tracking-widest">03</span>
-              <h3 className="text-base font-bold text-white">Review Detailed Scores</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
-                Get categorized evaluations, model solutions, and top 1% benchmarks.
-              </p>
-            </div>
-          </div>
-        </section>
-
         {/* ── BENTO PRACTICE MODULE CARDS SECTION ── */}
-        <section id="practice-modules" className="space-y-6 border-t border-white/5 pt-12 scroll-mt-24">
+        <section id="practice-modules" className="space-y-6 pt-4 scroll-mt-24">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
             Targeted Practice Studios
           </h2>
+
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
             
