@@ -268,14 +268,6 @@ export default function ReportPanel() {
           <span className="font-bold text-slate-100 text-sm tracking-tight">AI Interview Performance Report</span>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Dopamine Celebration Trigger Button */}
-          <button
-            onClick={() => setShowDopamineModal(true)}
-            className="btn-secondary py-2 px-3.5 text-xs font-bold text-amber-300 border-amber-500/80 bg-amber-950/40 hover:bg-amber-900/60 flex items-center gap-1.5 shadow-md animate-pulse"
-          >
-            <span>🎁</span>
-            <span>Level Up & Rewards</span>
-          </button>
           <button
             onClick={() => setShowPassportModal(true)}
             className="btn-secondary py-2 px-3.5 text-xs font-bold text-cyan-300 border-cyan-500/80 bg-cyan-950/40 hover:bg-cyan-900/60 flex items-center gap-1.5 shadow-md"
@@ -290,13 +282,6 @@ export default function ReportPanel() {
           >
             <span>📄</span>
             <span>1-Page Cheat Sheet</span>
-          </button>
-          <button
-            onClick={() => setShowCertificate(true)}
-            className="btn-secondary py-2 px-3.5 text-xs font-semibold text-amber-300 border-amber-800/80 hover:border-amber-500 flex items-center gap-1.5"
-          >
-            <span>📜</span>
-            <span>View Certificate</span>
           </button>
           <button
             onClick={() => setPhase('negotiate')}
@@ -326,6 +311,7 @@ export default function ReportPanel() {
             🔄 Retake
           </button>
         </div>
+
       </header>
 
       {/* Main Content */}
@@ -921,54 +907,7 @@ export default function ReportPanel() {
         </div>
       )}
 
-      {/* ── Verified Certificate Modal ── */}
-      {showCertificate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="card-dark border-amber-500/60 bg-gradient-to-b from-slate-900 to-slate-950 max-w-lg w-full p-8 space-y-6 shadow-2xl relative">
-            <button
-              onClick={() => setShowCertificate(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white text-base"
-            >
-              ✕
-            </button>
 
-            <div className="border-2 border-amber-500/40 rounded-2xl p-6 text-center space-y-3 bg-slate-950">
-              <div className="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500 flex items-center justify-center text-2xl mx-auto shadow-md">
-                🎓
-              </div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
-                Official Certificate of Readiness
-              </p>
-              <h2 className="text-2xl font-black text-white">{user?.name || 'Verified Candidate'}</h2>
-              <p className="text-xs text-slate-300">
-                Has successfully completed the AI Multimodal Interview for:
-              </p>
-              <p className="text-sm font-bold text-amber-300">{targetRole || 'Software Engineer'} ({companyTrack || 'General'} Track)</p>
-              <div className="pt-2 flex justify-center gap-4 text-xs font-mono text-slate-400">
-                <span>Score: <strong className="text-white">{overallScoreVal}/100</strong></span>
-                <span>•</span>
-                <span>Elo: <strong className="text-amber-300">{eloRating}</strong></span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleCopyLinkedIn}
-                className="btn-primary flex-1 py-3 text-xs font-bold btn-glow flex items-center justify-center gap-1.5 shadow-md"
-              >
-                <span>💼</span>
-                <span>{copiedLinkedIn ? '✅ Post Copied!' : 'Share to LinkedIn'}</span>
-              </button>
-              <button
-                onClick={() => window.print()}
-                className="btn-secondary py-3 px-4 text-xs font-semibold"
-              >
-                🖨️ Print Certificate
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── Dopamine Level-Up & Mystery Loot Box Modal ── */}
       <DopamineCelebrationModal
