@@ -3,11 +3,65 @@ import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
 
 const ROLES = [
-  { id: 'swe', title: 'Software Engineer', level: 'L4 / Mid-Level' },
-  { id: 'senior', title: 'Senior Software Engineer', level: 'L5 / Senior' },
-  { id: 'staff', title: 'Staff Engineer', level: 'L6 / Staff' },
-  { id: 'principal', title: 'Principal Engineer', level: 'L7+ / Principal' },
-  { id: 'em', title: 'Engineering Manager', level: 'M1 / Manager' },
+  {
+    id: 'backend',
+    title: 'Backend & Systems Engineer',
+    level: 'Go / Python / Java • Microservices, Concurrency & SQL',
+    tag: 'Backend',
+  },
+  {
+    id: 'fullstack',
+    title: 'Full Stack Software Engineer',
+    level: 'React / Next.js, Node.js / Python, REST/GraphQL APIs',
+    tag: 'Full Stack',
+  },
+  {
+    id: 'frontend',
+    title: 'Frontend & UI Architecture Engineer',
+    level: 'React, TypeScript, Web Vitals, State Management',
+    tag: 'Frontend',
+  },
+  {
+    id: 'ai-ml',
+    title: 'Machine Learning & AI Engineer',
+    level: 'PyTorch, LLM Orchestration, RAG, Vector Search & Python',
+    tag: 'AI / ML',
+  },
+  {
+    id: 'devops',
+    title: 'DevOps & SRE Cloud Engineer',
+    level: 'Kubernetes, Docker, Terraform, AWS / GCP, CI/CD Pipelines',
+    tag: 'DevOps / SRE',
+  },
+  {
+    id: 'mobile',
+    title: 'Mobile Applications Engineer',
+    level: 'iOS (Swift) / Android (Kotlin) / React Native',
+    tag: 'Mobile',
+  },
+  {
+    id: 'staff',
+    title: 'Staff / Principal Architect (L6+)',
+    level: 'High-Scale Distributed Design, Scalability & Cross-Team Strategy',
+    tag: 'Staff / L6+',
+  },
+  {
+    id: 'em',
+    title: 'Engineering Manager / Tech Lead',
+    level: 'Architecture Vision, Team Delivery, People Leadership',
+    tag: 'Management',
+  },
+];
+
+const POPULAR_CHIPS = [
+  'Full Stack (React/Node)',
+  'Backend Engineer (Go/Python)',
+  'Frontend (Next.js)',
+  'AI / ML Engineer',
+  'DevOps / SRE',
+  'iOS / Android Lead',
+  'Staff Architect',
+  'Data Engineer',
 ];
 
 const TYPES = [
@@ -17,6 +71,24 @@ const TYPES = [
   { id: 'blitz', title: '60s Rapid Blitz', desc: 'Fast-paced technical recall questions under 60s timers.' },
 ];
 
+const LEVELS = [
+  {
+    id: 'Easy',
+    label: '🟢 Easy (Foundation)',
+    desc: 'Core fundamentals, gentle guidance, and foundational concepts.',
+  },
+  {
+    id: 'Medium',
+    label: '🟡 Medium (Standard Tech)',
+    desc: 'Realistic production scenarios, edge case handling, and optimal patterns.',
+  },
+  {
+    id: 'Hard',
+    label: '🔴 Hard (Staff / Bar Raiser)',
+    desc: 'High concurrency, distributed scalability trade-offs, and intense deep dives.',
+  },
+];
+
 const FORMATS = [
   { id: 'voice-transcript', title: 'Voice + Live Transcript', desc: 'Real-time speech transcription with voice analytics.' },
   { id: 'text-only', title: 'Text-Only Mode', desc: 'Type your responses directly without microphone access.' },
@@ -24,15 +96,15 @@ const FORMATS = [
 ];
 
 export default function InterviewSetup({ onStartModule, onNavigate }) {
-  const { setPhase, setRole } = useInterview();
+  const { setPhase, setRole, setDifficultyLevel } = useInterview();
 
   const [step, setStep] = useState(1);
-  const [selectedRole, setSelectedRole] = useState(ROLES[1]); // Senior
-  const [customRoleText, setCustomRoleText] = useState('Senior Software Engineer');
+  const [selectedRole, setSelectedRole] = useState(ROLES[0]);
+  const [customRoleText, setCustomRoleText] = useState(ROLES[0].title);
 
   const [selectedType, setSelectedType] = useState(TYPES[0]); // Full Mock
+  const [difficulty, setDifficulty] = useState('Medium'); // 'Easy' | 'Medium' | 'Hard'
   const [selectedFormat, setSelectedFormat] = useState(FORMATS[0]); // Voice + Transcript
-  const [difficulty, setDifficulty] = useState('Medium');
   const [duration, setDuration] = useState('45');
   const [audioConsent, setAudioConsent] = useState(false);
   const [micState, setMicState] = useState('checking'); // 'checking' | 'granted' | 'denied'
@@ -57,6 +129,9 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
     if (setRole) {
       setRole(customRoleText || selectedRole.title);
     }
+    if (setDifficultyLevel) {
+      setDifficultyLevel(difficulty);
+    }
 
     const targetPhase = selectedType.id === 'system-design' ? 'video' : selectedType.id;
     setPhase(targetPhase);
@@ -72,7 +147,7 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
           <div className="flex items-center gap-2 text-zinc-400">
             <span className={step >= 1 ? 'text-teal-400 font-bold' : ''}>1. Role</span>
             <span>→</span>
-            <span className={step >= 2 ? 'text-teal-400 font-bold' : ''}>2. Interview Type</span>
+            <span className={step >= 2 ? 'text-teal-400 font-bold' : ''}>2. Module & Level</span>
             <span>→</span>
             <span className={step >= 3 ? 'text-teal-400 font-bold' : ''}>3. Format</span>
             <span>→</span>
@@ -81,18 +156,18 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
           <span className="text-zinc-500 font-bold">Step {step} of 4</span>
         </div>
 
-        {/* ── STEP 1: DIRECT TYPE-IN OR SELECT ROLE ── */}
+        {/* ── STEP 1: DIVERSE DOMAIN ROLE SELECTION OR CUSTOM INPUT ── */}
         {step === 1 && (
           <div className="space-y-6 animate-fade-in">
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Select or Type Target Engineering Role</h1>
-              <p className="text-xs text-zinc-400">Type your specific role title below or pick a preset seniority level.</p>
+              <p className="text-xs text-zinc-400">Type any specific specialization or click a suggestion below.</p>
             </div>
 
             {/* Direct Input Field Always Visible */}
-            <div className="bg-[#131318] border border-teal-500/60 p-4 rounded-2xl space-y-2 shadow-xl">
+            <div className="bg-[#131318] border border-teal-500/60 p-4 rounded-2xl space-y-3 shadow-xl">
               <label className="block text-xs font-bold text-teal-400 font-mono uppercase tracking-wider">
-                ✏️ Target Role / Job Title (Type freely below):
+                ✏️ Target Role / Tech Stack (Type freely):
               </label>
               <input
                 type="text"
@@ -101,19 +176,41 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
                   setCustomRoleText(e.target.value);
                   setSelectedRole({ id: 'custom', title: e.target.value || 'Custom Role', level: 'Custom Role' });
                 }}
-                placeholder="e.g. Senior Backend Engineer (Go/Rust), Full Stack Developer, Mobile Lead..."
+                placeholder="e.g. Backend Engineer (Go/Rust), Full Stack Developer, ML Engineer..."
                 className="w-full bg-[#0B0B0E] border border-zinc-700 focus:border-teal-500 rounded-xl p-3.5 text-sm sm:text-base text-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 font-sans shadow-inner"
               />
+
+              {/* Quick Suggestion Chips */}
+              <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                <span className="text-[10px] font-mono text-zinc-500 mr-1">Quick Suggestions:</span>
+                {POPULAR_CHIPS.map((chip, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setCustomRoleText(chip);
+                      setSelectedRole({ id: `chip-${idx}`, title: chip, level: 'Suggested Role' });
+                    }}
+                    className={`text-[11px] px-2.5 py-1 rounded-lg border font-mono transition-all cursor-pointer ${
+                      customRoleText === chip
+                        ? 'bg-teal-950 text-teal-300 border-teal-500/80 font-bold'
+                        : 'bg-[#0B0B0E] text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700'
+                    }`}
+                  >
+                    {chip}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="relative flex py-1 items-center">
               <div className="flex-grow border-t border-white/5"></div>
-              <span className="flex-shrink mx-4 text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Or Select Preset Seniority Level</span>
+              <span className="flex-shrink mx-4 text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Or Select Domain Specialization</span>
               <div className="flex-grow border-t border-white/5"></div>
             </div>
 
-            {/* Preset Seniority Cards */}
-            <div className="space-y-3">
+            {/* Diverse Role Domain Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {ROLES.map((role) => (
                 <button
                   key={role.id}
@@ -122,19 +219,19 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
                     setSelectedRole(role);
                     setCustomRoleText(role.title);
                   }}
-                  className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                    selectedRole.id === role.id && customRoleText === role.title
+                  className={`p-4 rounded-2xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
+                    customRoleText === role.title
                       ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
                       : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
                   }`}
                 >
-                  <div>
+                  <div className="flex items-center justify-between w-full">
                     <p className="font-bold text-sm text-white">{role.title}</p>
-                    <p className="text-xs text-zinc-400 font-mono mt-0.5">{role.level}</p>
+                    {customRoleText === role.title && (
+                      <span className="text-teal-400 font-bold text-xs">✓ Selected</span>
+                    )}
                   </div>
-                  {selectedRole.id === role.id && customRoleText === role.title && (
-                    <span className="text-teal-400 font-bold">✓ Selected</span>
-                  )}
+                  <p className="text-xs text-zinc-400 font-mono leading-relaxed">{role.level}</p>
                 </button>
               ))}
             </div>
@@ -150,38 +247,72 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
                 }}
                 className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
               >
-                Continue to Interview Type →
+                Continue to Module & Level →
               </button>
             </div>
           </div>
         )}
 
-        {/* ── STEP 2: INTERVIEW TYPE ── */}
+        {/* ── STEP 2: INTERVIEW MODULE & DIFFICULTY LEVEL ── */}
         {step === 2 && (
-          <div className="space-y-6 animate-fade-in">
-            <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Choose Interview Module</h1>
-              <p className="text-xs text-zinc-400">Focus on an individual practice domain or run a full multi-round simulation.</p>
+          <div className="space-y-8 animate-fade-in">
+            {/* Module Picker */}
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Choose Interview Module</h1>
+                <p className="text-xs text-zinc-400">Focus on an individual practice studio or run a full multi-round simulation.</p>
+              </div>
+
+              <div className="space-y-2.5">
+                {TYPES.map((type) => (
+                  <button
+                    key={type.id}
+                    onClick={() => setSelectedType(type)}
+                    className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                      selectedType.id === type.id
+                        ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
+                        : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      <p className="font-bold text-sm text-white">{type.title}</p>
+                      <p className="text-xs text-zinc-400 leading-relaxed">{type.desc}</p>
+                    </div>
+                    {selectedType.id === type.id && <span className="text-teal-400 font-bold">✓ Selected</span>}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="space-y-3">
-              {TYPES.map((type) => (
-                <button
-                  key={type.id}
-                  onClick={() => setSelectedType(type)}
-                  className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                    selectedType.id === type.id
-                      ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
-                      : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
-                  }`}
-                >
-                  <div className="space-y-1">
-                    <p className="font-bold text-sm text-white">{type.title}</p>
-                    <p className="text-xs text-zinc-400 leading-relaxed">{type.desc}</p>
-                  </div>
-                  {selectedType.id === type.id && <span className="text-teal-400 font-bold">✓ Selected</span>}
-                </button>
-              ))}
+            {/* Difficulty Level Picker */}
+            <div className="space-y-4 pt-2 border-t border-white/5">
+              <div className="space-y-1">
+                <h2 className="text-xl sm:text-2xl font-extrabold text-white">Select Difficulty Level</h2>
+                <p className="text-xs text-zinc-400">Calibrates the depth, complexity, and Bar Raiser expectations.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {LEVELS.map((lvl) => (
+                  <button
+                    key={lvl.id}
+                    type="button"
+                    onClick={() => setDifficulty(lvl.id)}
+                    className={`p-4 rounded-2xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
+                      difficulty === lvl.id
+                        ? 'bg-teal-950/60 border-teal-500 ring-2 ring-teal-500/30 text-white'
+                        : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <p className="font-bold text-sm text-white">{lvl.label}</p>
+                      {difficulty === lvl.id && (
+                        <span className="text-teal-400 font-bold text-xs">✓</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-zinc-400 font-sans leading-relaxed">{lvl.desc}</p>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="flex justify-between pt-4">
@@ -229,31 +360,28 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-300">Difficulty</label>
-                <select
-                  value={difficulty}
-                  onChange={(e) => setDifficulty(e.target.value)}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-xs text-white focus:outline-none"
-                >
-                  <option value="Easy">Easy (Foundation)</option>
-                  <option value="Medium">Medium (Standard Tech)</option>
-                  <option value="Hard">Hard (Staff / Bar Raiser)</option>
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-zinc-300">Target Duration</label>
-                <select
-                  value={duration}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-xs text-white focus:outline-none"
-                >
-                  <option value="15">15 Minutes (Rapid)</option>
-                  <option value="30">30 Minutes (Standard)</option>
-                  <option value="45">45 Minutes (Full Deep Dive)</option>
-                </select>
+            <div className="space-y-1.5 pt-2">
+              <label className="text-xs font-bold text-zinc-300">Target Duration</label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { id: '15', label: '15 Min', desc: 'Rapid Blitz' },
+                  { id: '30', label: '30 Min', desc: 'Standard' },
+                  { id: '45', label: '45 Min', desc: 'Deep Dive' },
+                ].map((d) => (
+                  <button
+                    key={d.id}
+                    type="button"
+                    onClick={() => setDuration(d.id)}
+                    className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
+                      duration === d.id
+                        ? 'bg-teal-950 border-teal-500 text-white font-bold'
+                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    <p className="text-xs font-bold">{d.label}</p>
+                    <p className="text-[10px] opacity-75">{d.desc}</p>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -293,12 +421,16 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
                 <span className="text-teal-400 font-bold">{selectedType.title}</span>
               </div>
               <div className="flex justify-between border-b border-white/5 pb-2">
+                <span className="text-zinc-400">Difficulty Level:</span>
+                <span className="text-amber-400 font-bold">{difficulty}</span>
+              </div>
+              <div className="flex justify-between border-b border-white/5 pb-2">
                 <span className="text-zinc-400">Format:</span>
                 <span className="text-emerald-400 font-bold">{selectedFormat.title}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-400">Difficulty / Duration:</span>
-                <span className="text-amber-400 font-bold">{difficulty} • {duration} Minutes</span>
+                <span className="text-zinc-400">Target Duration:</span>
+                <span className="text-zinc-300 font-bold">{duration} Minutes</span>
               </div>
             </div>
 
