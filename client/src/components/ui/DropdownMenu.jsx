@@ -20,14 +20,14 @@ export default function DropdownMenu({ label, items, onItemSelect }) {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
-        className="flex items-center gap-1 py-2 px-3 text-xs sm:text-sm font-medium text-zinc-300 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-lg outline-none"
+        className="flex items-center gap-1 py-2 px-3 text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors focus-visible:ring-2 focus-visible:ring-teal-500 rounded-lg outline-none cursor-pointer"
       >
         <span>{label}</span>
         <span className={`text-[10px] opacity-60 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>▾</span>
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-56 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl p-1.5 z-50 animate-fade-in space-y-0.5 text-left">
+        <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl p-1.5 z-50 animate-fade-in space-y-0.5 text-left">
           {items.map((item) => (
             <button
               key={item.id}
@@ -35,11 +35,11 @@ export default function DropdownMenu({ label, items, onItemSelect }) {
                 onItemSelect(item.id);
                 setIsOpen(false);
               }}
-              className="w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors flex items-center justify-between group"
+              className="w-full text-left px-3.5 py-2.5 rounded-lg text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors flex items-center justify-between group cursor-pointer"
             >
               <span>{item.label}</span>
               {item.badge && (
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800/60">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200">
                   {item.badge}
                 </span>
               )}

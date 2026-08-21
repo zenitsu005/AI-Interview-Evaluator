@@ -10,10 +10,10 @@ export default function Card({
   const baseStyles = 'rounded-2xl transition-all duration-200 border text-left relative overflow-hidden';
   
   const variantStyles = {
-    default: 'bg-zinc-900/90 border-zinc-800 shadow-layered p-6',
-    bento: 'bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border-zinc-800/80 p-6 hover:border-zinc-700 shadow-layered',
-    glass: 'bg-zinc-900/60 border-zinc-800/60 backdrop-blur-xl p-6 shadow-2xl',
-    interactive: 'bg-zinc-900/90 border-zinc-800 p-6 hover:border-indigo-500/50 hover:scale-[1.01] cursor-pointer shadow-layered group',
+    default: 'bg-white border-slate-200 shadow-sm p-6 text-slate-900',
+    bento: 'bg-white border-slate-200 p-6 hover:border-slate-300 shadow-sm text-slate-900',
+    glass: 'bg-white/90 border-slate-200 backdrop-blur-md p-6 shadow-sm text-slate-900',
+    interactive: 'bg-white border-slate-200 p-6 hover:border-teal-500/60 hover:shadow-md cursor-pointer shadow-sm group text-slate-900',
   };
 
   return (

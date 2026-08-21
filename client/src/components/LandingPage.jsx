@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
 import Button from './ui/Button';
@@ -19,27 +19,26 @@ export default function LandingPage({ onNavigate }) {
   };
 
   return (
-
-    <div className="min-h-screen flex flex-col justify-between bg-[#0B0B0E] text-zinc-100 font-sans antialiased selection:bg-teal-500 selection:text-white select-none">
+    <div className="min-h-screen flex flex-col justify-between bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-teal-500 selection:text-white select-none">
       <AppNavbar currentActive="landing" />
 
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-24 flex-1 space-y-28 text-left">
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-24 flex-1 space-y-20 text-left">
         
         {/* ── HERO SECTION ── */}
         <section className="relative mx-auto max-w-4xl px-0 text-center flex flex-col items-center space-y-7 pt-4">
           
           {/* 1. Refined Badge Pill */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/20 bg-amber-500/10 px-3.5 py-1 text-xs font-medium text-amber-300">
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-50 px-3.5 py-1 text-xs font-semibold text-amber-800 shadow-sm">
             <span>✦</span> Ek bar aaoge, job leke jaoge
           </div>
 
           {/* Headline with Gold Highlight */}
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.14]">
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-slate-900 leading-[1.14]">
             Practice the interview.{" "}
-            <span className="text-amber-500 font-extrabold">Understand the signal.</span>
+            <span className="text-amber-600 font-extrabold">Understand the signal.</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-zinc-400 max-w-2xl leading-relaxed text-pretty font-normal">
+          <p className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed text-pretty font-normal">
             Run realistic mock interviews across coding, debugging, and behavioral rounds. Get structured feedback you can use in your next attempt.
           </p>
 
@@ -49,7 +48,7 @@ export default function LandingPage({ onNavigate }) {
               <button
                 type="button"
                 onClick={() => nav('setup')}
-                className="py-3.5 px-7 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm shadow-xl shadow-teal-950/50 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
+                className="py-3.5 px-7 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-sm shadow-md shadow-teal-700/20 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
               >
                 <span>Start a mock interview →</span>
               </button>
@@ -57,22 +56,20 @@ export default function LandingPage({ onNavigate }) {
               <button
                 type="button"
                 onClick={handleExploreModules}
-                className="py-3.5 px-6 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-semibold text-sm transition-all active:scale-98 cursor-pointer flex items-center gap-1.5"
+                className="py-3.5 px-6 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-semibold text-sm transition-all active:scale-98 cursor-pointer flex items-center gap-1.5 shadow-sm"
               >
                 <span>Explore practice modules</span>
-                <span className="text-zinc-500">↓</span>
+                <span className="text-slate-500">↓</span>
               </button>
             </div>
           </div>
         </section>
 
-
         {/* ── BENTO PRACTICE MODULE CARDS SECTION ── */}
         <section id="practice-modules" className="space-y-6 pt-4 scroll-mt-24">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Targeted Practice Studios
           </h2>
-
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
             
@@ -81,13 +78,13 @@ export default function LandingPage({ onNavigate }) {
               <Card
                 variant="interactive"
                 onClick={() => nav('setup')}
-                className="h-full flex flex-col justify-between bg-[#131318] border-white/10 hover:border-teal-500/50 p-6 sm:p-7"
+                className="h-full flex flex-col justify-between bg-white border-slate-200 hover:border-teal-500/50 p-6 sm:p-7 shadow-sm"
               >
                 <div className="space-y-2">
-                  <h3 className="text-xl font-extrabold text-white">
+                  <h3 className="text-xl font-extrabold text-slate-900">
                     Full Mock Interview Studio
                   </h3>
-                  <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-xl text-pretty">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-xl text-pretty">
                     Simulate all core rounds: Aptitude, Technical Depth, System Architecture, and STAR Behavioral Fit.
                   </p>
                 </div>
@@ -106,12 +103,12 @@ export default function LandingPage({ onNavigate }) {
 
             {/* DSA Studio */}
             <div className="md:col-span-4">
-              <Card variant="interactive" onClick={() => nav('dsa')} className="h-full flex flex-col justify-between p-6 bg-[#131318] border-white/5 hover:border-teal-500/50">
+              <Card variant="interactive" onClick={() => nav('dsa')} className="h-full flex flex-col justify-between p-6 bg-white border-slate-200 hover:border-teal-500/50 shadow-sm">
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-slate-900">
                     DSA Practice Studio
                   </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
+                  <p className="text-xs text-slate-600 leading-relaxed text-pretty">
                     Solve coding challenges in C++, Python 3, C, or Java with live execution.
                   </p>
                 </div>
@@ -119,7 +116,7 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('dsa')}
-                    className="py-2 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-semibold text-xs transition-all active:scale-98 cursor-pointer"
+                    className="py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-semibold text-xs transition-all active:scale-98 cursor-pointer"
                   >
                     Practice DSA →
                   </button>
@@ -129,12 +126,12 @@ export default function LandingPage({ onNavigate }) {
 
             {/* Bug Hunter Studio */}
             <div className="md:col-span-6">
-              <Card variant="interactive" onClick={() => nav('bug-hunter')} className="h-full flex flex-col justify-between p-6 bg-[#131318] border-white/5 hover:border-teal-500/50">
+              <Card variant="interactive" onClick={() => nav('bug-hunter')} className="h-full flex flex-col justify-between p-6 bg-white border-slate-200 hover:border-teal-500/50 shadow-sm">
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-slate-900">
                     Bug Hunter Studio
                   </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
+                  <p className="text-xs text-slate-600 leading-relaxed text-pretty">
                     Audit real code snippets for concurrency bugs, memory leaks, and logic flaws.
                   </p>
                 </div>
@@ -142,7 +139,7 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('bug-hunter')}
-                    className="py-2 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-semibold text-xs transition-all active:scale-98 cursor-pointer"
+                    className="py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-semibold text-xs transition-all active:scale-98 cursor-pointer"
                   >
                     Debug Code →
                   </button>
@@ -152,12 +149,12 @@ export default function LandingPage({ onNavigate }) {
 
             {/* 60s Rapid Blitz */}
             <div className="md:col-span-6">
-              <Card variant="interactive" onClick={() => nav('blitz')} className="h-full flex flex-col justify-between p-6 bg-[#131318] border-white/5 hover:border-teal-500/50">
+              <Card variant="interactive" onClick={() => nav('blitz')} className="h-full flex flex-col justify-between p-6 bg-white border-slate-200 hover:border-teal-500/50 shadow-sm">
                 <div className="space-y-2">
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-slate-900">
                     60s Rapid Blitz
                   </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
+                  <p className="text-xs text-slate-600 leading-relaxed text-pretty">
                     Answer fast-paced technical questions under 60-second timers.
                   </p>
                 </div>
@@ -165,7 +162,7 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('blitz')}
-                    className="py-2 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-semibold text-xs transition-all active:scale-98 cursor-pointer"
+                    className="py-2 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 font-semibold text-xs transition-all active:scale-98 cursor-pointer"
                   >
                     Start Rapid Blitz →
                   </button>
@@ -176,12 +173,10 @@ export default function LandingPage({ onNavigate }) {
           </div>
         </section>
 
-
       </main>
 
-
       {/* ── PRODUCTION-GRADE ACCESSIBLE FOOTER ── */}
-      <footer className="border-t border-white/5 bg-[#0B0B0E] py-12 px-4 sm:px-6 text-xs text-zinc-400 select-none">
+      <footer className="border-t border-slate-200 bg-white py-12 px-4 sm:px-6 text-xs text-slate-600 select-none">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8 text-left">
           
           <div className="space-y-2 sm:col-span-1">
@@ -189,30 +184,30 @@ export default function LandingPage({ onNavigate }) {
               <div className="w-6 h-6 rounded-lg bg-teal-600 flex items-center justify-center text-xs text-white font-bold">
                 AI
               </div>
-              <span className="font-extrabold text-white text-sm">AI Interview Evaluator</span>
+              <span className="font-extrabold text-slate-900 text-sm">AI Interview Evaluator</span>
             </div>
-            <p className="text-[11px] text-zinc-500 leading-relaxed text-pretty">
+            <p className="text-[11px] text-slate-500 leading-relaxed text-pretty">
               Structured mock interview evaluation platform for software engineers.
             </p>
           </div>
 
           <div>
-            <p className="font-bold text-zinc-200 mb-2">Product Studios</p>
-            <ul className="space-y-1.5 text-zinc-400">
-              <li><button onClick={() => nav('setup')} className="hover:text-white transition-colors font-medium cursor-pointer">Mock Interview</button></li>
-              <li><button onClick={() => nav('dsa')} className="hover:text-white transition-colors cursor-pointer">DSA Practice</button></li>
-              <li><button onClick={() => nav('bug-hunter')} className="hover:text-white transition-colors cursor-pointer">Bug Hunter</button></li>
-              <li><button onClick={() => nav('blitz')} className="hover:text-white transition-colors cursor-pointer">Rapid Blitz</button></li>
+            <p className="font-bold text-slate-800 mb-2">Product Studios</p>
+            <ul className="space-y-1.5 text-slate-600">
+              <li><button onClick={() => nav('setup')} className="hover:text-slate-900 transition-colors font-medium cursor-pointer">Mock Interview</button></li>
+              <li><button onClick={() => nav('dsa')} className="hover:text-slate-900 transition-colors cursor-pointer">DSA Practice</button></li>
+              <li><button onClick={() => nav('bug-hunter')} className="hover:text-slate-900 transition-colors cursor-pointer">Bug Hunter</button></li>
+              <li><button onClick={() => nav('blitz')} className="hover:text-slate-900 transition-colors cursor-pointer">Rapid Blitz</button></li>
             </ul>
           </div>
 
           <div>
-            <p className="font-bold text-zinc-200 mb-2">Prep Tools</p>
-            <ul className="space-y-1.5 text-zinc-400">
-              <li><button onClick={() => nav('resume-builder')} className="hover:text-white transition-colors cursor-pointer">ATS Resume Scorer</button></li>
-              <li><button onClick={() => nav('anxiety-prep')} className="hover:text-white transition-colors cursor-pointer">Interview Confidence Lab</button></li>
-              <li><button onClick={() => nav('salary')} className="hover:text-white transition-colors cursor-pointer">Salary Practice</button></li>
-              <li><button onClick={() => nav('analytics')} className="hover:text-white transition-colors cursor-pointer">Progress & Analytics</button></li>
+            <p className="font-bold text-slate-800 mb-2">Prep Tools</p>
+            <ul className="space-y-1.5 text-slate-600">
+              <li><button onClick={() => nav('resume-builder')} className="hover:text-slate-900 transition-colors cursor-pointer">ATS Resume Scorer</button></li>
+              <li><button onClick={() => nav('anxiety-prep')} className="hover:text-slate-900 transition-colors cursor-pointer">Interview Confidence Lab</button></li>
+              <li><button onClick={() => nav('salary')} className="hover:text-slate-900 transition-colors cursor-pointer">Salary Practice</button></li>
+              <li><button onClick={() => nav('analytics')} className="hover:text-slate-900 transition-colors cursor-pointer">Progress & Analytics</button></li>
             </ul>
           </div>
         </div>
@@ -221,4 +216,3 @@ export default function LandingPage({ onNavigate }) {
     </div>
   );
 }
-
