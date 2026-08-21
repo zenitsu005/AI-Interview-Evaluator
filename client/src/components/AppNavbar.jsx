@@ -5,19 +5,20 @@ import { useAuth } from '../context/AuthContext';
 export default function AppNavbar({ currentActive = 'landing' }) {
   const { phase, setPhase } = useInterview();
   const { user, isAuthenticated, logout, openAuth, openHistory } = useAuth();
-  const [toolsDropdownOpen, setToolsDropdownOpen] = useState(false);
+  const [featuresDropdownOpen, setFeaturesDropdownOpen] = useState(false);
 
   const primaryLinks = [
     { id: 'landing', label: 'Home' },
-    { id: 'setup', label: 'Mock Studio', highlight: true },
-    { id: 'dsa', label: 'DSA Studio' },
+    { id: 'setup', label: 'Mock Studio' },
   ];
 
-  const toolLinks = [
+  const featureLinks = [
+    { id: 'setup', label: 'Mock Interview Studio' },
+    { id: 'dsa', label: 'DSA Studio' },
     { id: 'bug-hunter', label: 'Bug Hunter' },
     { id: 'blitz', label: '60s Rapid Blitz' },
-    { id: 'resume-builder', label: 'ATS Resume' },
     { id: 'negotiate', label: 'Salary Sparring' },
+    { id: 'resume-builder', label: 'ATS Resume Optimizer' },
     { id: 'hype-lab', label: 'Anxiety Hype Lab' },
   ];
 
@@ -45,12 +46,10 @@ export default function AppNavbar({ currentActive = 'landing' }) {
             return (
               <button
                 key={item.id}
-                onClick={() => { setPhase(item.id); setToolsDropdownOpen(false); }}
+                onClick={() => { setPhase(item.id); setFeaturesDropdownOpen(false); }}
                 className={`px-3.5 py-1.5 rounded-lg transition-all ${
                   isActive
                     ? 'bg-indigo-600 text-white shadow-sm font-bold'
-                    : item.highlight
-                    ? 'text-indigo-300 hover:text-white hover:bg-zinc-800'
                     : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
                 }`}
               >
@@ -59,28 +58,28 @@ export default function AppNavbar({ currentActive = 'landing' }) {
             );
           })}
 
-          {/* Tools Dropdown */}
+          {/* Features Dropdown */}
           <div className="relative">
             <button
-              onClick={() => setToolsDropdownOpen(!toolsDropdownOpen)}
+              onClick={() => setFeaturesDropdownOpen(!featuresDropdownOpen)}
               className="px-3.5 py-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all flex items-center gap-1 font-semibold"
             >
-              <span>Tools</span>
+              <span>Features</span>
               <span className="text-[10px] opacity-60">▾</span>
             </button>
 
-            {toolsDropdownOpen && (
+            {featuresDropdownOpen && (
               <div
-                onMouseLeave={() => setToolsDropdownOpen(false)}
-                className="absolute top-full left-0 mt-1.5 w-44 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl p-1.5 z-50 animate-fade-in space-y-0.5 text-left"
+                onMouseLeave={() => setFeaturesDropdownOpen(false)}
+                className="absolute top-full left-0 mt-1.5 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl p-1.5 z-50 animate-fade-in space-y-0.5 text-left"
               >
-                {toolLinks.map((t) => (
+                {featureLinks.map((f) => (
                   <button
-                    key={t.id}
-                    onClick={() => { setPhase(t.id); setToolsDropdownOpen(false); }}
+                    key={f.id}
+                    onClick={() => { setPhase(f.id); setFeaturesDropdownOpen(false); }}
                     className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors block"
                   >
-                    {t.label}
+                    {f.label}
                   </button>
                 ))}
               </div>
@@ -122,13 +121,13 @@ export default function AppNavbar({ currentActive = 'landing' }) {
                 onClick={() => openAuth('login')}
                 className="text-xs text-zinc-300 hover:text-white font-semibold px-3 py-1.5 rounded-xl transition-colors"
               >
-                Log In
+                Sign In
               </button>
               <button
                 onClick={() => openAuth('signup')}
                 className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-md transition-all active:scale-95"
               >
-                Sign Up
+                Start Free
               </button>
             </div>
           )}
