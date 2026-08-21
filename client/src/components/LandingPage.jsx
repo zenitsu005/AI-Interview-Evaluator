@@ -95,20 +95,19 @@ export default function LandingPage() {
         </div>
 
         {/* ── Real-Time Metrics & Trust Bar ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 w-full max-w-4xl mb-14 p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 backdrop-blur-md text-center">
-          <div className="space-y-0.5">
-            <p className="text-xl sm:text-2xl font-black text-white font-mono">100,000+</p>
-            <p className="text-[11px] text-slate-400 font-medium">Questions Evaluated</p>
+        <div className="grid grid-cols-3 gap-2 sm:gap-6 w-full max-w-3xl mb-14 p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 backdrop-blur-md text-center divide-x divide-slate-800/60">
+          <div className="space-y-0.5 px-1">
+            <p className="text-lg sm:text-2xl font-black text-white font-mono">100,000+</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium">Questions Evaluated</p>
           </div>
-          <div className="space-y-0.5">
-            <p className="text-xl sm:text-2xl font-black text-emerald-400 font-mono">98.4%</p>
-            <p className="text-[11px] text-slate-400 font-medium">Confidence Boost</p>
+          <div className="space-y-0.5 px-1">
+            <p className="text-lg sm:text-2xl font-black text-emerald-400 font-mono">98.4%</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium">Confidence Boost</p>
           </div>
-          <div className="space-y-0.5">
-            <p className="text-xl sm:text-2xl font-black text-cyan-400 font-mono">6 Personas</p>
-            <p className="text-[11px] text-slate-400 font-medium">Top Bar Raisers</p>
+          <div className="space-y-0.5 px-1">
+            <p className="text-lg sm:text-2xl font-black text-cyan-400 font-mono">6 Personas</p>
+            <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium">Top Bar Raisers</p>
           </div>
-
         </div>
 
         {/* ── All 8 Specialized Practice Studios Grid ── */}
