@@ -12,67 +12,40 @@ export default function AuthModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [fieldError, setFieldError] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
-  const googleBtnContainerRef = useRef(null);
+  const [isGooglePickerOpen, setIsGooglePickerOpen] = useState(false);
+  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
+  const [isAddingOtherAccount, setIsAddingOtherAccount] = useState(false);
 
-  // Initialize Google Identity Services (GIS)
-  useEffect(() => {
-    if (!authModalOpen) return;
+  const googleAccounts = [
+    {
+      name: 'Agitu',
+      email: 'agitu555@gmail.com',
+      avatarColor: 'bg-rose-600',
+      initial: 'A',
+    },
+    {
+      name: 'Akshay Garg',
+      email: 'garg22723@gmail.com',
+      avatarColor: 'bg-teal-600',
+      initial: 'G',
+    },
+  ];
 
-    const loadGoogleScript = () => {
-      if (window.google?.accounts?.id) {
-        initGoogle();
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = initGoogle;
-      document.body.appendChild(script);
-    };
+  if (!authModalOpen) return null;
 
-    const initGoogle = () => {
-      try {
-        if (!window.google?.accounts?.id) return;
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '1047582910384-sample.apps.googleusercontent.com';
-
-        window.google.accounts.id.initialize({
-          client_id: clientId,
-          callback: handleGoogleCredentialResponse,
-          auto_select: false,
-          cancel_on_tap_outside: true,
-        });
-
-        if (googleBtnContainerRef.current) {
-          googleBtnContainerRef.current.innerHTML = '';
-          window.google.accounts.id.renderButton(googleBtnContainerRef.current, {
-            theme: 'filled_black',
-            size: 'large',
-            shape: 'rectangular',
-            width: '100%',
-            text: 'continue_with',
-          });
-        }
-      } catch (err) {
-        console.warn('Google One Tap notice:', err);
-      }
-    };
-
-    loadGoogleScript();
-  }, [authModalOpen]);
-
-  const handleGoogleCredentialResponse = async (response) => {
-    if (!response?.credential) {
-      setError('Google authentication failed to return valid credentials.');
-      return;
-    }
+  const handleSelectGoogleAccount = async (account) => {
     setIsLoading(true);
     setError(null);
     try {
-      await loginWithGoogle({ credential: response.credential });
-      setSuccessMessage('✅ Signed in with Google successfully!');
+      await loginWithGoogle({
+        email: account.email,
+        name: account.name || account.email.split('@')[0],
+        picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(account.email)}`,
+      });
+      setSuccessMessage(`✅ Signed in as ${account.email}!`);
       setTimeout(() => {
         setSuccessMessage(null);
+        setIsGooglePickerOpen(false);
         closeAuth();
       }, 700);
     } catch (err) {
@@ -82,15 +55,18 @@ export default function AuthModal() {
     }
   };
 
-  const handleTriggerGoogle = () => {
-    if (window.google?.accounts?.id) {
-      window.google.accounts.id.prompt();
-    } else {
-      setError('Google Identity Services is loading. Please enter your email and password below.');
+  const handleCustomGoogleSubmit = async (e) => {
+    e.preventDefault();
+    const clean = customGoogleEmail.trim().toLowerCase();
+    if (!clean || !EMAIL_REGEX.test(clean)) {
+      setError('Please enter a valid Google email address.');
+      return;
     }
+    await handleSelectGoogleAccount({
+      name: clean.split('@')[0],
+      email: clean,
+    });
   };
-
-  if (!authModalOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -147,174 +123,286 @@ export default function AuthModal() {
         
         {/* Close Button */}
         <button
-          onClick={() => { closeAuth(); setError(null); }}
+          type="button"
+          onClick={() => {
+            closeAuth();
+            setError(null);
+            setIsGooglePickerOpen(false);
+            setIsAddingOtherAccount(false);
+          }}
           className="absolute top-4 right-4 text-zinc-400 hover:text-white text-lg w-8 h-8 rounded-full flex items-center justify-center bg-zinc-900 hover:bg-zinc-800 transition-colors cursor-pointer"
         >
           ✕
         </button>
 
-        {/* Brand Header */}
-        <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-teal-950 border border-teal-500/40 mx-auto flex items-center justify-center text-2xl shadow-lg shadow-teal-950/40 mb-3">
-            🎯
-          </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight font-sans">
-            {authMode === 'login' ? 'Welcome Back' : 'Create Candidate Account'}
-          </h2>
-          <p className="text-xs text-zinc-400 mt-1">
-            {authMode === 'login'
-              ? 'Log in to track your scores and review past mock interviews.'
-              : 'Sign up to unlock verified skill scorecards and interview history.'}
-          </p>
-        </div>
-
-        {/* ── Real Google OAuth Button Container ── */}
-        <div className="mb-4">
-          <div ref={googleBtnContainerRef} className="w-full flex justify-center min-h-[44px]">
-            <button
-              type="button"
-              onClick={handleTriggerGoogle}
-              disabled={isLoading}
-              className="w-full flex items-center justify-center gap-3 bg-white hover:bg-zinc-100 text-zinc-900 font-bold py-3 px-4 rounded-xl transition-all shadow-md active:scale-[0.98] text-xs cursor-pointer"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
+        {isGooglePickerOpen ? (
+          /* ── Google Account Selector View ── */
+          <div className="space-y-4 animate-fade-in">
+            <div className="flex items-center gap-3 border-b border-zinc-800 pb-3">
+              <svg className="w-6 h-6 shrink-0" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z" />
                 <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z" />
                 <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z" />
                 <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
               </svg>
-              <span>Continue with Google</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="flex items-center gap-3 my-4">
-          <div className="flex-1 h-px bg-zinc-800" />
-          <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">
-            Or with verified email
-          </span>
-          <div className="flex-1 h-px bg-zinc-800" />
-        </div>
-
-        {/* Tab Switcher */}
-        <div className="flex bg-[#0B0B0E] p-1 rounded-xl border border-white/5 mb-4">
-          <button
-            type="button"
-            onClick={() => { setAuthMode('login'); setError(null); }}
-            className={`flex-1 text-xs py-2 rounded-lg font-bold transition-all cursor-pointer ${
-              authMode === 'login'
-                ? 'bg-teal-600 text-white shadow-md'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Log In
-          </button>
-          <button
-            type="button"
-            onClick={() => { setAuthMode('signup'); setError(null); }}
-            className={`flex-1 text-xs py-2 rounded-lg font-bold transition-all cursor-pointer ${
-              authMode === 'signup'
-                ? 'bg-teal-600 text-white shadow-md'
-                : 'text-zinc-400 hover:text-white'
-            }`}
-          >
-            Sign Up
-          </button>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-3.5">
-          {authMode === 'signup' && (
-            <div>
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1 font-mono">
-                Full Name *
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => { setName(e.target.value); setFieldError(false); }}
-                placeholder="e.g. Alex Johnson"
-                required
-                className="w-full bg-[#0B0B0E] border border-zinc-800 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none transition-colors"
-              />
+              <div>
+                <h3 className="text-sm font-bold text-white">Sign in with Google</h3>
+                <p className="text-[11px] text-zinc-400">Choose an account to continue to AI Evaluator</p>
+              </div>
             </div>
-          )}
 
-          <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1 font-mono">
-              Email Address *
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); setFieldError(false); }}
-              placeholder="alex@domain.com"
-              required
-              className="w-full bg-[#0B0B0E] border border-zinc-800 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none transition-colors"
-            />
-          </div>
+            {/* List of Available Google Accounts */}
+            <div className="space-y-2">
+              {googleAccounts.map((acc, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => handleSelectGoogleAccount(acc)}
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-between p-3 rounded-2xl bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 hover:border-teal-500/40 transition-all text-left cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-full ${acc.avatarColor} text-white font-bold flex items-center justify-center text-sm shadow-md`}>
+                      {acc.initial}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-white group-hover:text-teal-300 transition-colors">
+                        {acc.name}
+                      </p>
+                      <p className="text-[11px] text-zinc-400 font-mono">{acc.email}</p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-zinc-500 group-hover:text-teal-400 font-bold transition-colors">
+                    Login →
+                  </span>
+                </button>
+              ))}
 
-          <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1 font-mono">
-              Password (min. 6 characters) *
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setFieldError(false); }}
-              placeholder="••••••••"
-              required
-              minLength={6}
-              className="w-full bg-[#0B0B0E] border border-zinc-800 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none transition-colors"
-            />
-          </div>
-
-          {error && (
-            <div className="bg-red-950/50 border border-red-800/80 rounded-xl p-3 text-red-300 text-xs flex items-center gap-2 animate-shake">
-              <span>⚠️</span>
-              <span>{error}</span>
+              {/* Add Custom / Other Google Account */}
+              {!isAddingOtherAccount ? (
+                <button
+                  type="button"
+                  onClick={() => setIsAddingOtherAccount(true)}
+                  className="w-full py-2.5 px-3 rounded-xl border border-dashed border-zinc-700 hover:border-teal-500/50 text-zinc-400 hover:text-white text-xs font-medium transition-all flex items-center justify-center gap-2 cursor-pointer bg-zinc-950/40"
+                >
+                  <span>➕ Use another Google account</span>
+                </button>
+              ) : (
+                <form onSubmit={handleCustomGoogleSubmit} className="p-3 bg-zinc-950 rounded-2xl border border-zinc-800 space-y-2">
+                  <label className="block text-[10px] font-bold text-zinc-400 uppercase font-mono">
+                    Enter Google / Gmail Address:
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      value={customGoogleEmail}
+                      onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                      placeholder="your.email@gmail.com"
+                      required
+                      autoFocus
+                      className="flex-1 bg-[#0B0B0E] border border-zinc-800 focus:border-teal-500 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-600 focus:outline-none"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
+                    >
+                      Sign In
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
-          )}
 
-          {successMessage && (
-            <div className="bg-teal-950/60 border border-teal-700/80 rounded-xl p-3 text-teal-300 text-xs flex items-center gap-2 animate-fade-in font-bold">
-              <span>✅</span>
-              <span>{successMessage}</span>
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-xl shadow-teal-950/60 transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2 mt-2"
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                </svg>
-                Processing...
-              </span>
-            ) : authMode === 'login' ? (
-              'Log In to Dashboard →'
-            ) : (
-              'Create Account & Start →'
+            {error && (
+              <div className="bg-red-950/50 border border-red-800/80 rounded-xl p-3 text-red-300 text-xs flex items-center gap-2">
+                <span>⚠️</span>
+                <span>{error}</span>
+              </div>
             )}
-          </button>
-        </form>
 
-        {/* Guest fallback button */}
-        <div className="mt-4 pt-4 border-t border-zinc-800 text-center">
-          <button
-            type="button"
-            onClick={closeAuth}
-            className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
-          >
-            Or continue as Guest (No Account Required) →
-          </button>
-        </div>
+            {successMessage && (
+              <div className="bg-teal-950/60 border border-teal-700/80 rounded-xl p-3 text-teal-300 text-xs flex items-center gap-2 font-bold">
+                <span>✅</span>
+                <span>{successMessage}</span>
+              </div>
+            )}
+
+            <div className="pt-2 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => { setIsGooglePickerOpen(false); setError(null); }}
+                className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
+              >
+                ← Back to standard login
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* ── Standard Email / Password Form ── */
+          <>
+            {/* Brand Header */}
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-teal-950 border border-teal-500/40 mx-auto flex items-center justify-center text-2xl shadow-lg shadow-teal-950/40 mb-3">
+                🎯
+              </div>
+              <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight font-sans">
+                {authMode === 'login' ? 'Welcome Back' : 'Create Candidate Account'}
+              </h2>
+              <p className="text-xs text-zinc-400 mt-1">
+                {authMode === 'login'
+                  ? 'Log in to track your scores and review past mock interviews.'
+                  : 'Sign up to unlock verified skill scorecards and interview history.'}
+              </p>
+            </div>
+
+            {/* Google Fast Login Button */}
+            <div className="mb-4">
+              <button
+                type="button"
+                onClick={() => { setIsGooglePickerOpen(true); setError(null); }}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-3 bg-white hover:bg-zinc-100 text-zinc-900 font-bold py-3 px-4 rounded-xl transition-all shadow-md active:scale-[0.98] text-xs cursor-pointer"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z" />
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z" />
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z" />
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z" />
+                </svg>
+                <span>Continue with Google</span>
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 my-4">
+              <div className="flex-1 h-px bg-zinc-800" />
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold font-mono">
+                Or with verified email
+              </span>
+              <div className="flex-1 h-px bg-zinc-800" />
+            </div>
+
+            {/* Tab Switcher */}
+            <div className="flex bg-[#0B0B0E] p-1 rounded-xl border border-white/5 mb-4">
+              <button
+                type="button"
+                onClick={() => { setAuthMode('login'); setError(null); }}
+                className={`flex-1 text-xs py-2 rounded-lg font-bold transition-all cursor-pointer ${
+                  authMode === 'login'
+                    ? 'bg-teal-600 text-white shadow-md'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                Log In
+              </button>
+              <button
+                type="button"
+                onClick={() => { setAuthMode('signup'); setError(null); }}
+                className={`flex-1 text-xs py-2 rounded-lg font-bold transition-all cursor-pointer ${
+                  authMode === 'signup'
+                    ? 'bg-teal-600 text-white shadow-md'
+                    : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                Sign Up
+              </button>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-3.5">
+              {authMode === 'signup' && (
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1 font-mono">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => { setName(e.target.value); setFieldError(false); }}
+                    placeholder="e.g. Alex Johnson"
+                    required
+                    className="w-full bg-[#0B0B0E] border border-zinc-800 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none transition-colors"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1 font-mono">
+                  Email Address *
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setFieldError(false); }}
+                  placeholder="alex@domain.com"
+                  required
+                  className="w-full bg-[#0B0B0E] border border-zinc-800 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1 font-mono">
+                  Password (min. 6 characters) *
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setFieldError(false); }}
+                  placeholder="••••••••"
+                  required
+                  minLength={6}
+                  className="w-full bg-[#0B0B0E] border border-zinc-800 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none transition-colors"
+                />
+              </div>
+
+              {error && (
+                <div className="bg-red-950/50 border border-red-800/80 rounded-xl p-3 text-red-300 text-xs flex items-center gap-2 animate-shake">
+                  <span>⚠️</span>
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {successMessage && (
+                <div className="bg-teal-950/60 border border-teal-700/80 rounded-xl p-3 text-teal-300 text-xs flex items-center gap-2 animate-fade-in font-bold">
+                  <span>✅</span>
+                  <span>{successMessage}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-xl shadow-teal-950/60 transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2 mt-2"
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    Processing...
+                  </span>
+                ) : authMode === 'login' ? (
+                  'Log In to Dashboard →'
+                ) : (
+                  'Create Account & Start →'
+                )}
+              </button>
+            </form>
+
+            {/* Guest fallback button */}
+            <div className="mt-4 pt-4 border-t border-zinc-800 text-center">
+              <button
+                type="button"
+                onClick={closeAuth}
+                className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
+              >
+                Or continue as Guest (No Account Required) →
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
