@@ -1,6 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+  --color-bg: #09090b;
+  --color-surface: #121215;
+  --color-surface-hover: #18181c;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(255, 255, 255, 0.16);
+  --color-accent: #6366f1;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --ease-human: cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 @layer base {
   html {
@@ -11,17 +21,36 @@
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     @apply antialiased selection:bg-indigo-600 selection:text-white bg-[#09090b] text-zinc-100;
   }
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+  p, li {
+    text-wrap: pretty;
+  }
   button, a, [role="button"] {
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s var(--ease-human);
   }
   button:active:not(:disabled), a:active, [role="button"]:active:not(:disabled) {
     transform: scale(0.98);
   }
   button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-    outline: 2px solid #6366f1;
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
   }
 }
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+.shadow-layered {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 20px 25px -5px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
 
 .font-editorial {
   font-family: 'Instrument Serif', 'Newsreader', Georgia, serif;
