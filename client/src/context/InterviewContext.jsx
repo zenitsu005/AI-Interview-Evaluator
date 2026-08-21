@@ -249,15 +249,29 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
 };
 
   /** Step 2: Instant zero-latency interview launcher (<10ms) */
-  const startInterview = useCallback(async () => {
+  const startInterview = useCallback((overrideConfig = {}) => {
     setIsLoading(false);
     setError(null);
 
+    const effectiveRole = overrideConfig.targetRole || targetRole || 'Software Engineer';
+    const effectiveLevel = overrideConfig.difficultyLevel || difficultyLevel || 'Intermediate';
+    const effectiveCompany = overrideConfig.companyTrack || companyTrack || 'General';
+    const effectivePersona = overrideConfig.interviewerPersona || interviewerPersona || BAR_RAISER_PERSONAS[0];
+    const effectiveDuration = overrideConfig.duration || duration || '15';
+    const effectiveMode = overrideConfig.interviewMode || interviewMode || 'video';
+
+    if (overrideConfig.targetRole) setTargetRole(overrideConfig.targetRole);
+    if (overrideConfig.difficultyLevel) setDifficultyLevel(overrideConfig.difficultyLevel);
+    if (overrideConfig.companyTrack) setCompanyTrack(overrideConfig.companyTrack);
+    if (overrideConfig.interviewerPersona) setInterviewerPersona(overrideConfig.interviewerPersona);
+    if (overrideConfig.duration) setDuration(overrideConfig.duration);
+    if (overrideConfig.interviewMode) setInterviewMode(overrideConfig.interviewMode);
+
     // 1. Instant opening question generation
     const instantQ = generateInstantOpeningQuestion(
-      targetRole,
-      difficultyLevel,
-      interviewerPersona
+      effectiveRole,
+      effectiveLevel,
+      effectivePersona
     );
 
     setCurrentRoundIndex(0);
@@ -266,6 +280,7 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
     setAllResponses([]);
     setPreviousQuestions([instantQ.question]);
     setActiveFollowUp(null);
+    isSubmittingRef.current = false;
 
     // 2. Instant Transition to Interview Studio
     setPhase('interview');
@@ -274,21 +289,21 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
     setTimeout(async () => {
       try {
         const effectiveAnalysis = resumeAnalysis || {
-          targetRole: targetRole || 'Software Engineer',
-          domainFocus: targetRole || 'Software Engineering',
-          technicalSkills: [targetRole || 'Software Engineer', 'System Architecture'],
+          targetRole: effectiveRole,
+          domainFocus: effectiveRole,
+          technicalSkills: [effectiveRole, 'System Architecture'],
           strengths: ['Data Structures & Algorithms', 'Analytical problem solving'],
           weaknesses: [],
         };
         const dynamicQ = await getQuestion({
           resumeAnalysis: effectiveAnalysis,
-          targetRole: targetRole || 'Software Engineer',
-          round: ROUNDS[0].id,
+          targetRole: effectiveRole,
+          round: 'aptitude',
           questionIndex: 1,
           previousQuestions: [],
-          difficultyLevel: difficultyLevel || 'Intermediate',
-          companyTrack: companyTrack || 'General',
-          persona: interviewerPersona?.id || 'amazon',
+          difficultyLevel: effectiveLevel,
+          companyTrack: effectiveCompany,
+          persona: effectivePersona?.id || 'amazon',
         });
         if (dynamicQ && dynamicQ.question && dynamicQ.question !== instantQ.question) {
           // If candidate has not answered yet, refresh to dynamic AI question
@@ -304,7 +319,8 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
         console.log('Optimized instant question active.');
       }
     }, 150);
-  }, [resumeAnalysis, targetRole, difficultyLevel, companyTrack, interviewerPersona, duration]);
+  }, [resumeAnalysis, targetRole, difficultyLevel, companyTrack, interviewerPersona, duration, interviewMode]);
+
 
 
 

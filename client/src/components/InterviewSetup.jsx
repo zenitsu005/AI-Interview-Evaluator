@@ -97,7 +97,7 @@ export default function InterviewSetup({ onNavigate }) {
   const [difficulty, setDifficulty] = useState('Intermediate');
   const [selectedPersona, setSelectedPersona] = useState(BAR_RAISER_PERSONAS?.[0] || null);
   const [selectedFormat, setSelectedFormat] = useState(FORMATS[0]);
-  const [duration, setDuration] = useState('45');
+  const [duration, setDuration] = useState('15');
   const [audioConsent, setAudioConsent] = useState(false);
   const [micState, setMicState] = useState('checking');
   const [isLaunching, setIsLaunching] = useState(false);
@@ -122,23 +122,24 @@ export default function InterviewSetup({ onNavigate }) {
 
     try {
       const targetRoleTitle = customRoleText.trim() || selectedRole.title;
-      if (setRole) setRole(targetRoleTitle);
-      if (setDifficultyLevel) setDifficultyLevel(difficulty);
-      if (selectedPersona) {
-        if (setCompanyTrack) setCompanyTrack(selectedPersona.company);
-        if (setInterviewerPersona) setInterviewerPersona(selectedPersona);
-      }
-      if (setInterviewMode) {
-        setInterviewMode(forceTextMode || selectedFormat.id === 'text-only' ? 'text' : 'video');
-      }
+      const selectedCompany = selectedPersona?.company || 'General';
+      const selectedMode = forceTextMode || selectedFormat.id === 'text-only' ? 'text' : 'video';
 
-      // Synchronous instant launch (<10ms)
-      startInterview();
+      // Synchronous instant launch (<10ms) with explicit duration calibration
+      startInterview({
+        duration: duration || '15',
+        targetRole: targetRoleTitle,
+        difficultyLevel: difficulty,
+        companyTrack: selectedCompany,
+        interviewerPersona: selectedPersona,
+        interviewMode: selectedMode,
+      });
     } catch (err) {
       console.error('Launch interview error:', err);
       setLaunchError(err.message || 'Failed to start interview session. Please try again.');
     }
   };
+
 
 
   return (
