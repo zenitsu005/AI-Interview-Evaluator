@@ -28,8 +28,7 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
 
   const [step, setStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState(ROLES[1]); // Senior
-  const [isCustomRole, setIsCustomRole] = useState(false);
-  const [customRoleText, setCustomRoleText] = useState('');
+  const [customRoleText, setCustomRoleText] = useState('Senior Software Engineer');
 
   const [selectedType, setSelectedType] = useState(TYPES[0]); // Full Mock
   const [selectedFormat, setSelectedFormat] = useState(FORMATS[0]); // Voice + Transcript
@@ -56,7 +55,7 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
     }
 
     if (setRole) {
-      setRole(selectedRole.title);
+      setRole(customRoleText || selectedRole.title);
     }
 
     const targetPhase = selectedType.id === 'system-design' ? 'video' : selectedType.id;
@@ -82,24 +81,49 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
           <span className="text-zinc-500 font-bold">Step {step} of 4</span>
         </div>
 
-        {/* ── STEP 1: ROLE SELECTION ── */}
+        {/* ── STEP 1: DIRECT TYPE-IN OR SELECT ROLE ── */}
         {step === 1 && (
           <div className="space-y-6 animate-fade-in">
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Select Target Engineering Role</h1>
-              <p className="text-xs text-zinc-400">Choose a standard seniority level or type in your custom role.</p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Select or Type Target Engineering Role</h1>
+              <p className="text-xs text-zinc-400">Type your specific role title below or pick a preset seniority level.</p>
             </div>
 
+            {/* Direct Input Field Always Visible */}
+            <div className="bg-[#131318] border border-teal-500/60 p-4 rounded-2xl space-y-2 shadow-xl">
+              <label className="block text-xs font-bold text-teal-400 font-mono uppercase tracking-wider">
+                ✏️ Target Role / Job Title (Type freely below):
+              </label>
+              <input
+                type="text"
+                value={customRoleText}
+                onChange={(e) => {
+                  setCustomRoleText(e.target.value);
+                  setSelectedRole({ id: 'custom', title: e.target.value || 'Custom Role', level: 'Custom Role' });
+                }}
+                placeholder="e.g. Senior Backend Engineer (Go/Rust), Full Stack Developer, Mobile Lead..."
+                className="w-full bg-[#0B0B0E] border border-zinc-700 focus:border-teal-500 rounded-xl p-3.5 text-sm sm:text-base text-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 font-sans shadow-inner"
+              />
+            </div>
+
+            <div className="relative flex py-1 items-center">
+              <div className="flex-grow border-t border-white/5"></div>
+              <span className="flex-shrink mx-4 text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Or Select Preset Seniority Level</span>
+              <div className="flex-grow border-t border-white/5"></div>
+            </div>
+
+            {/* Preset Seniority Cards */}
             <div className="space-y-3">
               {ROLES.map((role) => (
                 <button
                   key={role.id}
+                  type="button"
                   onClick={() => {
                     setSelectedRole(role);
-                    setIsCustomRole(false);
+                    setCustomRoleText(role.title);
                   }}
                   className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                    !isCustomRole && selectedRole.id === role.id
+                    selectedRole.id === role.id && customRoleText === role.title
                       ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
                       : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
                   }`}
@@ -108,56 +132,18 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
                     <p className="font-bold text-sm text-white">{role.title}</p>
                     <p className="text-xs text-zinc-400 font-mono mt-0.5">{role.level}</p>
                   </div>
-                  {!isCustomRole && selectedRole.id === role.id && <span className="text-teal-400 font-bold">✓ Selected</span>}
+                  {selectedRole.id === role.id && customRoleText === role.title && (
+                    <span className="text-teal-400 font-bold">✓ Selected</span>
+                  )}
                 </button>
               ))}
-
-              {/* Custom Type-In Role Card */}
-              <div
-                onClick={() => {
-                  setIsCustomRole(true);
-                  if (customRoleText) {
-                    setSelectedRole({ id: 'custom', title: customRoleText, level: 'User Specified' });
-                  }
-                }}
-                className={`w-full p-4 rounded-2xl border text-left transition-all cursor-pointer space-y-3 ${
-                  isCustomRole
-                    ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
-                    : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-sm text-white">✏️ Custom Role (Type your own title...)</p>
-                    <p className="text-xs text-zinc-400 font-mono mt-0.5">Specify exact stack, domain, or role title</p>
-                  </div>
-                  {isCustomRole && <span className="text-teal-400 font-bold">✓ Selected</span>}
-                </div>
-
-                {isCustomRole && (
-                  <div className="pt-2 animate-fade-in space-y-1.5" onClick={(e) => e.stopPropagation()}>
-                    <label className="text-xs font-bold text-teal-400 font-mono">Type Your Specific Target Role:</label>
-                    <input
-                      type="text"
-                      value={customRoleText}
-                      onChange={(e) => {
-                        setCustomRoleText(e.target.value);
-                        setSelectedRole({ id: 'custom', title: e.target.value || 'Custom Role', level: 'User Specified' });
-                      }}
-                      placeholder="e.g. Full Stack Developer (Node/React), iOS Lead, DevOps Architect..."
-                      className="w-full bg-[#0B0B0E] border border-teal-500/60 rounded-xl p-3.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 font-sans shadow-inner"
-                      autoFocus
-                    />
-                  </div>
-                )}
-              </div>
             </div>
 
             <div className="flex justify-end pt-4">
               <button
                 onClick={() => {
-                  if (isCustomRole && !customRoleText.trim()) {
-                    alert('Please type in your custom role title before continuing.');
+                  if (!customRoleText.trim()) {
+                    alert('Please type in or select your target role before continuing.');
                     return;
                   }
                   setStep(2);
@@ -300,7 +286,7 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
             <div className="bg-[#131318] border border-white/5 p-5 rounded-2xl space-y-3 font-mono text-xs">
               <div className="flex justify-between border-b border-white/5 pb-2">
                 <span className="text-zinc-400">Target Role:</span>
-                <span className="text-white font-bold">{selectedRole.title} ({selectedRole.level})</span>
+                <span className="text-white font-bold">{customRoleText || selectedRole.title}</span>
               </div>
               <div className="flex justify-between border-b border-white/5 pb-2">
                 <span className="text-zinc-400">Module:</span>
