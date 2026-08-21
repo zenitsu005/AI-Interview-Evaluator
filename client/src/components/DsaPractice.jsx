@@ -309,76 +309,247 @@ The solution set must not contain duplicate triplets.`,
     ],
   },
   {
-    id: 'trapping-rain-water',
-    title: 'Trapping Rain Water',
-    difficulty: 'Hard',
-    category: 'Two Pointers & Monotonic Stack',
+    id: 'valid-parentheses',
+    title: 'Valid Parentheses',
+    difficulty: 'Easy',
+    category: 'Stack',
     timeComplexity: 'O(N)',
-    spaceComplexity: 'O(1)',
-    description: `Given \`n\` non-negative integers representing an elevation map where the width of each bar is \`1\`, compute how much water it can trap after raining.`,
+    spaceComplexity: 'O(N)',
+    description: `Given a string \`s\` containing just the characters \`'('\`, \`')'\`, \`'{'\`, \`'}'\`, \`'['\` and \`']'\`, determine if the input string is valid.
+
+An input string is valid if:
+1. Open brackets must be closed by the same type of brackets.
+2. Open brackets must be closed in the correct order.`,
     examples: [
-      { input: 'height = [0,1,0,2,1,0,1,3,2,1,2,1]', output: '6' },
-      { input: 'height = [4,2,0,3,2,5]', output: '9' },
+      { input: 's = "()"', output: 'true' },
+      { input: 's = "()[]{}"', output: 'true' },
+      { input: 's = "(]"', output: 'false' },
     ],
     starterCodes: {
-      python: `def trap(height: list[int]) -> int:
-    if not height: return 0
-    l, r = 0, len(height) - 1
-    left_max, right_max = height[l], height[r]
-    water = 0
-    while l < r:
-        if left_max < right_max:
-            l += 1
-            left_max = max(left_max, height[l])
-            water += left_max - height[l]
+      python: `def isValid(s: str) -> bool:
+    stack = []
+    closeToOpen = { ")": "(", "]": "[", "}": "{" }
+    for c in s:
+        if c in closeToOpen:
+            if stack and stack[-1] == closeToOpen[c]:
+                stack.pop()
+            else:
+                return False
         else:
-            r -= 1
-            right_max = max(right_max, height[r])
-            water += right_max - height[r]
-    return water
+            stack.append(c)
+    return True if not stack else False
 `,
-      javascript: `function trap(height) {
-  if (!height || height.length === 0) return 0;
-  let l = 0, r = height.length - 1;
-  let leftMax = height[l], rightMax = height[r];
-  let water = 0;
-  while (l < r) {
-    if (leftMax < rightMax) {
-      l++;
-      leftMax = Math.max(leftMax, height[l]);
-      water += leftMax - height[l];
+      javascript: `function isValid(s) {
+  const stack = [];
+  const map = { ')': '(', ']': '[', '}': '{' };
+  for (let c of s) {
+    if (c in map) {
+      if (stack.length && stack[stack.length - 1] === map[c]) stack.pop();
+      else return false;
     } else {
-      r--;
-      rightMax = Math.max(rightMax, height[r]);
-      water += rightMax - height[r];
+      stack.push(c);
     }
   }
-  return water;
+  return stack.length === 0;
 }
 `,
     },
-    hints: ['Use two pointers (l, r) tracking leftMax and rightMax height bounds.'],
-    modelSolution: `def trap(height: list[int]) -> int:
-    if not height: return 0
-    l, r = 0, len(height) - 1
-    left_max, right_max = height[l], height[r]
-    water = 0
-    while l < r:
-        if left_max < right_max:
-            l += 1
-            left_max = max(left_max, height[l])
-            water += left_max - height[l]
-        else:
-            r -= 1
-            right_max = max(right_max, height[r])
-            water += right_max - height[r]
-    return water`,
+    hints: ['Use a stack to keep track of opening brackets.'],
+    modelSolution: `def isValid(s: str) -> bool:
+    stack = []
+    closeToOpen = { ")": "(", "]": "[", "}": "{" }
+    for c in s:
+        if c in closeToOpen:
+            if stack and stack[-1] == closeToOpen[c]:
+                stack.pop()
+            else: return False
+        else: stack.append(c)
+    return True if not stack else False`,
     testCases: [
-      { input: 'height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]', expected: '6' },
-      { input: 'height = [4, 2, 0, 3, 2, 5]', expected: '9' },
+      { input: 's = "()"', expected: 'true' },
+      { input: 's = "()[]{}"', expected: 'true' },
+      { input: 's = "(]"', expected: 'false' },
+    ],
+  },
+  {
+    id: 'group-anagrams',
+    title: 'Group Anagrams',
+    difficulty: 'Medium',
+    category: 'Arrays & Hashing',
+    timeComplexity: 'O(N * K)',
+    spaceComplexity: 'O(N * K)',
+    description: `Given an array of strings \`strs\`, group the anagrams together. You can return the answer in any order.`,
+    examples: [
+      { input: 'strs = ["eat","tea","tan","ate","nat","bat"]', output: '[["bat"],["nat","tan"],["ate","eat","tea"]]' },
+      { input: 'strs = [""]', output: '[[""]]' },
+    ],
+    starterCodes: {
+      python: `from collections import defaultdict
+
+def groupAnagrams(strs: list[str]) -> list[list[str]]:
+    res = defaultdict(list)
+    for s in strs:
+        count = [0] * 26
+        for c in s:
+            count[ord(c) - ord('a')] += 1
+        res[tuple(count)].append(s)
+    return list(res.values())
+`,
+      javascript: `function groupAnagrams(strs) {
+  const map = {};
+  for (let s of strs) {
+    const key = s.split('').sort().join('');
+    if (!map[key]) map[key] = [];
+    map[key].push(s);
+  }
+  return Object.values(map);
+}
+`,
+    },
+    hints: ['Use character frequency count tuples as hash map keys.'],
+    modelSolution: `from collections import defaultdict
+def groupAnagrams(strs: list[str]) -> list[list[str]]:
+    res = defaultdict(list)
+    for s in strs:
+        count = [0] * 26
+        for c in s:
+            count[ord(c) - ord('a')] += 1
+        res[tuple(count)].append(s)
+    return list(res.values())`,
+    testCases: [
+      { input: 'strs = ["eat","tea","tan","ate","nat","bat"]', expected: '[["bat"],["nat","tan"],["ate","eat","tea"]]' },
+    ],
+  },
+  {
+    id: 'number-of-islands',
+    title: 'Number of Islands',
+    difficulty: 'Medium',
+    category: 'Graphs & BFS/DFS',
+    timeComplexity: 'O(M * N)',
+    spaceComplexity: 'O(M * N)',
+    description: `Given an \`m x n\` 2D binary grid \`grid\` which represents a map of \`'1'\`s (land) and \`'0'\`s (water), return the number of islands.
+
+An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically.`,
+    examples: [
+      { input: 'grid = [["1","1","1","1","0"],["1","1","0","1","0"],["1","1","0","0","0"],["0","0","0","0","0"]]', output: '1' },
+      { input: 'grid = [["1","1","0","0","0"],["1","1","0","0","0"],["0","0","1","0","0"],["0","0","0","1","1"]]', output: '3' },
+    ],
+    starterCodes: {
+      python: `def numIslands(grid: list[list[str]]) -> int:
+    if not grid: return 0
+    rows, cols = len(grid), len(grid[0])
+    islands = 0
+    
+    def dfs(r, c):
+        if r < 0 or c < 0 or r >= rows or c >= cols or grid[r][c] == "0":
+            return
+        grid[r][c] = "0"
+        dfs(r + 1, c)
+        dfs(r - 1, c)
+        dfs(r, c + 1)
+        dfs(r, c - 1)
+        
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == "1":
+                dfs(r, c)
+                islands += 1
+    return islands
+`,
+      javascript: `function numIslands(grid) {
+  if (!grid || !grid.length) return 0;
+  let count = 0;
+  const rows = grid.length, cols = grid[0].length;
+  function dfs(r, c) {
+    if (r < 0 || c < 0 || r >= rows || c >= cols || grid[r][c] === '0') return;
+    grid[r][c] = '0';
+    dfs(r + 1, c); dfs(r - 1, c); dfs(r, c + 1); dfs(r, c - 1);
+  }
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (grid[r][c] === '1') { count++; dfs(r, c); }
+    }
+  }
+  return count;
+}
+`,
+    },
+    hints: ['Traverse the grid using Depth First Search (DFS) and sink visited land cells.'],
+    modelSolution: `def numIslands(grid: list[list[str]]) -> int:
+    if not grid: return 0
+    rows, cols = len(grid), len(grid[0])
+    islands = 0
+    def dfs(r, c):
+        if r < 0 or c < 0 or r >= rows or c >= cols or grid[r][c] == "0": return
+        grid[r][c] = "0"
+        dfs(r + 1, c); dfs(r - 1, c); dfs(r, c + 1); dfs(r, c - 1)
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == "1":
+                dfs(r, c); islands += 1
+    return islands`,
+    testCases: [
+      { input: 'grid = [["1","1","0"],["1","1","0"],["0","0","1"]]', expected: '2' },
+    ],
+  },
+  {
+    id: 'merge-k-lists',
+    title: 'Merge k Sorted Lists',
+    difficulty: 'Hard',
+    category: 'Heap / Priority Queue',
+    timeComplexity: 'O(N log k)',
+    spaceComplexity: 'O(k)',
+    description: `You are given an array of \`k\` linked-lists \`lists\`, each linked-list is sorted in ascending order.
+
+Merge all the linked-lists into one sorted linked-list and return it.`,
+    examples: [
+      { input: 'lists = [[1,4,5],[1,3,4],[2,6]]', output: '[1,1,2,3,4,4,5,6]' },
+      { input: 'lists = []', output: '[]' },
+    ],
+    starterCodes: {
+      python: `def mergeKLists(lists: list[ListNode]) -> ListNode:
+    if not lists or len(lists) == 0: return None
+    while len(lists) > 1:
+        mergedLists = []
+        for i in range(0, len(lists), 2):
+            l1 = lists[i]
+            l2 = lists[i + 1] if (i + 1) < len(lists) else None
+            mergedLists.append(mergeTwoLists(l1, l2))
+        lists = mergedLists
+    return lists[0]
+`,
+      javascript: `function mergeKLists(lists) {
+  if (!lists.length) return null;
+  while (lists.length > 1) {
+    const merged = [];
+    for (let i = 0; i < lists.length; i += 2) {
+      const l1 = lists[i];
+      const l2 = i + 1 < lists.length ? lists[i + 1] : null;
+      merged.push(mergeTwoLists(l1, l2));
+    }
+    lists = merged;
+  }
+  return lists[0];
+}
+`,
+    },
+    hints: ['Merge lists pairwise using Divide and Conquer to reduce time complexity to O(N log k).'],
+    modelSolution: `def mergeKLists(lists: list[ListNode]) -> ListNode:
+    if not lists: return None
+    while len(lists) > 1:
+        merged = []
+        for i in range(0, len(lists), 2):
+            l1 = lists[i]
+            l2 = lists[i + 1] if (i + 1) < len(lists) else None
+            merged.append(mergeTwoLists(l1, l2))
+        lists = merged
+    return lists[0]`,
+    testCases: [
+      { input: 'lists = [[1,4,5],[1,3,4],[2,6]]', expected: '[1,1,2,3,4,4,5,6]' },
     ],
   },
 ];
+
 
 export default function DsaPractice() {
   const { setPhase } = useInterview();
@@ -443,16 +614,31 @@ export default function DsaPractice() {
           title: cleanTitle(generated.title),
           difficulty: selectedDifficulty,
         };
-        setProblemsList((prev) => [formatted, ...prev]);
+        setProblemsList((prev) => {
+          const filtered = prev.filter((p) => cleanTitle(p.title) !== formatted.title);
+          return [formatted, ...filtered];
+        });
         handleSelectProblem(formatted);
+        setIsGeneratingAi(false);
+        return;
       }
     } catch (e) {
-      console.warn('AI DSA generation notice:', e);
-      handleShuffleNext();
+      console.warn('AI DSA generation fallback:', e);
     } finally {
       setIsGeneratingAi(false);
     }
+
+    // Fallback: Pick an unvisited problem from current difficulty tier
+    const currentTierProbs = problemsList.filter((p) => p.difficulty === selectedDifficulty);
+    const unvisited = currentTierProbs.filter((p) => p.id !== activeProblem?.id);
+    if (unvisited.length > 0) {
+      const pick = unvisited[Math.floor(Math.random() * unvisited.length)];
+      handleSelectProblem(pick);
+    } else {
+      handleShuffleNext();
+    }
   };
+
 
   const handleLangChange = (newLang) => {
     setLang(newLang);
