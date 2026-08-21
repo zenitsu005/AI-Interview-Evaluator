@@ -57,18 +57,13 @@ export default function AppNavbar({ currentActive = 'landing' }) {
             onItemSelect={handleSelectModule}
           />
           <button
-            onClick={() => handleSelectModule('landing')}
-            className="transition hover:text-white text-zinc-300 font-medium"
-          >
-            Pricing
-          </button>
-          <button
             onClick={openHistory}
             className="transition hover:text-white text-zinc-300 font-medium"
           >
             Past Mocks
           </button>
         </nav>
+
 
         {/* Desktop Right Actions */}
         <div className="hidden lg:flex items-center gap-3">
