@@ -114,16 +114,13 @@ export default function InterviewSetup({ onNavigate }) {
     }
   }, []);
 
-  const handleLaunchSession = async (forceTextMode = false) => {
+  const handleLaunchSession = (forceTextMode = false) => {
     if (selectedFormat.id !== 'text-only' && !audioConsent && !forceTextMode) {
       alert('Please check the audio processing consent box before launching voice mode, or choose Text-Only mode.');
       return;
     }
 
     try {
-      setIsLaunching(true);
-      setLaunchError(null);
-
       const targetRoleTitle = customRoleText.trim() || selectedRole.title;
       if (setRole) setRole(targetRoleTitle);
       if (setDifficultyLevel) setDifficultyLevel(difficulty);
@@ -135,13 +132,14 @@ export default function InterviewSetup({ onNavigate }) {
         setInterviewMode(forceTextMode || selectedFormat.id === 'text-only' ? 'text' : 'video');
       }
 
-      await startInterview();
+      // Synchronous instant launch (<10ms)
+      startInterview();
     } catch (err) {
       console.error('Launch interview error:', err);
       setLaunchError(err.message || 'Failed to start interview session. Please try again.');
-      setIsLaunching(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-[#0B0B0E] text-zinc-100 flex flex-col justify-between select-none">
@@ -505,31 +503,20 @@ export default function InterviewSetup({ onNavigate }) {
 
             <div className="flex justify-between pt-4">
               <button
-                disabled={isLaunching || contextLoading}
                 onClick={() => setStep(3)}
-                className="py-3 px-5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-xs font-semibold cursor-pointer disabled:opacity-50"
+                className="py-3 px-5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-xs font-semibold cursor-pointer"
               >
                 ← Back
               </button>
 
               <button
-                disabled={isLaunching || contextLoading}
                 onClick={() => handleLaunchSession(false)}
-                className="py-3.5 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-xl shadow-teal-950/50 transition-all active:scale-98 cursor-pointer flex items-center gap-2 disabled:opacity-60"
+                className="py-3.5 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-xl shadow-teal-950/50 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
               >
-                {isLaunching || contextLoading ? (
-                  <>
-                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                    </svg>
-                    <span>Calibrating Question 1...</span>
-                  </>
-                ) : (
-                  <span>Launch Mock Session →</span>
-                )}
+                <span>Launch Mock Session →</span>
               </button>
             </div>
+
           </div>
         )}
       </main>
