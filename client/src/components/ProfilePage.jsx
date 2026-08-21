@@ -5,12 +5,29 @@ import AnalyticsTrendSection from './AnalyticsTrendSection';
 import ShareReportCardModal from './ShareReportCardModal';
 
 export default function ProfilePage() {
-  const { user, history, logout } = useAuth();
+  const { user, history, logout, updateUserProfile } = useAuth();
   const { viewPastReport, setPhase } = useInterview();
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedShareReport, setSelectedShareReport] = useState(null);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editName, setEditName] = useState(user?.name || '');
+  const [editEmail, setEditEmail] = useState(user?.email || '');
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const totalInterviews = history.length;
+
+  const handleSaveProfile = (e) => {
+    e.preventDefault();
+    if (editName.trim() && editEmail.trim()) {
+      updateUserProfile({ name: editName.trim(), email: editEmail.trim() });
+      setSaveSuccess(true);
+      setTimeout(() => {
+        setSaveSuccess(false);
+        setIsEditingProfile(false);
+      }, 600);
+    }
+  };
+
 
   
   // Calculate average overall score
@@ -93,6 +110,17 @@ export default function ProfilePage() {
                 <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 uppercase tracking-wider">
                   Verified Candidate
                 </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditName(user?.name || '');
+                    setEditEmail(user?.email || '');
+                    setIsEditingProfile(true);
+                  }}
+                  className="text-[11px] text-teal-400 hover:text-teal-300 font-mono px-2 py-0.5 rounded-lg border border-teal-500/30 bg-teal-950/40 hover:bg-teal-900/50 transition-all cursor-pointer flex items-center gap-1"
+                >
+                  <span>✏️ Edit</span>
+                </button>
               </div>
               <p className="text-xs text-slate-400 font-mono mt-0.5">{user?.email || 'guest@candidate.com'}</p>
               <p className="text-[11px] text-slate-500 mt-1.5">
@@ -101,16 +129,31 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <button
-            onClick={() => {
-              logout();
-              setPhase('landing');
-            }}
-            className="text-xs text-slate-400 hover:text-red-400 border border-slate-800 bg-slate-950/80 px-4 py-2 rounded-xl transition-all"
-          >
-            Log Out
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setEditName(user?.name || '');
+                setEditEmail(user?.email || '');
+                setIsEditingProfile(true);
+              }}
+              className="text-xs text-teal-400 hover:text-white border border-teal-500/40 bg-teal-950/40 px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+            >
+              <span>✏️ Change Email / Name</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                setPhase('landing');
+              }}
+              className="text-xs text-slate-400 hover:text-red-400 border border-slate-800 bg-slate-950/80 px-4 py-2 rounded-xl transition-all cursor-pointer"
+            >
+              Log Out
+            </button>
+          </div>
         </div>
+
 
         {/* ── Key Metrics & XP Credits ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -291,8 +334,82 @@ export default function ProfilePage() {
         user={user}
       />
 
+      {/* ── Edit Profile Modal ── */}
+      {isEditingProfile && (
+
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B0B0E]/85 backdrop-blur-md animate-fade-in select-none">
+          <div className="bg-[#121217] border border-white/10 max-w-md w-full p-6 sm:p-8 shadow-2xl rounded-3xl relative text-left">
+            <button
+              type="button"
+              onClick={() => setIsEditingProfile(false)}
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white text-lg w-8 h-8 rounded-full flex items-center justify-center bg-zinc-900 hover:bg-zinc-800 transition-colors cursor-pointer"
+            >
+              ✕
+            </button>
+
+            <div className="mb-6">
+              <h2 className="text-xl font-extrabold text-white">Edit Profile Details</h2>
+              <p className="text-xs text-zinc-400 mt-1">Update your display name and registered email address.</p>
+            </div>
+
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1 font-mono">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="e.g. Akshay Garg"
+                  required
+                  className="w-full bg-[#0B0B0E] border border-zinc-800 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1 font-mono">
+                  Your Personal Email Address
+                </label>
+                <input
+                  type="email"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  placeholder="your.real.email@gmail.com"
+                  required
+                  className="w-full bg-[#0B0B0E] border border-zinc-800 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none"
+                />
+              </div>
+
+              {saveSuccess && (
+                <div className="p-3 rounded-xl bg-teal-950/60 border border-teal-500/40 text-teal-300 text-xs font-bold flex items-center gap-2">
+                  <span>✅</span>
+                  <span>Profile updated successfully!</span>
+                </div>
+              )}
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingProfile(false)}
+                  className="flex-1 py-3 px-4 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-300 hover:text-white text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md active:scale-95 cursor-pointer"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <footer className="py-4 border-t border-slate-900 bg-slate-950/80" />
     </div>
   );
 }
+

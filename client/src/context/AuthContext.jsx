@@ -96,6 +96,18 @@ export const AuthProvider = ({ children }) => {
     setHistory([]);
   }, []);
 
+  const updateUserProfile = useCallback(({ name, email }) => {
+    setUser((prev) => {
+      const updated = {
+        ...(prev || {}),
+        name: name !== undefined ? name : prev?.name,
+        email: email !== undefined ? email : prev?.email,
+        picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email || prev?.email || 'User')}`,
+      };
+      localStorage.setItem('mockai_user', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
   const openAuth = useCallback((mode = 'login') => {
     setAuthMode(mode);
@@ -120,9 +132,9 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         token,
-        isAuthenticated: !!user,
         history,
         isLoading,
+        isAuthenticated: !!token || !!user,
         authModalOpen,
         authMode,
         historyModalOpen,
@@ -130,6 +142,7 @@ export const AuthProvider = ({ children }) => {
         signup,
         loginWithGoogle,
         logout,
+        updateUserProfile,
         openAuth,
         closeAuth,
         openHistory,
