@@ -10,11 +10,11 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const featureItems = [
-    { id: 'video', label: 'System Architecture Simulation', badge: 'L7' },
     { id: 'dsa', label: 'DSA Live Studio', badge: 'Code' },
     { id: 'bug-hunter', label: 'Bug Hunting Labs', badge: 'Debug' },
     { id: 'negotiate', label: 'Salary Negotiation', badge: 'HR' },
   ];
+
 
   const prepToolItems = [
     { id: 'resume-builder', label: 'ATS Resume Scorer', badge: 'ATS' },
