@@ -40,12 +40,16 @@ const playStarChime = (pitchIndex = 0) => {
 export default function DopamineCelebrationModal({
   isOpen,
   onClose,
-  targetRole = 'Software Engineer',
+  onNext,
+  targetRole = 'Algorithm Problem',
+  buttonText = 'Next Question →',
+  badgeText = 'CHALLENGE COMPLETE',
+  titleText = 'Solution Verified',
 }) {
   const canvasRef = useRef(null);
   const [starsVisible, setStarsVisible] = useState([false, false, false]);
 
-  const displayRole = targetRole && targetRole.trim() ? targetRole : 'Software Engineer';
+  const displayRole = targetRole && targetRole.trim() ? targetRole : 'Algorithm Problem';
 
   // Canvas Confetti Burst Logic
   useEffect(() => {
@@ -132,6 +136,14 @@ export default function DopamineCelebrationModal({
 
   if (!isOpen) return null;
 
+  const handleAction = () => {
+    if (onNext) {
+      onNext();
+    } else if (onClose) {
+      onClose();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B0B0E]/90 backdrop-blur-xl overflow-hidden animate-fade-in select-none">
       
@@ -158,29 +170,29 @@ export default function DopamineCelebrationModal({
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/60 border border-teal-500/30 text-teal-300 text-[11px] font-mono font-semibold uppercase tracking-wider mb-1">
             <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping" />
-            Interview Loop Complete
+            {badgeText || 'CHALLENGE COMPLETE'}
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-sans">
-            Evaluation Synthesized
+            {titleText || 'Solution Verified'}
           </h2>
           <p className="text-xs text-zinc-400 font-medium">
-            Full multimodal scorecard generated for <span className="text-teal-300 font-semibold">{displayRole}</span>
+            Test cases validated successfully for <span className="text-teal-300 font-semibold">{displayRole}</span>
           </p>
         </div>
 
         {/* Executive Metric Pillars */}
         <div className="grid grid-cols-3 gap-2 py-1">
           <div className="p-2.5 rounded-xl bg-[#0B0B0E] border border-white/5 text-center">
-            <p className="text-[10px] font-mono text-zinc-500 uppercase">Aptitude</p>
-            <p className="text-xs font-bold text-white mt-0.5">Evaluated ✓</p>
+            <p className="text-[10px] font-mono text-zinc-500 uppercase">Correctness</p>
+            <p className="text-xs font-bold text-white mt-0.5">100% Passed ✓</p>
           </div>
           <div className="p-2.5 rounded-xl bg-[#0B0B0E] border border-white/5 text-center">
-            <p className="text-[10px] font-mono text-zinc-500 uppercase">Technical</p>
-            <p className="text-xs font-bold text-teal-400 mt-0.5">Calibrated ✓</p>
+            <p className="text-[10px] font-mono text-zinc-500 uppercase">Runtime</p>
+            <p className="text-xs font-bold text-teal-400 mt-0.5">Optimal ✓</p>
           </div>
           <div className="p-2.5 rounded-xl bg-[#0B0B0E] border border-white/5 text-center">
-            <p className="text-[10px] font-mono text-zinc-500 uppercase">STAR Matrix</p>
-            <p className="text-xs font-bold text-amber-400 mt-0.5">Scored ✓</p>
+            <p className="text-[10px] font-mono text-zinc-500 uppercase">Memory</p>
+            <p className="text-xs font-bold text-amber-400 mt-0.5">Efficient ✓</p>
           </div>
         </div>
 
@@ -202,17 +214,16 @@ export default function DopamineCelebrationModal({
           ))}
         </div>
 
-        {/* View Report CTA */}
+        {/* Primary Next Button Action */}
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleAction}
           className="w-full py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-teal-950/60 transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
         >
-          <span>Access Full Report & Scorecard →</span>
+          <span>{buttonText || 'Next Question →'}</span>
         </button>
 
       </div>
     </div>
   );
 }
-

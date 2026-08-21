@@ -1149,12 +1149,17 @@ export default function DsaPractice() {
         <DopamineCelebrationModal
           isOpen={showDopamineModal}
           onClose={() => setShowDopamineModal(false)}
-          score={100}
-          hiringRecommendation="Strong Hire"
-          summary={`Flawless execution! You solved "${cleanTitle(currentProb.title)}" on ${selectedDifficulty} difficulty in optimal time.`}
-          onRetake={handleShuffleNext}
+          onNext={() => {
+            setShowDopamineModal(false);
+            handleShuffleNext();
+          }}
+          buttonText="Next Question →"
+          badgeText="PROBLEM SOLVED"
+          titleText="Solution Verified"
+          targetRole={cleanTitle(currentProb.title)}
         />
       )}
+
     </div>
   );
 }
