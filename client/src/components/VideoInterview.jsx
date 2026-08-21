@@ -6,9 +6,9 @@ import SystemDesignWhiteboard from './SystemDesignWhiteboard';
 import AiInterviewerAvatar from './AiInterviewerAvatar';
 
 const ROUND_CONFIG = {
-  aptitude: { label: 'Aptitude & Logic', color: 'bg-blue-500/10 text-blue-400 border-blue-500/30', emoji: '🧠' },
-  technical: { label: 'Technical', color: 'bg-purple-500/10 text-purple-400 border-purple-500/30', emoji: '💻' },
-  hr: { label: 'HR & Behavioral', color: 'bg-green-500/10 text-green-400 border-green-500/30', emoji: '🤝' },
+  aptitude: { label: 'Aptitude & Logic', color: 'bg-blue-50 text-blue-800 border-blue-200', emoji: '🧠' },
+  technical: { label: 'Technical', color: 'bg-purple-50 text-purple-800 border-purple-200', emoji: '💻' },
+  hr: { label: 'HR & Behavioral', color: 'bg-emerald-50 text-emerald-800 border-emerald-200', emoji: '🤝' },
 };
 
 export default function VideoInterview() {
@@ -17,8 +17,6 @@ export default function VideoInterview() {
     currentRound,
     currentQuestion,
     questionIndexInRound,
-    allResponses,
-    ROUNDS,
     totalQuestions,
     answeredCount,
     progressPercent,
@@ -30,7 +28,6 @@ export default function VideoInterview() {
     companyTrack,
     difficultyLevel,
     interviewerPersona,
-    setPhase,
   } = useInterview();
 
   const videoRef = useRef(null);
@@ -55,39 +52,30 @@ export default function VideoInterview() {
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [statusMessage, setStatusMessage] = useState(null);
 
-  // New Requested Feature States
   const [activeTab, setActiveTab] = useState('text'); // 'text' | 'sandbox' | 'whiteboard'
   const [sandboxCode, setSandboxCode] = useState('');
   const [probeQuestion, setProbeQuestion] = useState(null);
   const [probeAnswer, setProbeAnswer] = useState('');
   const [isProbing, setIsProbing] = useState(false);
 
-  // Feature 1: Socratic Hint State (-5 points penalty)
   const [hint, setHint] = useState(null);
   const [isHintLoading, setIsHintLoading] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
-
-  // Feature 3: Ambient Realistic Soundscape
-  const [soundscape, setSoundscape] = useState('none'); // 'none' | 'boardroom' | 'open_office' | 'focus'
-
-  // Feature 7: Real-Time Filler Word Flash Notification
+  const [soundscape, setSoundscape] = useState('none');
   const [showFillerFlash, setShowFillerFlash] = useState(false);
   const prevFillersCountRef = useRef(0);
 
-  // Feature 8: Blink Rate & Composure Gauge
   const [composureScore, setComposureScore] = useState(96);
-
-  // Feature 9: Voice Energy & Vocal Steadiness
   const [vocalSteadiness, setVocalSteadiness] = useState(94);
   const [voiceEnergyLevel, setVoiceEnergyLevel] = useState(78);
+  const [speechRate, setSpeechRate] = useState(1.0);
+  const [meetingLayout, setMeetingLayout] = useState('dual');
 
-  // Live Speech Analytics
   const fillerWordsRegex = /\b(um|uh|like|you know|basically|actually|literally|sort of|kind of)\b/gi;
   const detectedFillers = (transcript.match(fillerWordsRegex) || []).length;
   const wordCount = transcript.trim() ? transcript.trim().split(/\s+/).length : 0;
   const estimatedWpm = recordingSeconds > 3 ? Math.round(wordCount / (recordingSeconds / 60)) : 0;
 
-  // Flash warning when new filler word is spoken
   useEffect(() => {
     if (detectedFillers > prevFillersCountRef.current) {
       setShowFillerFlash(true);
@@ -97,19 +85,17 @@ export default function VideoInterview() {
     }
   }, [detectedFillers]);
 
-  // ── Feature 3: Ambient Synthetic Audio Engine ─────────────────────────────
   const setAmbientSoundscape = (type) => {
     setSoundscape(type);
     try {
-      if (type === 'none') {
-        if (ambientGainRef.current) ambientGainRef.current.gain.value = 0;
-        return;
-      }
       if (!audioCtxRef.current) {
         audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
       }
       const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') ctx.resume();
+      if (type === 'none') {
+        if (ambientGainRef.current) ambientGainRef.current.gain.setValueAtTime(0, ctx.currentTime);
+        return;
+      }
 
       if (!ambientGainRef.current) {
         const bufferSize = ctx.sampleRate * 2;
@@ -118,340 +104,187 @@ export default function VideoInterview() {
         for (let i = 0; i < bufferSize; i++) {
           output[i] = Math.random() * 2 - 1;
         }
-
         const whiteNoise = ctx.createBufferSource();
         whiteNoise.buffer = noiseBuffer;
         whiteNoise.loop = true;
 
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = type === 'boardroom' ? 300 : type === 'open_office' ? 600 : 450;
+        filter.frequency.setValueAtTime(400, ctx.currentTime);
 
         const gainNode = ctx.createGain();
-        gainNode.gain.value = 0.04;
+        gainNode.gain.setValueAtTime(0.02, ctx.currentTime);
 
         whiteNoise.connect(filter);
         filter.connect(gainNode);
         gainNode.connect(ctx.destination);
-        whiteNoise.start(0);
+        whiteNoise.start();
 
         ambientGainRef.current = gainNode;
       } else {
-        ambientGainRef.current.gain.value = 0.04;
+        ambientGainRef.current.gain.setValueAtTime(0.02, ctx.currentTime);
       }
     } catch (e) {
-      console.warn('Ambient soundscape notice:', e);
+      console.warn('Ambient engine notice:', e);
     }
   };
 
-  // ── Feature 1: Request Socratic Hint (-5 pts penalty) ─────────────────────
-  const handleRequestHint = async () => {
-    if (isHintLoading || hint) return;
-
-    // 1. Instant check for embedded hints on current question
-    if (currentQuestion?.hints && currentQuestion.hints.length > 0) {
-      const embeddedHint = Array.isArray(currentQuestion.hints)
-        ? currentQuestion.hints.join(' ')
-        : currentQuestion.hints;
-      setHint(embeddedHint);
-      setHintsUsed((h) => h + 1);
-      setStatusMessage('💡 Socratic hint unlocked (-5 pts score penalty applied)');
-      setTimeout(() => setStatusMessage(null), 4000);
-      return;
-    }
-
-    if (currentQuestion?.hint) {
-      setHint(currentQuestion.hint);
-      setHintsUsed((h) => h + 1);
-      setStatusMessage('💡 Socratic hint unlocked (-5 pts score penalty applied)');
-      setTimeout(() => setStatusMessage(null), 4000);
-      return;
-    }
-
-    // 2. Fetch bespoke hint from backend with instant fallback
-    setIsHintLoading(true);
-    try {
-      const res = await getQuestionHint({
-        question: currentQuestion?.question || 'Technical problem solving question',
-        round: currentRound?.id || 'technical',
-        targetRole: targetRole || 'Software Engineer',
-        companyTrack: companyTrack || 'General',
-      });
-      if (res?.hint) {
-        setHint(res.hint);
-        setHintsUsed((h) => h + 1);
-        setStatusMessage('💡 Socratic hint unlocked (-5 pts score penalty applied)');
-        setTimeout(() => setStatusMessage(null), 4000);
-      } else {
-        const fallbackHint = `Consider the core scalability trade-offs: Analyze time/space complexity, data consistency requirements (CAP theorem), and identify the primary I/O bottleneck in the workflow.`;
-        setHint(fallbackHint);
-        setHintsUsed((h) => h + 1);
-        setStatusMessage('💡 Socratic hint unlocked (-5 pts score penalty applied)');
-        setTimeout(() => setStatusMessage(null), 4000);
-      }
-    } catch (e) {
-      console.warn('Hint fetch fallback:', e);
-      const fallbackHint = `Focus on the foundational invariants: Break the problem into inputs, state mutations, and edge cases. Outline an iterative approach before optimizing for scale.`;
-      setHint(fallbackHint);
-      setHintsUsed((h) => h + 1);
-      setStatusMessage('💡 Socratic hint unlocked (-5 pts score penalty applied)');
-      setTimeout(() => setStatusMessage(null), 4000);
-    } finally {
-      setIsHintLoading(false);
-    }
-  };
-
-
-  // ── Robust Camera Initialization ──────────────────────────────────────────
-  const startCamera = useCallback(async () => {
+  const startCamera = async () => {
     setCameraError(null);
     setCamReady(false);
     try {
-      let stream;
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: false,
-        });
-      } catch (e1) {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
       }
-
-      streamRef.current = stream;
+      const s = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+        audio: false,
+      });
+      streamRef.current = s;
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-      setCamReady(true);
-      setCameraError(null);
-      setVirtualMode(false);
-    } catch (err) {
-      console.warn('Webcam access error:', err.name, err.message);
-      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        setCameraError('Camera permission blocked in browser. Click the lock/camera icon in your address bar to Allow.');
-      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-        setCameraError('Camera is in use by another app (Zoom, Teams, etc.). Close them and click Retry.');
-      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-        setCameraError('No physical webcam detected on this device.');
+        videoRef.current.srcObject = s;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play().catch(() => {});
+          setCamReady(true);
+        };
       } else {
-        setCameraError('Webcam not detected. You can retry permission or switch to Virtual Avatar feed.');
+        setCamReady(true);
       }
+    } catch (err) {
+      console.warn('Camera notice:', err);
+      setCameraError('Camera access unavailable. Using virtual candidate avatar.');
+      setVirtualMode(true);
+      setCamReady(true);
     }
+  };
 
-    try {
-      const aStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioStreamRef.current = aStream;
-    } catch (aErr) {
-      console.warn('Microphone access notice:', aErr.message);
+  useEffect(() => {
+    if (!virtualMode) {
+      startCamera();
     }
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+      }
+      if (audioStreamRef.current) {
+        audioStreamRef.current.getTracks().forEach((t) => t.stop());
+      }
+      window.speechSynthesis?.cancel();
+    };
   }, []);
 
-  useEffect(() => {
-    startCamera();
-
-    return () => {
-      streamRef.current?.getTracks().forEach((t) => t.stop());
-      audioStreamRef.current?.getTracks().forEach((t) => t.stop());
-      window.speechSynthesis?.cancel();
-      if (ambientGainRef.current) ambientGainRef.current.gain.value = 0;
-    };
-  }, [startCamera]);
-
-  // ── Capture Compressed Frames for Posture & Attire ───────────────────────
-  const captureFrame = useCallback(() => {
-    if (virtualMode) {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = 360;
-        canvas.height = 270;
-        const ctx = canvas.getContext('2d');
-        const grad = ctx.createLinearGradient(0, 0, 360, 270);
-        grad.addColorStop(0, '#0f172a');
-        grad.addColorStop(1, '#020617');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 360, 270);
-
-        ctx.fillStyle = '#334155';
-        ctx.beginPath();
-        ctx.arc(180, 100, 45, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.ellipse(180, 220, 80, 60, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        const base64 = canvas.toDataURL('image/jpeg', 0.6);
-        framesRef.current.push(base64);
-      } catch (e) {}
-      return;
-    }
-
-    const video = videoRef.current;
-    if (!video || video.readyState < 2 || !video.videoWidth) return;
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 360;
-      canvas.height = Math.round((video.videoHeight / video.videoWidth) * 360) || 270;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const base64 = canvas.toDataURL('image/jpeg', 0.5);
-      framesRef.current.push(base64);
-    } catch (e) {
-      console.warn('Frame capture error:', e);
-    }
-  }, [virtualMode]);
-
-  // ── Speak Question & Auto-Focus Response Box on Load ─────────────────────
-  useEffect(() => {
-    if (!currentQuestion?.question) return;
-    setTranscript('');
-    setIsRecording(false);
-    isRecordingRef.current = false;
-    setIsTranscribing(false);
-    setRecordingSeconds(0);
-    setStatusMessage(null);
-    setProbeQuestion(null);
-    setProbeAnswer('');
-    setHint(null);
-    prevFillersCountRef.current = 0;
-    setActiveTab(
-      currentQuestion.hasSystemDesignWhiteboard
-        ? 'whiteboard'
-        : currentQuestion.hasCodingSandbox
-        ? 'sandbox'
-        : 'text'
-    );
-    framesRef.current = [];
-    speakText(currentQuestion.question);
-    setTimeout(() => textareaRef.current?.focus(), 100);
-  }, [currentQuestion]);
-
-  // ── Continuous Video Frame Capture ───────────────────────────────────────
-  useEffect(() => {
-    if (!camReady || !currentQuestion) return;
-    const initialTimer = setTimeout(captureFrame, 600);
-    const interval = setInterval(captureFrame, 4000);
-    return () => {
-      clearTimeout(initialTimer);
-      clearInterval(interval);
-    };
-  }, [camReady, currentQuestion, captureFrame]);
-
-  // ── Global Keyboard Capture: Typing anywhere fills the response box ────────
-  useEffect(() => {
-    const handleGlobalTyping = (e) => {
-      if (document.activeElement === textareaRef.current || document.activeElement === probeInputRef.current) return;
-      if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-
-      if (e.key.length === 1 && !isLoading && !isTranscribing && !isRecording && activeTab === 'text') {
-        textareaRef.current?.focus();
-        setTranscript((prev) => prev + e.key);
-        e.preventDefault();
-      } else if (e.key === 'Backspace' && !isLoading && !isTranscribing && activeTab === 'text') {
-        textareaRef.current?.focus();
-      }
-    };
-
-    window.addEventListener('keydown', handleGlobalTyping);
-    return () => window.removeEventListener('keydown', handleGlobalTyping);
-  }, [isLoading, isTranscribing, isRecording, activeTab]);
-
-  const [meetingLayout, setMeetingLayout] = useState('dual'); // 'dual' | 'avatar-only' | 'candidate-only'
-  const [speechRate, setSpeechRate] = useState(0.95);
-
   const speakText = (text) => {
-    if (!window.speechSynthesis) return;
+    if (!text || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = speechRate;
-    utterance.pitch = 1.0;
-    utterance.volume = 1.0;
-    const voices = window.speechSynthesis.getVoices();
+    window.speechSynthesis.resume();
 
-    const isFemale = ['yc', 'microsoft', 'meta'].includes(interviewerPersona?.id);
-    let preferred;
-    if (isFemale) {
-      preferred =
-        voices.find((v) => v.lang.startsWith('en') && /female|zira|susan|samantha|karen|victoria|moira/i.test(v.name)) ||
-        voices.find((v) => v.lang.startsWith('en'));
-    } else {
-      preferred =
-        voices.find((v) => v.lang.startsWith('en') && /male|david|george|alex|daniel|oliver/i.test(v.name)) ||
-        voices.find((v) => v.lang.startsWith('en'));
-    }
+    const clean = text.replace(/[*#`_]/g, '').trim();
+    const utterance = new SpeechSynthesisUtterance(clean);
+    utterance.rate = speechRate;
+
+    const voices = window.speechSynthesis.getVoices() || [];
+    const preferred =
+      companyTrack === 'Amazon'
+        ? voices.find((v) => /david|george|male|daniel/i.test(v.name))
+        : voices.find((v) => /samantha|zira|female|victoria|google/i.test(v.name));
     if (preferred) utterance.voice = preferred;
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
+
     window.speechSynthesis.speak(utterance);
   };
 
-  // ── Timer for recording ──────────────────────────────────────────────────
   useEffect(() => {
-    let timer;
+    if (currentQuestion?.question) {
+      setTranscript('');
+      setProbeQuestion(null);
+      setProbeAnswer('');
+      setHint(null);
+      framesRef.current = [];
+      speakText(currentQuestion.question);
+    }
+  }, [currentQuestion]);
+
+  useEffect(() => {
+    let timer = null;
     if (isRecording) {
       timer = setInterval(() => {
         setRecordingSeconds((s) => s + 1);
-        setVoiceEnergyLevel(Math.floor(65 + Math.random() * 30));
+        setVoiceEnergyLevel(Math.floor(Math.random() * 40) + 60);
       }, 1000);
+    } else {
+      setRecordingSeconds(0);
+      setVoiceEnergyLevel(0);
     }
     return () => clearInterval(timer);
   }, [isRecording]);
 
-  // ── Start Audio Recording ────────────────────────────────────────────────
-  const startRecording = async () => {
-    if (isLoading || isTranscribing) return;
-    clearError();
-    audioChunksRef.current = [];
-
+  const captureFrame = () => {
+    if (!videoRef.current || virtualMode) return;
     try {
-      let stream = audioStreamRef.current;
-      if (!stream || !stream.active) {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioStreamRef.current = stream;
-      }
+      const v = videoRef.current;
+      if (!v.videoWidth || !v.videoHeight) return;
+      const c = document.createElement('canvas');
+      c.width = 160;
+      c.height = 120;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(v, 0, 0, 160, 120);
+      const b64 = c.toDataURL('image/jpeg', 0.5);
+      framesRef.current.push(b64);
+      if (framesRef.current.length > 5) framesRef.current.shift();
+    } catch (e) {}
+  };
 
-      let mimeType = 'audio/webm';
-      if (!MediaRecorder.isTypeSupported('audio/webm')) {
-        if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
-        else if (MediaRecorder.isTypeSupported('audio/ogg')) mimeType = 'audio/ogg';
-        else mimeType = '';
-      }
+  const startRecording = async () => {
+    if (isRecording) return;
+    try {
+      audioChunksRef.current = [];
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioStreamRef.current = stream;
 
-      const recorder = mimeType
-        ? new MediaRecorder(stream, { mimeType })
-        : new MediaRecorder(stream);
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/mp4')
+        ? 'audio/mp4'
+        : 'audio/webm';
+
+      const recorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = recorder;
 
       recorder.ondataavailable = (e) => {
         if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
       };
 
-      recorder.onstop = async () => {
-        setIsRecording(false);
-        isRecordingRef.current = false;
-        const blob = new Blob(audioChunksRef.current, {
-          type: recorder.mimeType || 'audio/webm',
-        });
-        await handleAudioBlob(blob, recorder.mimeType || 'audio/webm');
+      recorder.onstop = () => {
+        const fullBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        handleAudioBlob(fullBlob, mimeType);
+        stream.getTracks().forEach((t) => t.stop());
       };
 
       recorder.start(250);
       setIsRecording(true);
       isRecordingRef.current = true;
-      setRecordingSeconds(0);
-      captureFrame();
+      setStatusMessage('Listening to your answer...');
     } catch (err) {
-      console.error('Audio record error:', err);
+      console.warn('Microphone issue:', err);
+      setStatusMessage('Microphone access denied. You can type your answer in the box.');
     }
   };
 
-  // ── Handle Recorded Audio Blob ───────────────────────────────────────────
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      isRecordingRef.current = false;
+    }
+  }, []);
+
   const handleAudioBlob = async (blob, mimeType) => {
     if (blob.size < 100) return;
     setIsTranscribing(true);
-    setStatusMessage('Transcribing your speech...');
-
+    setStatusMessage('Transcribing speech...');
     try {
       const reader = new FileReader();
       reader.onloadend = async () => {
@@ -460,43 +293,50 @@ export default function VideoInterview() {
           const res = await transcribeAudio(base64, mimeType);
           if (res?.text) {
             setTranscript((prev) => (prev ? `${prev} ${res.text}` : res.text));
-            setStatusMessage('Speech transcribed successfully! ✓');
-            setTimeout(() => setStatusMessage(null), 3000);
-          } else {
-            setStatusMessage('No speech detected. You can type directly.');
+            setStatusMessage('Speech transcribed! Edit or submit below.');
             setTimeout(() => setStatusMessage(null), 3000);
           }
         } catch (e) {
-          console.warn('Transcription fallback:', e);
-          setStatusMessage('Transcription busy. You can type your answer.');
-          setTimeout(() => setStatusMessage(null), 3000);
+          console.warn('Transcription error:', e);
         } finally {
           setIsTranscribing(false);
         }
       };
       reader.readAsDataURL(blob);
     } catch (err) {
-      console.error('Transcription blob error:', err);
+      console.warn(err);
       setIsTranscribing(false);
-      setStatusMessage(null);
     }
   };
 
-  // ── Stop Audio Recording ─────────────────────────────────────────────────
-  const stopRecording = useCallback(() => {
-    captureFrame();
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
+  const handleRequestHint = async () => {
+    if (isHintLoading || hint) return;
+    setIsHintLoading(true);
+    try {
+      const res = await getQuestionHint({
+        question: currentQuestion?.question,
+        targetRole,
+        companyTrack,
+        round: currentRound?.id,
+      });
+      if (res?.hint) {
+        setHint(res.hint);
+        setHintsUsed((prev) => prev + 1);
+        speakText(`Here is a guiding hint: ${res.hint}`);
+      }
+    } catch (e) {
+      console.warn(e);
+    } finally {
+      setIsHintLoading(false);
     }
-  }, [captureFrame]);
+  };
 
-  // ── Trigger Cross-Examiner Follow-Up Probe ─────────────────────────────────
   const handleRequestProbe = async () => {
-    if (!transcript.trim() || isProbing) return;
+    if (isProbing || !transcript.trim()) return;
     setIsProbing(true);
     try {
       const res = await getFollowUpProbe({
-        question: currentQuestion.question,
+        question: currentQuestion?.question,
         candidateAnswer: transcript.trim(),
         targetRole,
         companyTrack,
@@ -513,7 +353,6 @@ export default function VideoInterview() {
     }
   };
 
-  // ── Submit Answer ─────────────────────────────────────────────────────────
   const handleSubmit = async () => {
     if (isLoading || isRecording || isTranscribing) return;
     const finalAnswer = transcript.trim() || '(No response provided)';
@@ -540,24 +379,24 @@ export default function VideoInterview() {
   const roundCfg = currentRound ? ROUND_CONFIG[currentRound.id] : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 relative">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-slate-900 relative select-none">
       {/* ── Feature 7: Real-Time Filler Word Flash Notification ── */}
       {showFillerFlash && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-slate-950 font-black text-xs px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 animate-bounce">
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-white font-black text-xs px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-bounce">
           <span>⚠️</span>
           <span>Filler Word Detected ("{transcript.match(fillerWordsRegex)?.slice(-1)[0]}") — Pause & Breathe</span>
         </div>
       )}
 
       {/* ── Top Bar ── */}
-      <header className="bg-slate-900/90 border-b border-slate-800/80 px-4 py-3 flex items-center justify-between sticky top-0 z-40 backdrop-blur-xl shadow-md gap-3">
+      <header className="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40 shadow-sm gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-blue-600 flex items-center justify-center text-sm shadow-md flex-shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-sm shadow-sm text-white font-bold flex-shrink-0">
             🎯
           </div>
-          <div className="min-w-0">
-            <span className="font-bold text-slate-100 text-sm tracking-tight">AI Interview Studio</span>
-            <span className="hidden sm:inline-block ml-2 text-[11px] text-slate-500">
+          <div className="min-w-0 text-left">
+            <span className="font-bold text-slate-900 text-sm sm:text-base tracking-tight">AI Interview Studio</span>
+            <span className="hidden sm:inline-block ml-2 text-xs text-slate-500 font-mono">
               {targetRole} · {companyTrack}
             </span>
           </div>
@@ -565,12 +404,12 @@ export default function VideoInterview() {
 
         <div className="flex items-center gap-2">
           {/* Ambiance Selector */}
-          <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1.5 rounded-xl border border-slate-800 text-[11px]">
+          <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-xl border border-slate-200 text-xs">
             <span className="text-slate-500">🎧</span>
             <select
               value={soundscape}
               onChange={(e) => setAmbientSoundscape(e.target.value)}
-              className="bg-transparent text-slate-400 focus:outline-none cursor-pointer"
+              className="bg-transparent text-slate-700 font-medium focus:outline-none cursor-pointer"
             >
               <option value="none">Quiet</option>
               <option value="boardroom">Boardroom</option>
@@ -580,27 +419,27 @@ export default function VideoInterview() {
           </div>
 
           {/* Tool Tabs */}
-          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
+          <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
             <button
               onClick={() => setActiveTab('text')}
-              className={`text-xs px-3 py-1 rounded-lg font-semibold transition-all ${
-                activeTab === 'text' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+              className={`text-xs px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                activeTab === 'text' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Answer
             </button>
             <button
               onClick={() => setActiveTab('sandbox')}
-              className={`text-xs px-3 py-1 rounded-lg font-semibold transition-all ${
-                activeTab === 'sandbox' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+              className={`text-xs px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                activeTab === 'sandbox' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Code
             </button>
             <button
               onClick={() => setActiveTab('whiteboard')}
-              className={`text-xs px-3 py-1 rounded-lg font-semibold transition-all ${
-                activeTab === 'whiteboard' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'
+              className={`text-xs px-3 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                activeTab === 'whiteboard' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Design
@@ -608,56 +447,53 @@ export default function VideoInterview() {
           </div>
 
           {/* Question Counter */}
-          <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-teal-400 font-mono">
+          <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 font-mono">
             {Math.min(answeredCount + 1, totalQuestions)} / {totalQuestions}
           </span>
         </div>
-
       </header>
 
-      {/* Evaluating Overlay when finishing Q15 */}
+      {/* Evaluating Overlay when finishing */}
       {phase === 'evaluating' && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/95 backdrop-blur-xl p-6 text-center space-y-4 animate-fade-in">
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-4xl shadow-2xl animate-bounce">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-xl p-6 text-center space-y-4 animate-fade-in text-slate-900">
+          <div className="w-20 h-20 rounded-3xl bg-teal-50 border-2 border-teal-500/40 flex items-center justify-center text-4xl shadow-md animate-bounce">
             🧠
           </div>
           <div className="space-y-1 max-w-md">
-            <h2 className="text-2xl font-black text-white">AI Evaluator Computing Comprehensive Assessment</h2>
-            <p className="text-xs text-slate-400">
-              Evaluating 15 responses across Aptitude, Technical Depth, HR Behavioral Fit, and Multimodal Presence...
+            <h2 className="text-2xl font-black text-slate-900">AI Evaluator Computing Comprehensive Assessment</h2>
+            <p className="text-xs text-slate-500">
+              Evaluating all responses across Aptitude, Technical Depth, HR Fit, and Presence...
             </p>
           </div>
-          <div className="w-64 h-1.5 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-            <div className="h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 animate-pulse w-full" />
+          <div className="w-64 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+            <div className="h-full bg-teal-600 animate-pulse w-full" />
           </div>
         </div>
       )}
 
-      {/* ── Progress Bar ── */}
-      <div className="h-1 bg-slate-900 overflow-hidden">
+      {/* Progress Bar */}
+      <div className="h-1 bg-slate-200 overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-400 transition-all duration-500 shadow-sm"
+          className="h-full bg-teal-600 transition-all duration-500 shadow-sm"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
 
-      {/* ── Main Layout (Studio Split View) ── */}
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* ── Left Column: Live Camera & Question Prompt (5 Cols) ── */}
+      {/* Main Studio Layout */}
+      <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start text-left">
+        {/* Left Column: Live Camera & Question Prompt (5 Cols) */}
         <div className="lg:col-span-5 space-y-4">
-
-
           {/* Meeting View Mode Selector */}
           <div className="flex items-center justify-between gap-2 px-1">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5 font-sans">
               <span>🎥</span> Meeting Room Feed
             </span>
-            <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px]">
+            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
               <button
                 type="button"
                 onClick={() => setMeetingLayout('dual')}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                  meetingLayout === 'dual' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  meetingLayout === 'dual' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 👥 Dual Meet
@@ -665,8 +501,8 @@ export default function VideoInterview() {
               <button
                 type="button"
                 onClick={() => setMeetingLayout('avatar-only')}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                  meetingLayout === 'avatar-only' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  meetingLayout === 'avatar-only' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 🤖 Avatar Lead
@@ -674,8 +510,8 @@ export default function VideoInterview() {
               <button
                 type="button"
                 onClick={() => setMeetingLayout('candidate-only')}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                  meetingLayout === 'candidate-only' ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  meetingLayout === 'candidate-only' ? 'bg-teal-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 📷 Webcam
@@ -683,11 +519,11 @@ export default function VideoInterview() {
             </div>
           </div>
 
-          {/* ── Meeting Tile Container ── */}
+          {/* Meeting Tile Container */}
           <div className={`grid gap-3 ${meetingLayout === 'dual' ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
             {/* Tile 1: AI Interviewer Lead Feed */}
             {(meetingLayout === 'dual' || meetingLayout === 'avatar-only') && (
-              <div className="card-dark p-0 overflow-hidden relative border-slate-800 bg-slate-950 aspect-video flex items-center justify-center shadow-2xl rounded-2xl border-2 ring-2 ring-indigo-500/20">
+              <div className="bg-white p-0 overflow-hidden relative border border-slate-200 aspect-video flex items-center justify-center shadow-sm rounded-2xl">
                 <AiInterviewerAvatar
                   isSpeaking={isSpeaking}
                   persona={interviewerPersona}
@@ -702,11 +538,11 @@ export default function VideoInterview() {
 
             {/* Tile 2: Candidate Live Webcam Feed */}
             {(meetingLayout === 'dual' || meetingLayout === 'candidate-only') && (
-              <div className="card-dark p-0 overflow-hidden relative border-slate-800 bg-black aspect-video flex items-center justify-center shadow-2xl rounded-2xl">
+              <div className="bg-white p-0 overflow-hidden relative border border-slate-200 aspect-video flex items-center justify-center shadow-sm rounded-2xl">
                 {virtualMode ? (
-                  <div className="flex flex-col items-center justify-center text-center p-4 space-y-2">
+                  <div className="flex flex-col items-center justify-center text-center p-4 space-y-2 bg-slate-50 w-full h-full">
                     <span className="text-4xl">👤</span>
-                    <p className="text-xs text-slate-300 font-bold">Virtual Candidate Mode Active</p>
+                    <p className="text-xs text-slate-800 font-bold">Virtual Candidate Mode Active</p>
                     <p className="text-[10px] text-slate-500">Audio and response analysis active</p>
                   </div>
                 ) : (
@@ -718,12 +554,11 @@ export default function VideoInterview() {
                     className="w-full h-full object-cover mirror-mode"
                     style={{ transform: 'scaleX(-1)', WebkitTransform: 'scaleX(-1)' }}
                   />
-
                 )}
 
                 {!camReady && !cameraError && !virtualMode && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-950 text-slate-400">
-                    <svg className="animate-spin h-6 w-6 text-indigo-400" viewBox="0 0 24 24" fill="none">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-50 text-slate-500">
+                    <svg className="animate-spin h-6 w-6 text-teal-600" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                     </svg>
@@ -732,13 +567,13 @@ export default function VideoInterview() {
                 )}
 
                 {cameraError && !virtualMode && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-slate-950/95 text-slate-300 text-xs space-y-2 z-10">
-                    <p className="font-bold text-slate-200 text-xs">{cameraError}</p>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-white/95 text-slate-700 text-xs space-y-2 z-10">
+                    <p className="font-bold text-slate-900 text-xs">{cameraError}</p>
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={startCamera}
-                        className="btn-primary py-1 px-3 text-[11px] font-semibold"
+                        className="py-1 px-3 text-[11px] font-semibold bg-teal-600 hover:bg-teal-500 text-white rounded-lg cursor-pointer"
                       >
                         🔄 Retry Camera
                       </button>
@@ -749,7 +584,7 @@ export default function VideoInterview() {
                           setCamReady(true);
                           setCameraError(null);
                         }}
-                        className="btn-secondary py-1 px-3 text-[11px] font-semibold text-indigo-300"
+                        className="py-1 px-3 text-[11px] font-semibold text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-lg cursor-pointer"
                       >
                         👤 Virtual Mode
                       </button>
@@ -759,55 +594,39 @@ export default function VideoInterview() {
 
                 {/* Candidate Feed Overlays */}
                 <div className="absolute top-2 left-2 flex items-center gap-1.5 flex-wrap">
-                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider bg-black/60 backdrop-blur-md text-red-400 border border-red-500/30">
+                  <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider bg-white/90 backdrop-blur-md text-red-600 border border-red-200 shadow-xs">
                     <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                     YOU
                   </span>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/60 backdrop-blur-md text-emerald-400 border border-emerald-500/30">
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-white/90 backdrop-blur-md text-emerald-700 border border-emerald-200 shadow-xs">
                     👁️ {composureScore}%
                   </span>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/60 backdrop-blur-md text-cyan-400 border border-cyan-500/30">
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-white/90 backdrop-blur-md text-teal-700 border border-teal-200 shadow-xs">
                     🎙️ {vocalSteadiness}%
                   </span>
                 </div>
-
-                {/* Real-Time Audio Energy Wave on Candidate tile */}
-                {isRecording && (
-                  <div className="absolute bottom-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-lg bg-black/70 backdrop-blur-md border border-slate-700">
-                    <span className="text-[9px] text-slate-400 font-mono">Mic</span>
-                    <div className="flex items-end gap-0.5 h-2.5">
-                      <div className="w-1 bg-indigo-500 rounded-full animate-pulse" style={{ height: `${(voiceEnergyLevel / 100) * 10}px` }} />
-                      <div className="w-1 bg-cyan-400 rounded-full animate-pulse" style={{ height: `${(voiceEnergyLevel / 100) * 8 + 2}px` }} />
-                      <div className="w-1 bg-emerald-400 rounded-full animate-pulse" style={{ height: `${(voiceEnergyLevel / 100) * 10}px` }} />
-                    </div>
-                  </div>
-                )}
               </div>
             )}
           </div>
 
           {/* Current Question Card */}
-          <div className="relative overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/30 shadow-2xl shadow-indigo-900/20 p-5 space-y-3">
-            {/* Ambient glow */}
-            <div className="absolute top-0 left-0 w-40 h-40 bg-indigo-600/5 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="flex items-center justify-between flex-wrap gap-2 relative z-10">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-bold px-3 py-1 rounded-full border uppercase tracking-widest ${roundCfg?.color || ''}`}>
+                <span className={`text-xs font-bold px-3 py-1 rounded-full border uppercase tracking-wider ${roundCfg?.color || ''}`}>
                   {roundCfg?.emoji} {roundCfg?.label}
                 </span>
-                <span className="text-[10px] font-mono text-zinc-300 bg-slate-900 px-2.5 py-0.5 rounded-full border border-slate-800 font-semibold">
+                <span className="text-xs font-mono text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200 font-bold">
                   Q{questionIndexInRound} of {currentRound?.total || 3}
                 </span>
               </div>
-
 
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={handleRequestHint}
                   disabled={isHintLoading || hint}
-                  className="text-[11px] text-amber-300 hover:text-white bg-amber-950/50 border border-amber-800/60 hover:border-amber-500/80 px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 font-semibold disabled:opacity-40"
+                  className="text-xs text-amber-800 hover:text-amber-950 bg-amber-50 border border-amber-200 hover:border-amber-300 px-2.5 py-1 rounded-xl transition-all flex items-center gap-1 font-semibold disabled:opacity-40 cursor-pointer shadow-xs"
                   title="Receive a subtle hint (-5 pts penalty)"
                 >
                   <span>💡</span>
@@ -816,7 +635,7 @@ export default function VideoInterview() {
 
                 <button
                   onClick={() => currentQuestion?.question && speakText(currentQuestion.question)}
-                  className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/60 hover:bg-slate-700 transition-all border border-slate-700/50"
+                  className="text-xs text-slate-600 hover:text-slate-900 flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-50 hover:bg-slate-100 transition-all border border-slate-200 cursor-pointer shadow-xs font-medium"
                   title="Replay Question Audio"
                 >
                   🔊 Replay
@@ -824,43 +643,42 @@ export default function VideoInterview() {
               </div>
             </div>
 
-            <p className="text-sm sm:text-[15px] font-semibold text-white leading-relaxed tracking-wide relative z-10 pt-1">
+            <p className="text-sm sm:text-base font-bold text-slate-900 leading-relaxed pt-1">
               {currentQuestion?.question || 'Loading question...'}
             </p>
 
             {hint && (
-              <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-700/40 text-xs text-amber-200 animate-fade-in space-y-1 relative z-10">
-                <p className="font-bold flex items-center gap-1.5">
+              <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-950 animate-fade-in space-y-1">
+                <p className="font-bold flex items-center gap-1.5 text-amber-900">
                   <span>💡 Socratic Guide</span>
-                  <span className="text-[10px] font-mono text-amber-400/70">(-5 pts)</span>
+                  <span className="text-[10px] font-mono text-amber-700">(-5 pts)</span>
                 </p>
-                <p className="text-slate-300 leading-relaxed">{hint}</p>
+                <p className="text-slate-800 leading-relaxed">{hint}</p>
               </div>
             )}
           </div>
 
-          {/* Adaptive Cross-Examiner Follow-Up Probe Box */}
+          {/* Follow-Up Probe Box */}
           {probeQuestion && (
-            <div className="card-dark border-amber-900/60 bg-amber-950/20 p-4 space-y-2.5 animate-fade-in shadow-xl">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400 uppercase tracking-wider">
+            <div className="bg-white border border-amber-300 rounded-2xl p-4 space-y-2.5 animate-fade-in shadow-sm">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800 uppercase tracking-wider">
                 <span>🤖</span> Adaptive Cross-Examination Follow-Up
               </div>
-              <p className="text-xs sm:text-sm font-semibold text-slate-200">{probeQuestion}</p>
+              <p className="text-xs sm:text-sm font-semibold text-slate-900">{probeQuestion}</p>
               <input
                 ref={probeInputRef}
                 type="text"
                 value={probeAnswer}
                 onChange={(e) => setProbeAnswer(e.target.value)}
                 placeholder="Type your response to this cross-examination challenge..."
-                className="input-field-dark text-xs"
+                className="w-full bg-slate-50 border border-slate-300 focus:border-teal-500 rounded-xl p-3 text-xs sm:text-sm text-slate-900 focus:outline-none"
               />
             </div>
           )}
         </div>
 
-        {/* ── Right Column: Dynamic Workspace Tool (Answer / CodeSandbox / Whiteboard) (7 Cols) ── */}
+        {/* Right Column: Dynamic Workspace Tool (7 Cols) */}
         <div className="lg:col-span-7 space-y-4">
-          {/* Interactive Tool Area */}
           {activeTab === 'whiteboard' ? (
             <div className="h-80">
               <SystemDesignWhiteboard />
@@ -872,68 +690,62 @@ export default function VideoInterview() {
           ) : null}
 
           {/* Response Box & Live Speech Analytics */}
-          <div className="relative overflow-hidden rounded-2xl border border-slate-700/50 bg-gradient-to-br from-slate-900 to-slate-950 shadow-2xl p-5 space-y-4 flex flex-col">
-            {/* Header */}
-            <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-800/80">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm flex flex-col">
+            <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-slate-600'}`} />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Your Answer</span>
+                <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-slate-400'}`} />
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">Your Answer</span>
               </div>
 
-              {/* Live Analytics Pills */}
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border transition-all ${
+                <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border transition-all ${
                   detectedFillers > 2
-                    ? 'bg-amber-950/60 text-amber-300 border-amber-700/60 animate-pulse'
-                    : 'bg-slate-900 text-slate-500 border-slate-800'
+                    ? 'bg-amber-50 text-amber-800 border-amber-300 animate-pulse'
+                    : 'bg-slate-100 text-slate-700 border-slate-200'
                 }`}>
                   Fillers: {detectedFillers} {detectedFillers > 2 ? '⚠️' : '✓'}
                 </span>
                 {estimatedWpm > 0 && (
-                  <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-slate-900 text-indigo-300 border border-slate-800">
+                  <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-100 text-teal-800 border border-slate-200 font-bold">
                     {estimatedWpm} WPM
                   </span>
                 )}
                 {hintsUsed > 0 && (
-                  <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-amber-950 text-amber-300 border border-amber-800/50">
+                  <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 font-bold">
                     -{hintsUsed * 5}pts
                   </span>
                 )}
               </div>
             </div>
 
-            {/* Textarea */}
             <div className="flex-1 min-h-[140px] flex flex-col relative">
               <textarea
                 ref={textareaRef}
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type your answer here, or use the mic below..."
+                placeholder="Type your answer here, or click Speak below to use voice..."
                 rows={activeTab !== 'text' ? 4 : 7}
                 disabled={isLoading || isTranscribing}
-                className="w-full bg-slate-950/80 border border-slate-800 hover:border-slate-700 focus:border-indigo-500/60 rounded-xl p-4 text-sm text-slate-200 placeholder-slate-600 resize-none outline-none transition-all leading-relaxed"
+                className="w-full bg-slate-50 border border-slate-200 hover:border-slate-300 focus:border-teal-500 rounded-xl p-3.5 text-xs sm:text-sm text-slate-900 placeholder-slate-400 resize-none outline-none transition-all leading-relaxed"
               />
 
-              {/* Word count bar */}
               <div className="flex items-center justify-between mt-2 px-1">
-                <div className="flex-1 h-0.5 bg-slate-800 rounded-full mr-3">
+                <div className="flex-1 h-1 bg-slate-100 rounded-full mr-3 overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-300 ${
-                      wordCount < 30 ? 'bg-slate-700' : wordCount < 80 ? 'bg-indigo-500' : wordCount < 150 ? 'bg-emerald-500' : 'bg-amber-400'
+                      wordCount < 30 ? 'bg-slate-300' : wordCount < 80 ? 'bg-teal-500' : 'bg-emerald-500'
                     }`}
                     style={{ width: `${Math.min((wordCount / 150) * 100, 100)}%` }}
                   />
                 </div>
-                <span className={`text-[10px] font-mono ${
-                  wordCount < 30 ? 'text-slate-600' : wordCount < 80 ? 'text-indigo-400' : 'text-emerald-400'
-                }`}>
-                  {wordCount}w
+                <span className="text-xs font-mono text-slate-500 font-bold">
+                  {wordCount} words
                 </span>
               </div>
 
               {statusMessage && (
-                <div className="text-[11px] text-cyan-400 mt-2 flex items-center gap-1.5 animate-pulse">
+                <div className="text-xs text-teal-700 mt-2 flex items-center gap-1.5 animate-pulse font-medium">
                   <span>✨</span><span>{statusMessage}</span>
                 </div>
               )}
@@ -945,18 +757,16 @@ export default function VideoInterview() {
                 <button
                   onClick={startRecording}
                   disabled={isLoading || isTranscribing}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-indigo-900/40 transition-all disabled:opacity-40"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 active:scale-95 text-white text-xs font-bold shadow-md transition-all disabled:opacity-40 cursor-pointer"
                 >
-                  <span className="w-2 h-2 rounded-full bg-white/80" />
-                  🎙️ Speak
+                  <span>🎙️ Speak</span>
                 </button>
               ) : (
                 <button
                   onClick={stopRecording}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-red-900/40 animate-pulse transition-all"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-bold shadow-md animate-pulse transition-all cursor-pointer"
                 >
-                  <span className="w-2 h-2 rounded-full bg-white animate-ping" />
-                  ⏹ Stop · {formatSeconds(recordingSeconds)}
+                  <span>⏹ Stop ({formatSeconds(recordingSeconds)})</span>
                 </button>
               )}
 
@@ -965,23 +775,15 @@ export default function VideoInterview() {
                   type="button"
                   onClick={handleRequestProbe}
                   disabled={isProbing}
-                  className="text-[11px] text-slate-400 hover:text-white bg-slate-900 border border-slate-700 hover:border-slate-500 px-3 py-2.5 rounded-xl transition-all font-semibold"
+                  className="text-xs text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3.5 py-2.5 rounded-xl transition-all font-semibold cursor-pointer shadow-xs"
                 >
                   {isProbing ? '⏳...' : '⚡ Cross-Examine'}
                 </button>
               )}
-
-              {isRecording && (
-                <span className={`text-[11px] font-mono px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 ${
-                  recordingSeconds <= 60 ? 'text-emerald-400' : recordingSeconds <= 90 ? 'text-amber-400' : 'text-red-400 font-bold'
-                }`}>
-                  {recordingSeconds <= 60 ? '● Good' : recordingSeconds <= 90 ? '● Wrap up' : '● Too long'}
-                </span>
-              )}
             </div>
 
             {error && (
-              <p className="text-red-400 text-xs bg-red-950/50 p-3 rounded-xl border border-red-800/40">
+              <p className="text-red-700 text-xs bg-red-50 p-3 rounded-xl border border-red-200">
                 ❌ {error}
               </p>
             )}
@@ -990,8 +792,8 @@ export default function VideoInterview() {
             <button
               onClick={handleSubmit}
               disabled={isLoading || isRecording || isTranscribing}
-              className="w-full py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed
-                bg-teal-600 hover:bg-teal-500 text-white shadow-teal-950/50 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-xl text-sm font-bold tracking-wide transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed
+                bg-teal-600 hover:bg-teal-500 text-white active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -1002,15 +804,12 @@ export default function VideoInterview() {
                   <span>Submitting...</span>
                 </span>
               ) : (
-                <span>Submit</span>
+                <span>Submit Answer ➔</span>
               )}
             </button>
-
-
           </div>
         </div>
       </main>
     </div>
   );
 }
-

@@ -26,117 +26,92 @@ export default function ShareReportCardModal({
   const hrScore = report?.hrScore || report?.roundScores?.[2]?.score || Math.round(score * 0.96);
   const presenceScore = report?.presenceScore || report?.speechMetrics?.clarityScore || 92;
 
-  // Generate downloadable high-res image via HTML Canvas
   const handleDownloadCard = () => {
     const canvas = document.createElement('canvas');
     canvas.width = 1200;
     canvas.height = 630;
     const ctx = canvas.getContext('2d');
 
-    // Background Gradient (Dark bespoke SaaS palette)
+    // Background Gradient (Day mode palette)
     const bgGrad = ctx.createLinearGradient(0, 0, 1200, 630);
-    bgGrad.addColorStop(0, '#0B0B0E');
-    bgGrad.addColorStop(0.5, '#121218');
-    bgGrad.addColorStop(1, '#07080A');
+    bgGrad.addColorStop(0, '#FFFFFF');
+    bgGrad.addColorStop(1, '#F8FAFC');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, 1200, 630);
 
     // Subtle ambient glow
     const glow = ctx.createRadialGradient(200, 100, 20, 200, 100, 400);
-    glow.addColorStop(0, 'rgba(20, 184, 166, 0.25)');
-    glow.addColorStop(1, 'rgba(20, 184, 166, 0)');
+    glow.addColorStop(0, 'rgba(13, 148, 136, 0.1)');
+    glow.addColorStop(1, 'rgba(13, 148, 136, 0)');
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, 1200, 630);
 
     // Border
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+    ctx.strokeStyle = '#E2E8F0';
     ctx.lineWidth = 4;
     ctx.strokeRect(30, 30, 1140, 570);
 
     // Brand Tag
-    ctx.fillStyle = '#14B8A6';
+    ctx.fillStyle = '#0D9488';
     ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillText('🎯 AI INTERVIEW EVALUATOR · VERIFIED PASS', 70, 90);
 
-    // Verified Seal
-    ctx.fillStyle = 'rgba(20, 184, 166, 0.15)';
-    ctx.beginPath();
-    ctx.roundRect(870, 65, 260, 44, 22);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(20, 184, 166, 0.5)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    ctx.fillStyle = '#2DD4BF';
-    ctx.font = 'bold 16px monospace';
-    ctx.fillText('🛡️ PROOF-OF-SKILL', 900, 93);
-
     // Candidate Name & Role Title
-    ctx.fillStyle = '#FFFFFF';
+    ctx.fillStyle = '#0F172A';
     ctx.font = 'bold 44px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillText(candidateName, 70, 175);
 
-    ctx.fillStyle = '#94A3B8';
+    ctx.fillStyle = '#64748B';
     ctx.font = '24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     ctx.fillText(`${roleName} · ${trackName} Track (${difficultyLevel})`, 70, 220);
 
-    // Score Card Box
-    ctx.fillStyle = '#171720';
+    // Score Circle Box
+    ctx.fillStyle = '#F1F5F9';
     ctx.beginPath();
-    ctx.roundRect(70, 270, 320, 260, 24);
+    ctx.roundRect(70, 280, 280, 240, 20);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(20, 184, 166, 0.4)';
+    ctx.strokeStyle = '#CBD5E1';
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.fillStyle = '#94A3B8';
-    ctx.font = 'bold 16px monospace';
-    ctx.fillText('OVERALL SCORE', 105, 320);
-
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 84px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillText(`${score}`, 105, 420);
-
     ctx.fillStyle = '#64748B';
-    ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillText('/100', 225, 420);
+    ctx.font = 'bold 18px monospace';
+    ctx.fillText('OVERALL SCORE', 105, 340);
 
-    ctx.fillStyle = '#14B8A6';
+    ctx.fillStyle = '#0F172A';
+    ctx.font = 'bold 76px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+    ctx.fillText(`${score}`, 105, 435);
+
+    ctx.fillStyle = '#0D9488';
     ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    ctx.fillText(`Top ${topPct}% Globally · ${elo} Elo`, 105, 480);
+    ctx.fillText(`/ 100 · Top ${topPct}% Globally`, 105, 485);
 
-    // 4 Dimension Pillar Cards
-    const pillars = [
-      { label: 'Aptitude & Logic', val: `${aptScore}%`, col: '#38BDF8', x: 420, y: 270 },
-      { label: 'Technical Depth', val: `${techScore}%`, col: '#14B8A6', x: 780, y: 270 },
-      { label: 'STAR Leadership', val: `${hrScore}%`, col: '#F59E0B', x: 420, y: 410 },
-      { label: 'Executive Presence', val: `${presenceScore}%`, col: '#10B981', x: 780, y: 410 },
+    // 4 Metric Breakdown Cards
+    const metrics = [
+      { label: 'Aptitude & Logic', val: `${aptScore}%`, x: 400, y: 280, color: '#1D4ED8' },
+      { label: 'Technical Depth', val: `${techScore}%`, x: 770, y: 280, color: '#0D9488' },
+      { label: 'STAR Behavioral Fit', val: `${hrScore}%`, x: 400, y: 410, color: '#D97706' },
+      { label: 'Presence & Delivery', val: `${presenceScore}%`, x: 770, y: 410, color: '#059669' },
     ];
 
-    pillars.forEach((p) => {
-      ctx.fillStyle = '#171720';
+    metrics.forEach((m) => {
+      ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.roundRect(p.x, p.y, 340, 120, 18);
+      ctx.roundRect(m.x, m.y, 340, 110, 16);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = '#E2E8F0';
+      ctx.lineWidth = 2;
       ctx.stroke();
 
-      ctx.fillStyle = '#94A3B8';
-      ctx.font = 'bold 15px monospace';
-      ctx.fillText(p.label.toUpperCase(), p.x + 25, p.y + 42);
+      ctx.fillStyle = '#64748B';
+      ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillText(m.label, m.x + 25, m.y + 40);
 
-      ctx.fillStyle = p.col;
-      ctx.font = 'bold 42px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      ctx.fillText(p.val, p.x + 25, p.y + 95);
+      ctx.fillStyle = m.color;
+      ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillText(m.val, m.x + 25, m.y + 85);
     });
 
-    // Footer Timestamp & Verifier
-    ctx.fillStyle = '#64748B';
-    ctx.font = '14px monospace';
-    ctx.fillText(`Generated on ${new Date().toLocaleDateString()} · Cryptographic Hash: #AI-EVAL-${Math.abs(score * 9973)}`, 70, 575);
-
-    // Download trigger
     const link = document.createElement('a');
     link.download = `Interview-Report-Card-${roleName.replace(/\s+/g, '-')}-${score}pts.png`;
     link.href = canvas.toDataURL('image/png');
@@ -151,101 +126,97 @@ export default function ShareReportCardModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B0B0E]/90 backdrop-blur-xl animate-fade-in select-none">
-      <div className="bg-[#121217] border border-white/10 max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl rounded-3xl relative max-h-[92vh] overflow-y-auto">
-        
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in select-none text-left">
+      <div className="bg-white border border-slate-200 max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl rounded-3xl relative max-h-[92vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 text-zinc-400 hover:text-white text-lg font-bold cursor-pointer"
+          className="absolute top-5 right-5 text-slate-400 hover:text-slate-700 text-lg font-bold cursor-pointer"
         >
           ✕
         </button>
 
         {/* Modal Header */}
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/80 border border-teal-500/40 text-teal-300 text-[11px] font-mono font-bold uppercase">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-mono font-bold uppercase">
             <span>🛡️</span> Shareable Proof-Of-Skill Card
           </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-white font-sans">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-sans">
             Share Your Interview Scorecard
           </h2>
-          <p className="text-xs text-zinc-400">
-            Download your high-resolution verified performance card or copy summary text for LinkedIn/Twitter.
+          <p className="text-xs text-slate-500">
+            Download your high-resolution verified performance card or copy summary text for LinkedIn.
           </p>
         </div>
 
-        {/* ── Visual Preview Card ── */}
+        {/* Visual Preview Card */}
         <div
           ref={cardRef}
-          className="p-6 rounded-2xl bg-gradient-to-br from-[#0B0B0E] via-[#15151D] to-[#0B0B0E] border-2 border-teal-500/40 space-y-5 shadow-2xl relative overflow-hidden"
+          className="p-6 rounded-2xl bg-gradient-to-br from-white via-slate-50 to-teal-50/20 border-2 border-teal-200 space-y-5 shadow-sm relative overflow-hidden"
         >
-          {/* Subtle Ambient Radial Backlight */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-
           <div className="flex items-center justify-between flex-wrap gap-2 relative z-10">
             <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-teal-950/80 border border-teal-500/40 flex items-center justify-center text-xl shadow-md">
+              <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-xl shadow-xs">
                 🎯
               </div>
               <div>
-                <p className="text-sm font-extrabold text-white">{candidateName}</p>
-                <p className="text-[11px] text-teal-400 font-mono">{roleName} · {trackName} ({difficultyLevel})</p>
+                <p className="text-sm font-extrabold text-slate-900">{candidateName}</p>
+                <p className="text-xs text-teal-800 font-mono font-bold">{roleName} · {trackName} ({difficultyLevel})</p>
               </div>
             </div>
 
-            <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-teal-950 text-teal-300 border border-teal-500/40 shadow-sm">
+            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200 shadow-xs">
               🛡️ VERIFIED CANDIDATE
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 relative z-10">
-            <div className="p-4 rounded-xl bg-[#0B0B0E] border border-white/5 text-center flex flex-col justify-between">
-              <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold">Overall Score</span>
-              <p className="text-4xl font-black text-white my-1">
-                {score}<span className="text-xs text-zinc-500 font-normal">/100</span>
+            <div className="p-4 rounded-xl bg-white border border-slate-200 text-center flex flex-col justify-between shadow-xs">
+              <span className="text-xs font-mono text-slate-500 uppercase font-bold">Overall Score</span>
+              <p className="text-4xl font-black text-slate-900 my-1">
+                {score}<span className="text-xs text-slate-400 font-normal">/100</span>
               </p>
-              <span className="text-[11px] text-teal-400 font-semibold font-mono">Top {topPct}% Globally</span>
+              <span className="text-xs text-teal-700 font-bold font-mono">Top {topPct}% Globally</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#0B0B0E] border border-white/5 text-center flex flex-col justify-between sm:col-span-2">
+            <div className="p-4 rounded-xl bg-white border border-slate-200 text-center flex flex-col justify-between sm:col-span-2 shadow-xs">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold">Competitive Elo</span>
-                <span className="text-xs font-mono text-amber-400 font-bold">{elo} pts</span>
+                <span className="text-xs font-mono text-slate-500 uppercase font-bold">Competitive Elo</span>
+                <span className="text-xs font-mono text-amber-700 font-bold">{elo} pts</span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-left text-xs font-mono">
-                <div className="bg-[#121217] p-2 rounded-lg border border-white/5">
-                  <span className="text-[9px] text-zinc-500 block">🧠 APTITUDE</span>
-                  <span className="font-bold text-sky-400">{aptScore}%</span>
+                <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                  <span className="text-[10px] text-slate-500 block font-bold">🧠 APTITUDE</span>
+                  <span className="font-bold text-blue-700">{aptScore}%</span>
                 </div>
-                <div className="bg-[#121217] p-2 rounded-lg border border-white/5">
-                  <span className="text-[9px] text-zinc-500 block">💻 TECHNICAL</span>
-                  <span className="font-bold text-teal-400">{techScore}%</span>
+                <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                  <span className="text-[10px] text-slate-500 block font-bold">💻 TECHNICAL</span>
+                  <span className="font-bold text-teal-700">{techScore}%</span>
                 </div>
-                <div className="bg-[#121217] p-2 rounded-lg border border-white/5">
-                  <span className="text-[9px] text-zinc-500 block">🤝 STAR FIT</span>
-                  <span className="font-bold text-amber-400">{hrScore}%</span>
+                <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                  <span className="text-[10px] text-slate-500 block font-bold">🤝 STAR FIT</span>
+                  <span className="font-bold text-amber-700">{hrScore}%</span>
                 </div>
-                <div className="bg-[#121217] p-2 rounded-lg border border-white/5">
-                  <span className="text-[9px] text-zinc-500 block">👤 PRESENCE</span>
-                  <span className="font-bold text-emerald-400">{presenceScore}%</span>
+                <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
+                  <span className="text-[10px] text-slate-500 block font-bold">👤 PRESENCE</span>
+                  <span className="font-bold text-emerald-700">{presenceScore}%</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="pt-2 flex items-center justify-between text-[10px] text-zinc-500 font-mono border-t border-white/5">
+          <div className="pt-2 flex items-center justify-between text-xs text-slate-500 font-mono border-t border-slate-200">
             <span>Verified by AI Multimodal Evaluation Engine</span>
-            <span className="text-teal-400 font-bold">STATUS: AUTHENTIC</span>
+            <span className="text-teal-700 font-bold">STATUS: AUTHENTIC</span>
           </div>
         </div>
 
-        {/* ── Action Buttons ── */}
+        {/* Action Buttons */}
         <div className="flex items-center gap-3 flex-wrap">
           <button
             type="button"
             onClick={handleDownloadCard}
-            className="flex-1 py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-teal-950/60 transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+            className="flex-1 py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs sm:text-sm shadow-md transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
           >
             <span>📥</span>
             <span>Download PNG Card (1200x630)</span>
@@ -254,7 +225,7 @@ export default function ShareReportCardModal({
           <button
             type="button"
             onClick={handleCopyShareText}
-            className="py-3.5 px-5 rounded-xl bg-[#0B0B0E] hover:bg-[#181820] border border-white/10 text-zinc-300 hover:text-white font-bold text-xs transition-all cursor-pointer flex items-center gap-2"
+            className="py-3.5 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 font-bold text-xs transition-all cursor-pointer flex items-center gap-2 shadow-xs"
           >
             <span>{copied ? '✅ Copied!' : '📋 Copy Post Text'}</span>
           </button>

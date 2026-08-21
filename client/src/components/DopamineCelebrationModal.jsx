@@ -51,13 +51,11 @@ export default function DopamineCelebrationModal({
 
   const displayRole = targetRole && targetRole.trim() ? targetRole : 'Algorithm Problem';
 
-  // Canvas Confetti Burst Logic
   useEffect(() => {
     if (!isOpen) return;
 
     playArcadeVictoryChime();
 
-    // Sequential Star Pop Timers
     setStarsVisible([false, false, false]);
     const starTimers = [
       setTimeout(() => { setStarsVisible([true, false, false]); playStarChime(0); }, 250),
@@ -65,38 +63,25 @@ export default function DopamineCelebrationModal({
       setTimeout(() => { setStarsVisible([true, true, true]); playStarChime(2); }, 750),
     ];
 
-    // Canvas Confetti Particle System
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const colors = ['#14b8a6', '#f59e0b', '#10b981', '#38bdf8', '#fbbf24'];
+    const colors = ['#0d9488', '#d97706', '#059669', '#0284c7', '#f59e0b'];
     let particles = [];
 
-    // Left and Right subtle celebratory burst
     for (let i = 0; i < 50; i++) {
       particles.push({
-        x: canvas.width * 0.15,
-        y: canvas.height * 0.85,
-        vx: Math.random() * 10 + 3,
-        vy: -Math.random() * 14 - 6,
-        size: Math.random() * 6 + 3,
+        x: canvas.width * 0.3 + (Math.random() * canvas.width * 0.4),
+        y: canvas.height * 0.5,
+        vx: (Math.random() - 0.5) * 14,
+        vy: (Math.random() - 0.8) * 12 - 4,
+        size: Math.random() * 8 + 4,
         color: colors[Math.floor(Math.random() * colors.length)],
         rotation: Math.random() * 360,
-        vr: Math.random() * 8 - 4,
-        opacity: 1,
-      });
-      particles.push({
-        x: canvas.width * 0.85,
-        y: canvas.height * 0.85,
-        vx: -Math.random() * 10 - 3,
-        vy: -Math.random() * 14 - 6,
-        size: Math.random() * 6 + 3,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        rotation: Math.random() * 360,
-        vr: Math.random() * 8 - 4,
+        vRotation: (Math.random() - 0.5) * 10,
         opacity: 1,
       });
     }
@@ -104,17 +89,18 @@ export default function DopamineCelebrationModal({
     let animationFrame;
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
         p.vy += 0.35;
-        p.rotation += p.vr;
-        p.opacity -= 0.01;
+        p.rotation += p.vRotation;
+        p.opacity -= 0.012;
 
         ctx.save();
+        ctx.globalAlpha = Math.max(0, p.opacity);
         ctx.translate(p.x, p.y);
         ctx.rotate((p.rotation * Math.PI) / 180);
-        ctx.globalAlpha = Math.max(0, p.opacity);
         ctx.fillStyle = p.color;
         ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
         ctx.restore();
@@ -145,59 +131,51 @@ export default function DopamineCelebrationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B0B0E]/90 backdrop-blur-xl overflow-hidden animate-fade-in select-none">
-      
-      {/* Background Ambient Glow */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-        <div className="w-[600px] h-[600px] rounded-full bg-teal-500/10 blur-[120px]" />
-        <div className="w-[400px] h-[400px] rounded-full bg-amber-500/5 blur-[100px]" />
-      </div>
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-hidden animate-fade-in select-none">
       {/* Confetti Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-10" />
 
-      {/* Main Executive Celebration Modal */}
-      <div className="relative z-20 max-w-md w-full bg-[#121217] border border-white/10 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl shadow-black/80 overflow-hidden">
-        
-        {/* Glow Halo & Trophy Emblem */}
+      {/* Main Celebration Modal */}
+      <div className="relative z-20 max-w-md w-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl overflow-hidden text-slate-900">
+        {/* Trophy Emblem */}
         <div className="relative inline-block">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-teal-950 to-[#181820] border border-teal-500/40 flex items-center justify-center text-3xl mx-auto shadow-xl shadow-teal-950/60 ring-4 ring-teal-500/10 animate-bounce">
+          <div className="w-16 h-16 rounded-2xl bg-teal-50 border-2 border-teal-500/40 flex items-center justify-center text-3xl mx-auto shadow-md animate-bounce">
             🏆
           </div>
         </div>
 
         {/* Title & Role Info */}
         <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/60 border border-teal-500/30 text-teal-300 text-[11px] font-mono font-semibold uppercase tracking-wider mb-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-mono font-semibold uppercase tracking-wider mb-1">
+            <span className="w-2 h-2 rounded-full bg-teal-600 animate-ping" />
             {badgeText || 'CHALLENGE COMPLETE'}
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-sans">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-sans">
             {titleText || 'Solution Verified'}
           </h2>
-          <p className="text-xs text-zinc-400 font-medium">
-            Test cases validated successfully for <span className="text-teal-300 font-semibold">{displayRole}</span>
+          <p className="text-xs text-slate-600 font-medium">
+            Test cases validated successfully for <span className="text-teal-700 font-bold">{displayRole}</span>
           </p>
         </div>
 
-        {/* Executive Metric Pillars */}
+        {/* Metric Pillars */}
         <div className="grid grid-cols-3 gap-2 py-1">
-          <div className="p-2.5 rounded-xl bg-[#0B0B0E] border border-white/5 text-center">
-            <p className="text-[10px] font-mono text-zinc-500 uppercase">Correctness</p>
-            <p className="text-xs font-bold text-white mt-0.5">100% Passed ✓</p>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+            <p className="text-[10px] font-mono text-slate-500 uppercase font-bold">Correctness</p>
+            <p className="text-xs font-bold text-slate-900 mt-0.5">100% Passed ✓</p>
           </div>
-          <div className="p-2.5 rounded-xl bg-[#0B0B0E] border border-white/5 text-center">
-            <p className="text-[10px] font-mono text-zinc-500 uppercase">Runtime</p>
-            <p className="text-xs font-bold text-teal-400 mt-0.5">Optimal ✓</p>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+            <p className="text-[10px] font-mono text-slate-500 uppercase font-bold">Runtime</p>
+            <p className="text-xs font-bold text-teal-700 mt-0.5">Optimal ✓</p>
           </div>
-          <div className="p-2.5 rounded-xl bg-[#0B0B0E] border border-white/5 text-center">
-            <p className="text-[10px] font-mono text-zinc-500 uppercase">Memory</p>
-            <p className="text-xs font-bold text-amber-400 mt-0.5">Efficient ✓</p>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+            <p className="text-[10px] font-mono text-slate-500 uppercase font-bold">Memory</p>
+            <p className="text-xs font-bold text-amber-700 mt-0.5">Efficient ✓</p>
           </div>
         </div>
 
-        {/* Refined Gold Star Badges */}
-        <div className="p-4 rounded-2xl bg-[#0B0B0E] border border-white/5 flex items-center justify-center gap-4 shadow-inner">
+        {/* Gold Star Badges */}
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center gap-4 shadow-inner">
           {starsVisible.map((visible, idx) => (
             <div
               key={idx}
@@ -207,7 +185,7 @@ export default function DopamineCelebrationModal({
                   : 'scale-50 -rotate-12 opacity-0'
               }`}
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500/20 to-yellow-500/10 border border-amber-500/40 flex items-center justify-center text-2xl shadow-lg shadow-amber-500/20">
+              <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-300 flex items-center justify-center text-2xl shadow-sm">
                 ⭐
               </div>
             </div>
@@ -218,11 +196,10 @@ export default function DopamineCelebrationModal({
         <button
           type="button"
           onClick={handleAction}
-          className="w-full py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-teal-950/60 transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+          className="w-full py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs sm:text-sm shadow-md transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
         >
           <span>{buttonText || 'Next Question →'}</span>
         </button>
-
       </div>
     </div>
   );

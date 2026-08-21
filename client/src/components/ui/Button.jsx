@@ -12,7 +12,7 @@ export default function Button({
   type = 'button',
   ...props
 }) {
-  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none select-none';
+  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none select-none cursor-pointer';
   
   const sizeStyles = {
     sm: 'px-3 py-1.5 text-xs gap-1.5',
@@ -21,12 +21,11 @@ export default function Button({
   };
 
   const variantStyles = {
-    primary: 'bg-teal-600 hover:bg-teal-500 text-white shadow-lg shadow-teal-950/50 border border-teal-500/30',
-    secondary: 'bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-800 hover:border-zinc-700 shadow-sm',
-    ghost: 'bg-transparent hover:bg-zinc-800/60 text-zinc-400 hover:text-white',
-    danger: 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-950/40 border border-red-500/30',
+    primary: 'bg-teal-600 hover:bg-teal-500 text-white shadow-md shadow-teal-700/20 border border-teal-600',
+    secondary: 'bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 hover:border-slate-300 shadow-sm',
+    ghost: 'bg-transparent hover:bg-slate-100 text-slate-600 hover:text-slate-900',
+    danger: 'bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-700/20 border border-red-600',
   };
-
 
   return (
     <button

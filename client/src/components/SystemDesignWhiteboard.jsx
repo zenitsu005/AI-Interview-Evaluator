@@ -1,13 +1,13 @@
 import React, { useState, useRef } from 'react';
 
 const ARCHITECTURE_BLOCKS = [
-  { type: 'client', label: 'Client / Web App', icon: '📱', color: 'border-blue-500 bg-blue-950/40 text-blue-300' },
-  { type: 'lb', label: 'Load Balancer (ALB)', icon: '⚖️', color: 'border-amber-500 bg-amber-950/40 text-amber-300' },
-  { type: 'api', label: 'API Gateway', icon: '🚪', color: 'border-cyan-500 bg-cyan-950/40 text-cyan-300' },
-  { type: 'service', label: 'Microservice (App)', icon: '⚙️', color: 'border-indigo-500 bg-indigo-950/40 text-indigo-300' },
-  { type: 'cache', label: 'Redis / Memcached', icon: '⚡', color: 'border-red-500 bg-red-950/40 text-red-300' },
-  { type: 'db', label: 'Postgres (Primary/Replica)', icon: '🗄️', color: 'border-emerald-500 bg-emerald-950/40 text-emerald-300' },
-  { type: 'queue', label: 'Kafka / Event Bus', icon: '📬', color: 'border-purple-500 bg-purple-950/40 text-purple-300' },
+  { type: 'client', label: 'Client / Web App', icon: '📱', color: 'border-blue-300 bg-blue-50 text-blue-900' },
+  { type: 'lb', label: 'Load Balancer (ALB)', icon: '⚖️', color: 'border-amber-300 bg-amber-50 text-amber-900' },
+  { type: 'api', label: 'API Gateway', icon: '🚪', color: 'border-teal-300 bg-teal-50 text-teal-900' },
+  { type: 'service', label: 'Microservice (App)', icon: '⚙️', color: 'border-purple-300 bg-purple-50 text-purple-900' },
+  { type: 'cache', label: 'Redis / Memcached', icon: '⚡', color: 'border-red-300 bg-red-50 text-red-900' },
+  { type: 'db', label: 'Postgres (Primary/Replica)', icon: '🗄️', color: 'border-emerald-300 bg-emerald-50 text-emerald-900' },
+  { type: 'queue', label: 'Kafka / Event Bus', icon: '📬', color: 'border-indigo-300 bg-indigo-50 text-indigo-900' },
 ];
 
 export default function SystemDesignWhiteboard({ onSnapshot }) {
@@ -75,14 +75,14 @@ export default function SystemDesignWhiteboard({ onSnapshot }) {
   };
 
   return (
-    <div className="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col h-full font-sans">
+    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm flex flex-col h-full font-sans text-left">
       {/* Top Toolbar */}
-      <div className="bg-slate-900/90 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between gap-3 flex-wrap">
+      <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-cyan-400 flex items-center gap-1.5">
+          <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
             <span>📐</span> Interactive System Design Canvas
           </span>
-          <span className="text-[10px] text-slate-500 font-mono hidden sm:inline">
+          <span className="text-xs text-slate-500 hidden sm:inline font-mono">
             (Click 2 components to link with an arrow)
           </span>
         </div>
@@ -91,7 +91,7 @@ export default function SystemDesignWhiteboard({ onSnapshot }) {
           <button
             type="button"
             onClick={clearCanvas}
-            className="text-[10px] text-slate-400 hover:text-slate-200 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
+            className="text-xs text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 transition-colors cursor-pointer"
           >
             Clear Grid
           </button>
@@ -99,8 +99,8 @@ export default function SystemDesignWhiteboard({ onSnapshot }) {
       </div>
 
       {/* Palette Toolbar */}
-      <div className="bg-slate-950 px-4 py-2 border-b border-slate-800/60 flex items-center gap-1.5 overflow-x-auto">
-        <span className="text-[10px] font-bold uppercase text-slate-500 tracking-wider mr-1 flex-shrink-0">
+      <div className="bg-white px-4 py-2 border-b border-slate-200 flex items-center gap-1.5 overflow-x-auto">
+        <span className="text-xs font-bold uppercase text-slate-500 tracking-wider mr-1 flex-shrink-0">
           + Add Block:
         </span>
         {ARCHITECTURE_BLOCKS.map((b) => (
@@ -108,7 +108,7 @@ export default function SystemDesignWhiteboard({ onSnapshot }) {
             key={b.type}
             type="button"
             onClick={() => addBlock(b)}
-            className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 flex items-center gap-1.5 flex-shrink-0 transition-all active:scale-95 shadow-sm"
+            className="text-xs px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 flex items-center gap-1.5 flex-shrink-0 transition-all active:scale-95 shadow-xs cursor-pointer font-medium"
           >
             <span>{b.icon}</span>
             <span>{b.label}</span>
@@ -119,13 +119,13 @@ export default function SystemDesignWhiteboard({ onSnapshot }) {
       {/* SVG Canvas Grid */}
       <div
         ref={canvasAreaRef}
-        className="flex-1 relative bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] min-h-[260px] overflow-hidden"
+        className="flex-1 relative bg-slate-50/50 [background-size:16px_16px] min-h-[260px] overflow-hidden"
       >
         {/* SVG Connectors */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none">
           <defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#0d9488" />
             </marker>
           </defs>
           {connections.map((c, i) => {
@@ -144,7 +144,7 @@ export default function SystemDesignWhiteboard({ onSnapshot }) {
                   y1={y1}
                   x2={x2}
                   y2={y2}
-                  stroke="#475569"
+                  stroke="#0d9488"
                   strokeWidth="2"
                   strokeDasharray="4 2"
                   markerEnd="url(#arrow)"
@@ -152,10 +152,10 @@ export default function SystemDesignWhiteboard({ onSnapshot }) {
                 <text
                   x={(x1 + x2) / 2}
                   y={(y1 + y2) / 2 - 5}
-                  fill="#94a3b8"
-                  fontSize="9"
+                  fill="#0f766e"
+                  fontSize="10"
                   textAnchor="middle"
-                  className="font-mono"
+                  className="font-sans font-bold"
                 >
                   {c.label}
                 </text>
@@ -177,9 +177,9 @@ export default function SystemDesignWhiteboard({ onSnapshot }) {
               onMouseMove={(e) => draggedNodeId === n.id && handleNodeDrag(e, n.id)}
               onMouseUp={() => setDraggedNodeId(null)}
               style={{ left: `${n.x}px`, top: `${n.y}px` }}
-              className={`absolute cursor-move select-none px-3 py-2 rounded-xl border shadow-lg text-xs font-semibold flex items-center gap-2 transition-transform active:scale-95 ${
+              className={`absolute cursor-move select-none px-3 py-2 rounded-xl border shadow-sm text-xs font-bold flex items-center gap-2 transition-transform active:scale-95 ${
                 isSelected
-                  ? 'ring-2 ring-cyan-400 border-cyan-400 bg-cyan-950'
+                  ? 'ring-2 ring-teal-500 border-teal-500 bg-teal-50 text-teal-950 shadow-md'
                   : blockCfg.color
               }`}
             >

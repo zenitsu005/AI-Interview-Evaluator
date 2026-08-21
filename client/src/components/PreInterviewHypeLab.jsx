@@ -497,7 +497,7 @@ export default function PreInterviewHypeLab() {
             </div>
 
             {/* Posture Video Camera Mirror / Silhouette Guide */}
-            <div className="relative max-w-md mx-auto aspect-video rounded-2xl overflow-hidden border-2 border-emerald-500/40 bg-slate-950 shadow-md flex items-center justify-center">
+            <div className="relative max-w-md mx-auto aspect-video rounded-2xl overflow-hidden border-2 border-teal-200 bg-slate-50 shadow-sm flex items-center justify-center">
               <video
                 ref={videoRef}
                 autoPlay
@@ -510,7 +510,7 @@ export default function PreInterviewHypeLab() {
               {!cameraActive && (
                 <div className="p-6 text-center space-y-3 z-10">
                   <div className="text-5xl animate-bounce">🧘</div>
-                  <p className="text-xs text-slate-300 font-medium max-w-xs mx-auto">
+                  <p className="text-xs text-slate-700 font-medium max-w-xs mx-auto">
                     {cameraError ? cameraError : 'Camera Mirror Mode'}
                   </p>
                   <button
