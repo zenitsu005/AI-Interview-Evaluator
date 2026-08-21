@@ -227,8 +227,7 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-4">
               <Card variant="interactive" onClick={() => nav('dsa')} className="h-full flex flex-col justify-between p-6">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-indigo-400 font-mono font-semibold">Algorithms & Data Structures</span>
+                  <div className="flex items-center justify-end">
                     <span className="text-xs text-zinc-500 font-mono">15–30 min</span>
                   </div>
                   <h3 className="text-lg font-bold text-white text-balance">
@@ -250,8 +249,7 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-4">
               <Card variant="interactive" onClick={() => nav('video')} className="h-full flex flex-col justify-between p-6">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-indigo-400 font-mono font-semibold">Distributed Systems</span>
+                  <div className="flex items-center justify-end">
                     <span className="text-xs text-zinc-500 font-mono">30–45 min</span>
                   </div>
                   <h3 className="text-lg font-bold text-white text-balance">
@@ -273,8 +271,7 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-4">
               <Card variant="interactive" onClick={() => nav('bug-hunter')} className="h-full flex flex-col justify-between p-6">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-indigo-400 font-mono font-semibold">Debugging & Code Review</span>
+                  <div className="flex items-center justify-end">
                     <span className="text-xs text-zinc-500 font-mono">15–20 min</span>
                   </div>
                   <h3 className="text-lg font-bold text-white text-balance">
@@ -296,8 +293,7 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-4">
               <Card variant="interactive" onClick={() => nav('blitz')} className="h-full flex flex-col justify-between p-6">
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-indigo-400 font-mono font-semibold">Technical Recall Speed</span>
+                  <div className="flex items-center justify-end">
                     <span className="text-xs text-zinc-500 font-mono">5–10 min</span>
                   </div>
                   <h3 className="text-lg font-bold text-white text-balance">
@@ -314,6 +310,7 @@ export default function LandingPage({ onNavigate }) {
                 </div>
               </Card>
             </div>
+
 
           </div>
         </section>
