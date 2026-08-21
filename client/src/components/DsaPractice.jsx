@@ -669,7 +669,7 @@ const DSA_PROBLEM_POOLS = {
   ],
 };
 
-const getStarterTemplate = (prob, language = 'python') => {
+const getStarterTemplate = (prob, language = 'cpp') => {
   if (!prob) return '# Write your solution here\npass\n';
   if (prob.starterCodes && prob.starterCodes[language]) {
     const raw = prob.starterCodes[language];
@@ -683,14 +683,15 @@ const getStarterTemplate = (prob, language = 'python') => {
   if (language === 'python') {
     return `def ${funcName}(*args, **kwargs):\n    # Write your solution here\n    pass\n`;
   }
-  if (language === 'java') {
-    return `class Solution {\n    public Object ${funcName}() {\n        // Write your solution here\n        return null;\n    }\n}\n`;
-  }
   if (language === 'cpp') {
     return `class Solution {\npublic:\n    auto ${funcName}() {\n        // Write your solution here\n        return 0;\n    }\n};\n`;
   }
-  return `function ${funcName}() {\n  // Write your solution here\n}\n`;
+  if (language === 'c') {
+    return `// C Implementation\nint ${funcName}() {\n    // Write your solution here\n    return 0;\n}\n`;
+  }
+  return `class Solution {\n    public Object ${funcName}() {\n        // Write your solution here\n        return null;\n    }\n}\n`;
 };
+
 
 export default function DsaPractice() {
   const { setPhase } = useInterview();
@@ -1149,11 +1150,12 @@ export default function DsaPractice() {
                     onChange={(e) => handleLangChange(e.target.value)}
                     className="bg-zinc-950 border border-zinc-800 text-teal-400 font-mono text-xs rounded-lg px-2.5 py-1 focus:outline-none cursor-pointer"
                   >
+                    <option value="cpp">C++</option>
                     <option value="python">Python 3</option>
-                    <option value="java">Java (OpenJDK 17)</option>
-                    <option value="cpp">C++ (GCC 11)</option>
-                    <option value="javascript">JavaScript (Node.js)</option>
+                    <option value="c">C</option>
+                    <option value="java">Java</option>
                   </select>
+
                 </div>
 
                 <div className="flex items-center gap-2">
