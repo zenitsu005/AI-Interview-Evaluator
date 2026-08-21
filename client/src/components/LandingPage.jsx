@@ -152,10 +152,13 @@ export default function LandingPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="indigo">FEATURED STUDIO</Badge>
-                    <span className="text-xs text-zinc-500 font-mono group-hover:text-indigo-300 transition-colors">Launch Studio →</span>
+                    <span className="text-xs text-zinc-400 font-mono group-hover:text-indigo-300 transition-colors flex items-center gap-1">
+                      <span>Launch Studio</span>
+                      <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    </span>
                   </div>
                   <h3 className="text-xl sm:text-2xl font-extrabold text-white group-hover:text-indigo-200 transition-colors text-balance">
-                    🎯 Full Mock Interview Studio
+                    Full Mock Interview Studio
                   </h3>
                   <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-xl text-pretty">
                     Simulate all 3 core rounds: Aptitude & Logic, Technical Depth, and STAR Behavioral Fit with AI Bar Raiser feedback.
@@ -175,8 +178,15 @@ export default function LandingPage() {
               <Card variant="interactive" onClick={() => setPhase('dsa')} className="h-full flex flex-col justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl">💻</span>
-                    <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
+                    <div className="w-9 h-9 rounded-xl bg-indigo-950/80 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-sm">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                      </svg>
+                    </div>
+                    <span className="text-xs text-zinc-400 font-mono group-hover:text-white transition-colors flex items-center gap-1">
+                      <span>Open</span>
+                      <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    </span>
                   </div>
                   <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors text-balance">
                     DSA Practice Studio
@@ -185,7 +195,7 @@ export default function LandingPage() {
                     Solve algorithms with automated test runner and complexity analysis.
                   </p>
                 </div>
-                <span className="text-[11px] text-zinc-500 font-mono pt-4">Complexity Analysis</span>
+                <span className="text-[11px] text-indigo-400 font-mono pt-4 font-semibold">Complexity Analysis</span>
               </Card>
             </div>
 
@@ -193,8 +203,15 @@ export default function LandingPage() {
               <Card variant="interactive" onClick={() => setPhase('video')} className="h-full flex flex-col justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl">📐</span>
-                    <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
+                    <div className="w-9 h-9 rounded-xl bg-indigo-950/80 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-sm">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                    </div>
+                    <span className="text-xs text-zinc-400 font-mono group-hover:text-white transition-colors flex items-center gap-1">
+                      <span>Open</span>
+                      <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    </span>
                   </div>
                   <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors text-balance">
                     System Design Whiteboard
@@ -203,7 +220,7 @@ export default function LandingPage() {
                     Architect distributed systems, load balancers, and caches.
                   </p>
                 </div>
-                <span className="text-[11px] text-zinc-500 font-mono pt-4">Distributed Systems</span>
+                <span className="text-[11px] text-indigo-400 font-mono pt-4 font-semibold">Distributed Systems</span>
               </Card>
             </div>
 
@@ -211,8 +228,15 @@ export default function LandingPage() {
               <Card variant="interactive" onClick={() => setPhase('bug-hunter')} className="h-full flex flex-col justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl">🐛</span>
-                    <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
+                    <div className="w-9 h-9 rounded-xl bg-indigo-950/80 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-sm">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    </div>
+                    <span className="text-xs text-zinc-400 font-mono group-hover:text-white transition-colors flex items-center gap-1">
+                      <span>Open</span>
+                      <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    </span>
                   </div>
                   <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors text-balance">
                     Bug Hunter Studio
@@ -221,7 +245,7 @@ export default function LandingPage() {
                     Identify race conditions, memory leaks, and logic flaws under pressure.
                   </p>
                 </div>
-                <span className="text-[11px] text-zinc-500 font-mono pt-4">Debugging & Auditing</span>
+                <span className="text-[11px] text-indigo-400 font-mono pt-4 font-semibold">Debugging & Auditing</span>
               </Card>
             </div>
 
@@ -229,8 +253,15 @@ export default function LandingPage() {
               <Card variant="interactive" onClick={() => setPhase('blitz')} className="h-full flex flex-col justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl">⚡</span>
-                    <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
+                    <div className="w-9 h-9 rounded-xl bg-indigo-950/80 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-sm">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <span className="text-xs text-zinc-400 font-mono group-hover:text-white transition-colors flex items-center gap-1">
+                      <span>Open</span>
+                      <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    </span>
                   </div>
                   <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors text-balance">
                     60s Rapid Blitz
@@ -239,10 +270,11 @@ export default function LandingPage() {
                     Answer rapid technical questions under 60-second timers.
                   </p>
                 </div>
-                <span className="text-[11px] text-zinc-500 font-mono pt-4">Recall Speed</span>
+                <span className="text-[11px] text-indigo-400 font-mono pt-4 font-semibold">Recall Speed</span>
               </Card>
             </div>
           </div>
+
         </section>
 
         {/* FAQ Accordion */}
