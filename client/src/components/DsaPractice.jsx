@@ -958,14 +958,6 @@ export default function DsaPractice() {
               ⚡ Select DSA Difficulty Level
             </span>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleShuffleNext}
-                className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 hover:border-slate-300 px-3 py-1.5 rounded-xl transition-all font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm"
-              >
-                <span>Next Question →</span>
-              </button>
-
               {/* ── Refresh All Questions of Selected Level ── */}
               <button
                 type="button"
@@ -1145,11 +1137,11 @@ export default function DsaPractice() {
               {/* Editor Header */}
               <div className="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-slate-600 font-bold">Language:</span>
+                  <span className="text-xs font-mono text-slate-700 font-bold">Language:</span>
                   <select
                     value={lang}
                     onChange={(e) => handleLangChange(e.target.value)}
-                    className="bg-white border border-slate-300 text-slate-900 font-mono text-xs rounded-lg px-2.5 py-1 focus:outline-none cursor-pointer shadow-sm"
+                    className="bg-white border border-slate-300 text-slate-900 font-mono text-xs rounded-lg px-2.5 py-1 focus:outline-none cursor-pointer shadow-sm font-semibold"
                   >
                     <option value="cpp">C++</option>
                     <option value="python">Python 3</option>
@@ -1171,19 +1163,10 @@ export default function DsaPractice() {
                   <button
                     type="button"
                     onClick={() => setCode(getStarterTemplate(activeProblem || currentProb, lang))}
-                    className="text-xs text-slate-600 hover:text-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors font-mono cursor-pointer bg-white"
+                    className="text-xs text-slate-700 hover:text-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors font-mono cursor-pointer bg-white font-medium"
                     title="Reset to clean boilerplate template"
                   >
                     Reset Code
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleRunCode}
-                    disabled={isRunning}
-                    className="text-xs bg-teal-600 hover:bg-teal-500 text-white font-bold px-4 py-1.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer disabled:opacity-50"
-                  >
-                    <span>{isRunning ? 'Executing Tests...' : 'Submit'}</span>
                   </button>
                 </div>
               </div>
@@ -1196,8 +1179,34 @@ export default function DsaPractice() {
                 rows={16}
                 spellCheck={false}
                 placeholder="Write your algorithmic solution here..."
-                className="w-full bg-slate-900 p-4 text-xs font-mono text-emerald-400 focus:outline-none resize-y leading-relaxed"
+                className="w-full bg-slate-900 p-4 text-xs sm:text-sm font-mono text-emerald-400 focus:outline-none resize-y leading-relaxed block"
               />
+
+              {/* Bottom Action Toolbar Below Code Writing Area */}
+              <div className="bg-slate-50 border-t border-slate-200 px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+                <span className="text-xs text-slate-500 font-mono hidden sm:inline">
+                  ⚡ Press Submit to execute test cases
+                </span>
+
+                <div className="flex items-center gap-2.5 ml-auto">
+                  <button
+                    type="button"
+                    onClick={handleShuffleNext}
+                    className="text-xs sm:text-sm bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 hover:border-slate-400 px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+                  >
+                    <span>Next Question →</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleRunCode}
+                    disabled={isRunning}
+                    className="text-xs sm:text-sm bg-teal-600 hover:bg-teal-500 text-white font-bold px-5 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer disabled:opacity-50"
+                  >
+                    <span>{isRunning ? 'Executing Tests...' : 'Submit Code'}</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Test Results Output Panel */}

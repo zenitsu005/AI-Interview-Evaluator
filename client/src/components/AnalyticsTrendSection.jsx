@@ -47,16 +47,6 @@ export default function AnalyticsTrendSection({ history = [], currentReport = nu
     };
   });
 
-  const latestElo = trendData[trendData.length - 1]?.elo || 1550;
-  const firstElo = trendData[0]?.elo || 1350;
-  const eloDiff = latestElo - firstElo;
-
-  const latestFillers = trendData[trendData.length - 1]?.fillers || 2;
-  const firstFillers = trendData[0]?.fillers || 7;
-  const fillerReductionPct = firstFillers > 0
-    ? Math.round(((firstFillers - latestFillers) / firstFillers) * 100)
-    : 75;
-
   // Topic Mastery Matrix Data
   const latestSession = trendData[trendData.length - 1];
   const topics = [
@@ -64,52 +54,51 @@ export default function AnalyticsTrendSection({ history = [], currentReport = nu
       category: 'Algorithms & Problem Solving',
       score: latestSession.aptitude,
       level: latestSession.aptitude >= 85 ? 'Expert' : latestSession.aptitude >= 70 ? 'Advanced' : 'Developing',
-      color: 'text-sky-400 bg-sky-950/40 border-sky-800/60',
-      heatColor: 'bg-sky-500',
+      color: 'text-blue-800 bg-blue-50 border-blue-200',
+      heatColor: 'bg-blue-600',
       subtopics: ['Time/Space Complexity', 'Graph / DP Invariants', 'Edge-case Boundary Checks'],
     },
     {
       category: 'Distributed Systems & Architecture',
       score: latestSession.technical,
       level: latestSession.technical >= 85 ? 'Expert' : latestSession.technical >= 70 ? 'Advanced' : 'Developing',
-      color: 'text-teal-400 bg-teal-950/40 border-teal-800/60',
-      heatColor: 'bg-teal-500',
+      color: 'text-teal-800 bg-teal-50 border-teal-200',
+      heatColor: 'bg-teal-600',
       subtopics: ['Idempotency & Queues', 'CAP & Sharding Trade-offs', 'High Concurrency Bottlenecks'],
     },
     {
       category: 'STAR Leadership & Behavioral Fit',
       score: latestSession.hr,
       level: latestSession.hr >= 85 ? 'Master' : latestSession.hr >= 70 ? 'Proficient' : 'Developing',
-      color: 'text-amber-400 bg-amber-950/40 border-amber-800/60',
-      heatColor: 'bg-amber-500',
+      color: 'text-amber-800 bg-amber-50 border-amber-200',
+      heatColor: 'bg-amber-600',
       subtopics: ['Data-Driven Ownership', 'Cross-Team Conflict Resolution', 'Executive Stakeholder Alignment'],
     },
     {
       category: 'Executive Delivery & Vocal Steadiness',
       score: latestSession.presence,
       level: latestSession.presence >= 85 ? 'Executive Tier' : latestSession.presence >= 70 ? 'Articulate' : 'Developing',
-      color: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/60',
-      heatColor: 'bg-emerald-500',
+      color: 'text-emerald-800 bg-emerald-50 border-emerald-200',
+      heatColor: 'bg-emerald-600',
       subtopics: ['Filler Word Suppression', 'Structured WPM Cadence', 'Camera Eye Contact & Posture'],
     },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-left">
       {/* ── Topic Mastery Matrix Heatmap ── */}
-      <div className="card-dark border-white/10 bg-[#121217] p-5 space-y-4 shadow-xl">
-
-        <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-white/5">
+      <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+        <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-100">
           <div className="space-y-0.5">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-teal-700">
               🧭 Skill Competency & Gap Analysis
             </span>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <span>Topic Mastery Heatmap</span>
-              <span className="text-[11px] text-zinc-400 font-normal">({targetRole || 'Software Engineer'})</span>
+              <span className="text-xs text-slate-500 font-normal">({targetRole || 'Software Engineer'})</span>
             </h3>
           </div>
-          <span className="text-[11px] font-mono text-teal-400 bg-teal-950/60 border border-teal-500/30 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-mono text-teal-800 bg-teal-50 border border-teal-200 px-3 py-1 rounded-xl font-bold">
             Real-Time Assessment
           </span>
         </div>
@@ -118,17 +107,17 @@ export default function AnalyticsTrendSection({ history = [], currentReport = nu
           {topics.map((t) => (
             <div
               key={t.category}
-              className="p-4 rounded-2xl bg-[#0B0B0E] border border-white/5 hover:border-white/10 transition-all space-y-3"
+              className="p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-teal-500/40 transition-all space-y-3 shadow-xs"
             >
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold text-zinc-200">{t.category}</h4>
-                <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${t.color}`}>
+                <h4 className="text-xs sm:text-sm font-bold text-slate-900">{t.category}</h4>
+                <span className={`text-xs font-sans font-bold px-2.5 py-0.5 rounded-full border ${t.color}`}>
                   {t.level} ({t.score}%)
                 </span>
               </div>
 
               {/* Heatmap Bar */}
-              <div className="h-1.5 bg-[#181820] rounded-full overflow-hidden border border-white/5">
+              <div className="h-2 bg-slate-200 rounded-full overflow-hidden border border-slate-300">
                 <div
                   className={`h-full rounded-full ${t.heatColor} transition-all duration-1000 shadow-sm`}
                   style={{ width: `${Math.max(10, t.score)}%` }}
@@ -140,7 +129,7 @@ export default function AnalyticsTrendSection({ history = [], currentReport = nu
                 {t.subtopics.map((sub, idx) => (
                   <span
                     key={idx}
-                    className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#121217] text-zinc-400 border border-white/5"
+                    className="text-[11px] font-sans px-2.5 py-1 rounded-lg bg-white text-slate-700 border border-slate-200 font-medium shadow-xs"
                   >
                     ✓ {sub}
                   </span>
