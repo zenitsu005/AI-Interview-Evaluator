@@ -608,10 +608,11 @@ export default function VideoInterview() {
           </div>
 
           {/* Question Counter */}
-          <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-indigo-400 font-mono">
-            {Math.min(answeredCount + 1, totalQuestions)}/{totalQuestions}
+          <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-teal-400 font-mono">
+            {Math.min(answeredCount + 1, totalQuestions)} / {totalQuestions}
           </span>
         </div>
+
       </header>
 
       {/* Evaluating Overlay when finishing Q15 */}
@@ -795,10 +796,11 @@ export default function VideoInterview() {
                 <span className={`text-[10px] font-bold px-3 py-1 rounded-full border uppercase tracking-widest ${roundCfg?.color || ''}`}>
                   {roundCfg?.emoji} {roundCfg?.label}
                 </span>
-                <span className="text-[10px] font-mono text-slate-500 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-800">
-                  Q{questionIndexInRound}
+                <span className="text-[10px] font-mono text-zinc-300 bg-slate-900 px-2.5 py-0.5 rounded-full border border-slate-800 font-semibold">
+                  Q{questionIndexInRound} of {currentRound?.total || 3}
                 </span>
               </div>
+
 
               <div className="flex items-center gap-1.5">
                 <button

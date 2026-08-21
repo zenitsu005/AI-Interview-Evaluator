@@ -109,7 +109,7 @@ export const InterviewProvider = ({ children }) => {
   const [difficultyLevel, setDifficultyLevel] = useState('Intermediate'); // 'Beginner' | 'Intermediate' | 'Experienced'
   const [companyTrack, setCompanyTrack] = useState('Amazon'); // Track
   const [interviewerPersona, setInterviewerPersona] = useState(BAR_RAISER_PERSONAS[0]); // Bar Raiser Persona
-  const [duration, setDuration] = useState('30'); // '15' | '30' | '45'
+  const [duration, setDuration] = useState('15'); // '15' | '30' | '45'
   const [resumeText, setResumeText] = useState('');
   const [targetRole, setTargetRole] = useState('');
   const [resumeAnalysis, setResumeAnalysis] = useState(null);
@@ -124,13 +124,14 @@ export const InterviewProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   // Dynamic question count per round: 3 in 15m (9 total), 5 in 30m (15 total), 7 in 45m (21 total)
-  const questionsPerRound = duration === '15' ? 3 : duration === '45' ? 7 : 5;
+  const questionsPerRound = String(duration) === '15' ? 3 : String(duration) === '45' ? 7 : 5;
 
   const ROUNDS = [
     { id: 'aptitude', label: 'Aptitude & Logic', total: questionsPerRound, color: 'blue' },
     { id: 'technical', label: 'Technical', total: questionsPerRound, color: 'purple' },
     { id: 'hr', label: 'HR & Behavioral', total: questionsPerRound, color: 'green' },
   ];
+
 
   const TOTAL_QUESTIONS = ROUNDS.reduce((sum, r) => sum + r.total, 0);
 
@@ -370,7 +371,10 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
 
         const effectiveRole = targetRole || 'Software Engineer';
 
-        if (nextQIndex <= round.total) {
+        const qPerRound = String(duration) === '15' ? 3 : String(duration) === '45' ? 7 : 5;
+        const currentTotalInRound = round?.total || qPerRound;
+
+        if (nextQIndex <= currentTotalInRound) {
           // Next question in same round
           let q;
           try {
@@ -501,8 +505,11 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
       companyTrack,
       interviewerPersona,
       previousQuestions,
+      duration,
+      ROUNDS,
     ]
   );
+
 
   /** Request an instant follow-up cross-examination probe */
   const triggerFollowUpProbe = useCallback(
