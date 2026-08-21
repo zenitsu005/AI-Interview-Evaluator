@@ -72,24 +72,14 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7 text-left space-y-6">
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex items-center gap-2.5">
               <Badge variant="emerald" hasPulse>
                 Ek Baar Aaoge, Job Leke Jaoge
               </Badge>
-
-              <button
-                type="button"
-                onClick={handleWakeUp}
-                className="cursor-pointer"
-              >
-                <Badge variant={serverState === 'ready' ? 'emerald' : 'amber'} hasPulse={serverState !== 'ready'}>
-                  {serverState === 'ready' ? 'AI Server Active' : 'Warming AI Server...'}
-                </Badge>
-              </button>
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-white text-balance">
-              Stop guessing how you perform in <span className="font-editorial italic font-normal text-indigo-300">high-stakes</span> tech interviews.
+              Stop guessing how you perform in high-stakes tech interviews.
             </h1>
 
             <p className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed text-pretty">
@@ -118,11 +108,27 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-5">
-            <Card variant="bento" className="space-y-4">
-              <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-950 border border-indigo-700/50 flex items-center justify-center text-sm">
+          <div className="lg:col-span-5 relative">
+            {/* Subtle ambient glow behind card (15% opacity) */}
+            <div className="absolute -inset-2 bg-indigo-600/15 rounded-3xl blur-3xl pointer-events-none" />
+
+            <Card variant="bento" className="p-0 overflow-hidden relative shadow-2xl border-zinc-800/80">
+              {/* Application Window Header Bar with macOS Dots */}
+              <div className="bg-zinc-950/90 border-b border-zinc-800/80 px-4 py-2.5 flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
+                </div>
+                <span className="text-[10px] font-mono text-zinc-500 font-medium">mock-studio-app</span>
+                <Badge variant="emerald" hasPulse className="text-[10px] py-0.5 px-2">
+                  LIVE
+                </Badge>
+              </div>
+
+              <div className="p-5 space-y-4">
+                <div className="flex items-center gap-2.5 border-b border-zinc-800/60 pb-3">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-950/80 border border-indigo-700/50 flex items-center justify-center text-sm">
                     👔
                   </div>
                   <div>
@@ -130,34 +136,32 @@ export default function LandingPage() {
                     <p className="text-[10px] text-zinc-500 font-mono">Amazon Principal Bar Raiser</p>
                   </div>
                 </div>
-                <Badge variant="emerald" hasPulse>
-                  LIVE
-                </Badge>
-              </div>
 
-              <div className="space-y-2">
-                <p className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Round 2 · System Architecture</p>
-                <p className="text-xs text-zinc-200 leading-relaxed font-medium text-pretty">
-                  "How would you guarantee zero message loss during a 100x traffic surge on your Kafka ingestion stream?"
-                </p>
-              </div>
+                <div className="space-y-2">
+                  <p className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Round 2 · System Architecture</p>
+                  <p className="text-xs text-zinc-200 leading-relaxed font-medium text-pretty">
+                    "How would you guarantee zero message loss during a 100x traffic surge on your Kafka ingestion stream?"
+                  </p>
+                </div>
 
-              <div className="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800/80 space-y-2 text-[11px]">
-                <div className="flex items-center justify-between text-zinc-400">
-                  <span>Candidate Composure</span>
-                  <span className="font-mono text-emerald-400 font-bold">96% Steady</span>
-                </div>
-                <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 w-[96%]" />
-                </div>
-                <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono pt-1">
-                  <span>Pacing: 132 WPM</span>
-                  <span>Fillers: 0 detected</span>
+                <div className="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800/80 space-y-2 text-[11px]">
+                  <div className="flex items-center justify-between text-zinc-400">
+                    <span>Candidate Composure</span>
+                    <span className="font-mono text-emerald-400 font-bold">96% Steady</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-500 w-[96%]" />
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono pt-1">
+                    <span>Pacing: 132 WPM</span>
+                    <span>Fillers: 0 detected</span>
+                  </div>
                 </div>
               </div>
             </Card>
           </div>
         </section>
+
 
         {/* Metrics Bar */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-zinc-800/60 border border-zinc-800 rounded-2xl overflow-hidden shadow-layered">
