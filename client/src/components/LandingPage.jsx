@@ -14,7 +14,17 @@ export default function LandingPage({ onNavigate }) {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
+  const handleExploreModules = () => {
+    const el = document.getElementById('practice-modules');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      nav('dsa');
+    }
+  };
+
   const faqs = [
+
     {
       q: "How realistic are the AI interviewer personas?",
       a: "Personas use structured role prompts and transparent interview rubrics to simulate common interview styles (e.g. System Architect, Algorithm Lead, Bar Raiser). They are practice tools rather than replacements for human interview loops."
@@ -77,12 +87,14 @@ export default function LandingPage({ onNavigate }) {
 
                 <button
                   type="button"
-                  onClick={() => nav('setup')}
-                  className="py-3.5 px-6 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-semibold text-sm transition-all active:scale-98 cursor-pointer"
+                  onClick={handleExploreModules}
+                  className="py-3.5 px-6 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-200 font-semibold text-sm transition-all active:scale-98 cursor-pointer flex items-center gap-1.5"
                 >
-                  Explore practice modules
+                  <span>Explore practice modules</span>
+                  <span className="text-zinc-500">↓</span>
                 </button>
               </div>
+
 
               {/* 2. Adjusted Disclaimer Spacing */}
               <div className="pt-4 flex items-center gap-2 text-xs text-zinc-500">
@@ -186,7 +198,8 @@ export default function LandingPage({ onNavigate }) {
         </section>
 
         {/* ── BENTO PRACTICE MODULE CARDS SECTION ── */}
-        <section className="space-y-8 border-t border-white/5 pt-16">
+        <section id="practice-modules" className="space-y-8 border-t border-white/5 pt-16 scroll-mt-24">
+
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
               Targeted Practice Studios
