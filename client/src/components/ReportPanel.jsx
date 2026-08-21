@@ -76,10 +76,9 @@ export default function ReportPanel() {
   const [showCheatSheet, setShowCheatSheet] = useState(false);
   const [showPassportModal, setShowPassportModal] = useState(false);
   const [copiedLinkedIn, setCopiedLinkedIn] = useState(false);
-
-
-
+  const [activeTierTabs, setActiveTierTabs] = useState({});
   const [selectedDayNumber, setSelectedDayNumber] = useState(1);
+
   const [playingVoiceIdx, setPlayingVoiceIdx] = useState(null);
   const [copiedKey, setCopiedKey] = useState(null);
 
