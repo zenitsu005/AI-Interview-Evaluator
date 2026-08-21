@@ -74,10 +74,11 @@ export default function LandingPage() {
           <div className="lg:col-span-7 space-y-6">
             {/* Status Pills */}
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-              <span className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-zinc-300 px-3.5 py-1 rounded-full text-xs font-semibold">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                Ek Baar Aaoge, Job Paoge
+              <span className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 text-zinc-200 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                Ek Baar Aaoge, Job Leke Jaoge
               </span>
+
 
               <button
                 type="button"
