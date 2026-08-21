@@ -139,33 +139,9 @@ export default function LandingPage({ onNavigate }) {
           </div>
         </section>
 
-        {/* ── BALANCED STATS SECTION AT BOTTOM OF HERO ── */}
-        <section className="border-y border-white/5 py-8 bg-[#121216]/50 rounded-2xl px-6 sm:px-10">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center font-mono">
-            <div className="space-y-1">
-              <p className="text-2xl sm:text-3xl font-extrabold text-white">100% Free</p>
-              <p className="text-xs text-zinc-400 font-sans">No Credit Card Required</p>
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-2xl sm:text-3xl font-extrabold text-teal-400">8 Target Roles</p>
-              <p className="text-xs text-zinc-400 font-sans">Software to Principal Level</p>
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-2xl sm:text-3xl font-extrabold text-amber-400">3 Core Studios</p>
-              <p className="text-xs text-zinc-400 font-sans">DSA, Debugging, Rapid Blitz</p>
-            </div>
-
-            <div className="space-y-1">
-              <p className="text-2xl sm:text-3xl font-extrabold text-white">100% Private</p>
-              <p className="text-xs text-zinc-400 font-sans">Local Browser Storage</p>
-            </div>
-          </div>
-        </section>
-
         {/* ── 3-STEP PRACTICE WORKFLOW SECTION ── */}
         <section className="space-y-8 pt-4">
+
           <div className="space-y-2">
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
               How the Practice Engine Works
