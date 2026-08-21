@@ -245,28 +245,6 @@ export default function LandingPage({ onNavigate }) {
               </Card>
             </div>
 
-            {/* System Design Whiteboard */}
-            <div className="md:col-span-4">
-              <Card variant="interactive" onClick={() => nav('video')} className="h-full flex flex-col justify-between p-6">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-end">
-                    <span className="text-xs text-zinc-500 font-mono">30–45 min</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white text-balance">
-                    System Design Whiteboard
-                  </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
-                    Architect microservices, caches, and load balancers with interactive diagrams and exports.
-                  </p>
-                </div>
-                <div className="pt-4">
-                  <Button variant="secondary" size="sm" onClick={() => nav('video')}>
-                    Open whiteboard →
-                  </Button>
-                </div>
-              </Card>
-            </div>
-
             {/* Bug Hunter Studio */}
             <div className="md:col-span-4">
               <Card variant="interactive" onClick={() => nav('bug-hunter')} className="h-full flex flex-col justify-between p-6">
@@ -288,6 +266,7 @@ export default function LandingPage({ onNavigate }) {
                 </div>
               </Card>
             </div>
+
 
             {/* 60s Rapid Blitz */}
             <div className="md:col-span-4">
@@ -378,13 +357,13 @@ export default function LandingPage({ onNavigate }) {
           <div>
             <p className="font-bold text-zinc-200 mb-2">Product Studios</p>
             <ul className="space-y-1.5 text-zinc-400">
-              <li><button onClick={() => nav('setup')} className="hover:text-white transition-colors">Mock Interview</button></li>
+              <li><button onClick={() => nav('setup')} className="hover:text-white transition-colors font-medium">Mock Interview</button></li>
               <li><button onClick={() => nav('dsa')} className="hover:text-white transition-colors">DSA Practice</button></li>
-              <li><button onClick={() => nav('video')} className="hover:text-white transition-colors">System Design</button></li>
               <li><button onClick={() => nav('bug-hunter')} className="hover:text-white transition-colors">Bug Hunter</button></li>
               <li><button onClick={() => nav('blitz')} className="hover:text-white transition-colors">Rapid Blitz</button></li>
             </ul>
           </div>
+
 
           <div>
             <p className="font-bold text-zinc-200 mb-2">Prep Tools</p>
