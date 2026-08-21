@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --color-bg: #09090b;
   --color-surface: #121215;
@@ -11,6 +15,7 @@
   --radius-xl: 1.25rem;
   --ease-human: cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 
 @layer base {
   html {
