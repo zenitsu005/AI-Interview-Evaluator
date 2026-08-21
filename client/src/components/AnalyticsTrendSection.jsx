@@ -96,89 +96,9 @@ export default function AnalyticsTrendSection({ history = [], currentReport = nu
 
   return (
     <div className="space-y-6">
-      {/* ── Top Analytics Sparkline Grid ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        {/* 1. Elo Growth Trendline */}
-        <div className="card-dark border-teal-500/30 bg-[#121217] p-5 space-y-4 shadow-xl">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">
-                📈 Elo Rating Trajectory
-              </span>
-              <h3 className="text-sm font-bold text-white">
-                {latestElo} pts <span className="text-xs text-emerald-400 font-mono">({eloDiff >= 0 ? `+${eloDiff}` : eloDiff} pts)</span>
-              </h3>
-            </div>
-            <span className="text-[11px] font-mono text-zinc-400 bg-[#0B0B0E] px-2.5 py-1 rounded-lg border border-white/5">
-              Past {trendData.length} Mocks
-            </span>
-          </div>
-
-          {/* SVG Sparkline Graph */}
-          <div className="h-28 w-full relative flex items-end justify-between pt-4 px-2 bg-[#0B0B0E] rounded-xl border border-white/5">
-            {trendData.map((d, i) => {
-              const heightPct = Math.min(100, Math.max(20, ((d.elo - 1000) / 1000) * 100));
-              return (
-                <div key={i} className="flex flex-col items-center gap-1.5 flex-1 group">
-                  <div className="text-[10px] font-mono text-teal-300 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                    {d.elo}
-                  </div>
-                  <div
-                    className="w-8 sm:w-10 rounded-t-lg bg-gradient-to-t from-teal-900 to-teal-400 transition-all duration-500 group-hover:brightness-125 relative shadow-md shadow-teal-500/20"
-                    style={{ height: `${heightPct}%` }}
-                  />
-                  <span className="text-[9px] font-mono text-zinc-500 truncate max-w-[60px]">
-                    {d.date}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 2. Filler Word Reduction Rate */}
-        <div className="card-dark border-amber-500/30 bg-[#121217] p-5 space-y-4 shadow-xl">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">
-                🎙️ Speech Clarity & Filler Suppression
-              </span>
-              <h3 className="text-sm font-bold text-white">
-                {fillerReductionPct >= 0 ? `${fillerReductionPct}% Reduction` : 'Calibrating'}
-                <span className="text-xs text-amber-300 font-mono ml-2">({latestFillers} fillers now)</span>
-              </h3>
-            </div>
-            <span className="text-[11px] font-mono text-zinc-400 bg-[#0B0B0E] px-2.5 py-1 rounded-lg border border-white/5">
-              Cadence HUD
-            </span>
-          </div>
-
-          {/* Filler Word Progression Bar Chart */}
-          <div className="h-28 w-full relative flex items-end justify-between pt-4 px-2 bg-[#0B0B0E] rounded-xl border border-white/5">
-            {trendData.map((d, i) => {
-              const barHeight = Math.min(100, Math.max(15, (d.fillers / 10) * 100));
-              return (
-                <div key={i} className="flex flex-col items-center gap-1.5 flex-1 group">
-                  <div className="text-[10px] font-mono text-amber-300 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                    {d.fillers}w
-                  </div>
-                  <div
-                    className="w-8 sm:w-10 rounded-t-lg bg-gradient-to-t from-amber-900 to-amber-400 transition-all duration-500 group-hover:brightness-125 relative shadow-md shadow-amber-500/20"
-                    style={{ height: `${barHeight}%` }}
-                  />
-                  <span className="text-[9px] font-mono text-zinc-500 truncate max-w-[60px]">
-                    {d.date}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
       {/* ── Topic Mastery Matrix Heatmap ── */}
       <div className="card-dark border-white/10 bg-[#121217] p-5 space-y-4 shadow-xl">
+
         <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b border-white/5">
           <div className="space-y-0.5">
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-teal-400">
