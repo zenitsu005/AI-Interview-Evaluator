@@ -187,50 +187,104 @@ export const sendCoachMessage = async ({
 };
 
 // ── Auth & History APIs ──
-export const signupUser = async ({ name, email, password }) => {
+const getRegisteredAccounts = () => {
   try {
-    const { data } = await api.post('/auth/signup', { name, email, password });
+    return JSON.parse(localStorage.getItem('mockai_registered_accounts') || '{}');
+  } catch (e) {
+    return {};
+  }
+};
+
+const saveRegisteredAccount = (account) => {
+  try {
+    const existing = getRegisteredAccounts();
+    existing[account.email.toLowerCase()] = account;
+    localStorage.setItem('mockai_registered_accounts', JSON.stringify(existing));
+  } catch (e) {}
+};
+
+export const signupUser = async ({ name, email, password }) => {
+  const cleanEmail = (email || '').trim().toLowerCase();
+  const cleanName = (name || '').trim();
+
+  // Check if account already exists
+  const existingAccounts = getRegisteredAccounts();
+  if (existingAccounts[cleanEmail]) {
+    throw new Error('An account with this email already exists. Please log in.');
+  }
+
+  try {
+    const { data } = await api.post('/auth/signup', { name: cleanName, email: cleanEmail, password });
+    if (data?.user) {
+      saveRegisteredAccount({ name: cleanName, email: cleanEmail, password, user: data.user, token: data.token });
+    }
     return data;
   } catch (err) {
+    if (err.response?.status === 400 || err.response?.status === 409) {
+      throw new Error(err.response?.data?.error || 'Registration failed.');
+    }
+    // Local registration fallback
     const mockUser = {
       id: 'usr_' + Date.now(),
-      email: email || 'candidate@gmail.com',
-      name: name || 'Verified Candidate',
-      picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email || 'User')}`,
+      email: cleanEmail,
+      name: cleanName || 'Candidate',
+      picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanEmail)}`,
+      createdAt: new Date().toISOString(),
     };
     const mockToken = 'mock_jwt_' + Date.now();
+    saveRegisteredAccount({ name: cleanName, email: cleanEmail, password, user: mockUser, token: mockToken });
     localStorage.setItem('mockai_user', JSON.stringify(mockUser));
     return { token: mockToken, user: mockUser };
   }
 };
 
 export const loginUser = async ({ email, password }) => {
+  const cleanEmail = (email || '').trim().toLowerCase();
+
   try {
-    const { data } = await api.post('/auth/login', { email, password });
+    const { data } = await api.post('/auth/login', { email: cleanEmail, password });
     return data;
   } catch (err) {
-    const mockUser = {
+    // If backend explicitly rejected credentials (401 / 400 / 403), strictly fail!
+    if (err.response?.status === 401 || err.response?.status === 400 || err.response?.status === 403) {
+      throw new Error(err.response?.data?.error || 'Incorrect email or password. Please try again.');
+    }
+
+    // Check against registered accounts
+    const registered = getRegisteredAccounts();
+    const account = registered[cleanEmail];
+
+    if (!account) {
+      throw new Error('No account found with this email. Please click "Sign Up" to create your account.');
+    }
+
+    if (account.password !== password) {
+      throw new Error('❌ Incorrect password. Access denied.');
+    }
+
+    const user = account.user || {
       id: 'usr_' + Date.now(),
-      email: email || 'candidate@gmail.com',
-      name: (email || 'Candidate').split('@')[0].replace(/[._]/g, ' '),
-      picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email || 'User')}`,
+      email: cleanEmail,
+      name: account.name || cleanEmail.split('@')[0],
+      picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanEmail)}`,
     };
-    const mockToken = 'mock_jwt_' + Date.now();
-    localStorage.setItem('mockai_user', JSON.stringify(mockUser));
-    return { token: mockToken, user: mockUser };
+    const token = account.token || ('mock_jwt_' + Date.now());
+    localStorage.setItem('mockai_user', JSON.stringify(user));
+    return { token, user };
   }
 };
 
 export const googleLoginUser = async ({ email, name, picture }) => {
+  const cleanEmail = (email || '').trim().toLowerCase();
   try {
-    const { data } = await api.post('/auth/google-login', { email, name, picture });
+    const { data } = await api.post('/auth/google-login', { email: cleanEmail, name, picture });
     return data;
   } catch (err) {
     const mockUser = {
       id: 'usr_' + Date.now(),
-      email: email || 'candidate.akshay@gmail.com',
-      name: name || 'Verified Candidate',
-      picture: picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email || 'User')}`,
+      email: cleanEmail || 'candidate@gmail.com',
+      name: name || (cleanEmail ? cleanEmail.split('@')[0] : 'Candidate'),
+      picture: picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanEmail || 'User')}`,
     };
     const mockToken = 'mock_jwt_' + Date.now();
     localStorage.setItem('mockai_user', JSON.stringify(mockUser));
@@ -239,6 +293,7 @@ export const googleLoginUser = async ({ email, name, picture }) => {
 };
 
 export const getMe = async () => {
+
   try {
     const { data } = await api.get('/auth/me');
     return data;
