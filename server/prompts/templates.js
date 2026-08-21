@@ -486,9 +486,12 @@ Return EXACTLY this JSON structure:
     }
   ],
   "starterCodes": {
-    "python": "def solution(...):\\n    # Write your solution here\\n    pass\\n",
-    "javascript": "function solution(...) {\\n  // Write your solution here\\n}\\n"
+    "python": "def solution(...):\n    # Write your solution here\n    pass\n",
+    "java": "class Solution {\n    public Object solution(...) {\n        // Write your solution here\n        return null;\n    }\n}\n",
+    "cpp": "class Solution {\npublic:\n    auto solution(...) {\n        // Write your solution here\n        return 0;\n    }\n};\n",
+    "javascript": "function solution(...) {\n  // Write your solution here\n}\n"
   },
+
   "hints": [
     "Hint 1 on data structures...",
     "Hint 2 on optimal approach..."
