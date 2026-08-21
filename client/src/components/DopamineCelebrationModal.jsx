@@ -144,15 +144,23 @@ export default function DopamineCelebrationModal({
       {/* Main Celebration Modal Window */}
       <div className="relative z-20 max-w-md w-full bg-zinc-950 border border-zinc-800 rounded-3xl p-6 sm:p-8 text-center space-y-7 shadow-2xl relative overflow-hidden">
         
+        {/* Animated Party Popper Icon */}
+        <div className="relative inline-block">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 flex items-center justify-center text-3xl sm:text-4xl mx-auto shadow-2xl shadow-amber-500/40 border-2 border-amber-200 animate-bounce">
+            🎉
+          </div>
+        </div>
+
         {/* Banner */}
         <div className="space-y-1.5">
-          <span className="text-3xl sm:text-4xl font-extrabold tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-200 drop-shadow-[0_2px_10px_rgba(245,158,11,0.5)] font-mono">
-            LEVEL CLEAR!
+          <span className="text-2xl sm:text-3xl font-extrabold tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-200 drop-shadow-[0_2px_10px_rgba(245,158,11,0.5)] font-mono">
+            CONGRATULATIONS!
           </span>
           <p className="text-xs text-zinc-400 font-medium">
             Interview round completed for <strong className="text-white font-bold">{targetRole}</strong>
           </p>
         </div>
+
 
         {/* High-Contrast Stars Container */}
         <div className="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-center gap-5 shadow-inner">
