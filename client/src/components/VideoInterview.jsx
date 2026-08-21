@@ -610,24 +610,7 @@ export default function VideoInterview() {
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* ── Left Column: Live Camera & Question Prompt (5 Cols) ── */}
         <div className="lg:col-span-5 space-y-4">
-          {/* Active Bar Raiser Interrogation Banner */}
-          <div className="bg-slate-900/90 border border-indigo-500/30 rounded-2xl p-3 flex items-center justify-between gap-3 shadow-lg">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="text-2xl">{interviewerPersona?.avatar || '📦'}</span>
-              <div className="min-w-0">
-                <p className="text-xs font-extrabold text-white flex items-center gap-1.5 truncate">
-                  <span>{interviewerPersona?.name || 'Marcus Vance'}</span>
-                  <span className="text-[10px] font-medium text-slate-400">({interviewerPersona?.company || companyTrack})</span>
-                </p>
-                <p className="text-[10px] text-amber-300 font-mono italic truncate">
-                  "{interviewerPersona?.catchphrase || 'Demanding high ownership and measurable metrics.'}"
-                </p>
-              </div>
-            </div>
-            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border border-indigo-500/40 bg-indigo-950 text-indigo-300 whitespace-nowrap">
-              {interviewerPersona?.badge?.split('&')[0] || 'Bar Raiser'}
-            </span>
-          </div>
+
 
           {/* Meeting View Mode Selector */}
           <div className="flex items-center justify-between gap-2 px-1">
