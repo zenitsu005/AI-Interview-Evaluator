@@ -361,7 +361,7 @@ export default function LandingPage({ onNavigate }) {
 
       {/* ── PRODUCTION-GRADE ACCESSIBLE FOOTER ── */}
       <footer className="border-t border-white/5 bg-[#0B0B0E] py-12 px-4 sm:px-6 text-xs text-zinc-400 select-none">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-8 mb-8 text-left">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8 text-left">
           
           <div className="space-y-2 sm:col-span-1">
             <div className="flex items-center gap-2">
@@ -394,25 +394,13 @@ export default function LandingPage({ onNavigate }) {
               <li><button onClick={() => nav('analytics')} className="hover:text-white transition-colors cursor-pointer">Progress & Analytics</button></li>
             </ul>
           </div>
-
-          <div>
-            <p className="font-bold text-zinc-200 mb-2">Company & Legal</p>
-            <ul className="space-y-1.5 text-zinc-400">
-              <li><button onClick={() => nav('how-it-works')} className="hover:text-white transition-colors cursor-pointer">How It Works</button></li>
-              <li><button onClick={() => nav('privacy')} className="hover:text-white transition-colors cursor-pointer">Privacy Policy</button></li>
-              <li><button onClick={() => nav('terms')} className="hover:text-white transition-colors cursor-pointer">Terms of Service</button></li>
-              <li><button onClick={() => nav('security')} className="hover:text-white transition-colors cursor-pointer">Security Architecture</button></li>
-              <li><button onClick={() => nav('accessibility')} className="hover:text-white transition-colors cursor-pointer">Accessibility Statement</button></li>
-              <li><button onClick={() => nav('support')} className="hover:text-white transition-colors cursor-pointer">Support & Help Desk</button></li>
-            </ul>
-          </div>
         </div>
 
         <div className="max-w-6xl mx-auto border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between text-[11px] text-zinc-500 font-mono gap-2">
           <p>© 2026 AI Interview Evaluator. Structured practice for technical candidates.</p>
-          <p className="text-zinc-600">Built for software engineers.</p>
         </div>
       </footer>
+
     </div>
   );
 }
