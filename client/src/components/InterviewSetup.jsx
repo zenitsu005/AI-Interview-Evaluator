@@ -13,7 +13,6 @@ const ROLES = [
 const TYPES = [
   { id: 'video', title: 'Full Mock Interview', desc: 'Simulate technical depth, system design, and STAR behavioral.' },
   { id: 'dsa', title: 'Coding / DSA Studio', desc: 'Algorithm challenges, automated test runner, complexity analysis.' },
-  { id: 'system-design', title: 'System Design Whiteboard', desc: 'Distributed architecture diagrams, load balancers, and caches.' },
   { id: 'bug-hunter', title: 'Debugging / Code Review', desc: 'Audit race conditions, memory leaks, and logic flaws.' },
   { id: 'blitz', title: '60s Rapid Blitz', desc: 'Fast-paced technical recall questions under 60s timers.' },
 ];
@@ -25,10 +24,13 @@ const FORMATS = [
 ];
 
 export default function InterviewSetup({ onStartModule, onNavigate }) {
-  const { setPhase } = useInterview();
+  const { setPhase, setRole } = useInterview();
 
   const [step, setStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState(ROLES[1]); // Senior
+  const [isCustomRole, setIsCustomRole] = useState(false);
+  const [customRoleText, setCustomRoleText] = useState('');
+
   const [selectedType, setSelectedType] = useState(TYPES[0]); // Full Mock
   const [selectedFormat, setSelectedFormat] = useState(FORMATS[0]); // Voice + Transcript
   const [difficulty, setDifficulty] = useState('Medium');
@@ -53,25 +55,29 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
       return;
     }
 
+    if (setRole) {
+      setRole(selectedRole.title);
+    }
+
     const targetPhase = selectedType.id === 'system-design' ? 'video' : selectedType.id;
     setPhase(targetPhase);
   };
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-zinc-100 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#0B0B0E] text-zinc-100 flex flex-col justify-between select-none">
       <AppNavbar currentActive="setup" />
 
       <main className="max-w-3xl mx-auto w-full px-6 py-10 space-y-8 text-left flex-1">
         {/* Step Indicator Breadcrumb */}
-        <div className="flex items-center justify-between border-b border-zinc-800 pb-4 text-xs font-mono">
+        <div className="flex items-center justify-between border-b border-white/5 pb-4 text-xs font-mono">
           <div className="flex items-center gap-2 text-zinc-400">
-            <span className={step >= 1 ? 'text-indigo-400 font-bold' : ''}>1. Role</span>
+            <span className={step >= 1 ? 'text-teal-400 font-bold' : ''}>1. Role</span>
             <span>→</span>
-            <span className={step >= 2 ? 'text-indigo-400 font-bold' : ''}>2. Interview Type</span>
+            <span className={step >= 2 ? 'text-teal-400 font-bold' : ''}>2. Interview Type</span>
             <span>→</span>
-            <span className={step >= 3 ? 'text-indigo-400 font-bold' : ''}>3. Format</span>
+            <span className={step >= 3 ? 'text-teal-400 font-bold' : ''}>3. Format</span>
             <span>→</span>
-            <span className={step >= 4 ? 'text-indigo-400 font-bold' : ''}>4. Review & Consent</span>
+            <span className={step >= 4 ? 'text-teal-400 font-bold' : ''}>4. Review & Consent</span>
           </div>
           <span className="text-zinc-500 font-bold">Step {step} of 4</span>
         </div>
@@ -81,33 +87,82 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
           <div className="space-y-6 animate-fade-in">
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Select Target Engineering Role</h1>
-              <p className="text-xs text-zinc-400">Prompts and Bar Raiser rubrics calibrate to your selected seniority level.</p>
+              <p className="text-xs text-zinc-400">Choose a standard seniority level or type in your custom role.</p>
             </div>
 
             <div className="space-y-3">
               {ROLES.map((role) => (
                 <button
                   key={role.id}
-                  onClick={() => setSelectedRole(role)}
+                  onClick={() => {
+                    setSelectedRole(role);
+                    setIsCustomRole(false);
+                  }}
                   className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                    selectedRole.id === role.id
-                      ? 'bg-indigo-950/50 border-indigo-500 ring-2 ring-indigo-500/20 text-white'
-                      : 'bg-zinc-900/80 border-zinc-800 hover:border-zinc-700 text-zinc-300'
+                    !isCustomRole && selectedRole.id === role.id
+                      ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
+                      : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
                   }`}
                 >
                   <div>
                     <p className="font-bold text-sm text-white">{role.title}</p>
                     <p className="text-xs text-zinc-400 font-mono mt-0.5">{role.level}</p>
                   </div>
-                  {selectedRole.id === role.id && <span className="text-indigo-400 font-bold">✓ Selected</span>}
+                  {!isCustomRole && selectedRole.id === role.id && <span className="text-teal-400 font-bold">✓ Selected</span>}
                 </button>
               ))}
+
+              {/* Custom Type-In Role Card */}
+              <div
+                onClick={() => {
+                  setIsCustomRole(true);
+                  if (customRoleText) {
+                    setSelectedRole({ id: 'custom', title: customRoleText, level: 'User Specified' });
+                  }
+                }}
+                className={`w-full p-4 rounded-2xl border text-left transition-all cursor-pointer space-y-3 ${
+                  isCustomRole
+                    ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
+                    : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-sm text-white">✏️ Custom Role (Type your own title...)</p>
+                    <p className="text-xs text-zinc-400 font-mono mt-0.5">Specify exact stack, domain, or role title</p>
+                  </div>
+                  {isCustomRole && <span className="text-teal-400 font-bold">✓ Selected</span>}
+                </div>
+
+                {isCustomRole && (
+                  <div className="pt-2 animate-fade-in space-y-1.5" onClick={(e) => e.stopPropagation()}>
+                    <label className="text-xs font-bold text-teal-400 font-mono">Type Your Specific Target Role:</label>
+                    <input
+                      type="text"
+                      value={customRoleText}
+                      onChange={(e) => {
+                        setCustomRoleText(e.target.value);
+                        setSelectedRole({ id: 'custom', title: e.target.value || 'Custom Role', level: 'User Specified' });
+                      }}
+                      placeholder="e.g. Full Stack Developer (Node/React), iOS Lead, DevOps Architect..."
+                      className="w-full bg-[#0B0B0E] border border-teal-500/60 rounded-xl p-3.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 font-sans shadow-inner"
+                      autoFocus
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex justify-end pt-4">
               <button
-                onClick={() => setStep(2)}
-                className="py-3 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
+                onClick={() => {
+                  if (isCustomRole && !customRoleText.trim()) {
+                    alert('Please type in your custom role title before continuing.');
+                    return;
+                  }
+                  setStep(2);
+                }}
+                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
               >
                 Continue to Interview Type →
               </button>
@@ -130,15 +185,15 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
                   onClick={() => setSelectedType(type)}
                   className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                     selectedType.id === type.id
-                      ? 'bg-indigo-950/50 border-indigo-500 ring-2 ring-indigo-500/20 text-white'
-                      : 'bg-zinc-900/80 border-zinc-800 hover:border-zinc-700 text-zinc-300'
+                      ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
+                      : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
                   }`}
                 >
                   <div className="space-y-1">
                     <p className="font-bold text-sm text-white">{type.title}</p>
                     <p className="text-xs text-zinc-400 leading-relaxed">{type.desc}</p>
                   </div>
-                  {selectedType.id === type.id && <span className="text-indigo-400 font-bold">✓ Selected</span>}
+                  {selectedType.id === type.id && <span className="text-teal-400 font-bold">✓ Selected</span>}
                 </button>
               ))}
             </div>
@@ -152,7 +207,7 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
               </button>
               <button
                 onClick={() => setStep(3)}
-                className="py-3 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
+                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
               >
                 Continue to Format →
               </button>
@@ -175,15 +230,15 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
                   onClick={() => setSelectedFormat(fmt)}
                   className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                     selectedFormat.id === fmt.id
-                      ? 'bg-indigo-950/50 border-indigo-500 ring-2 ring-indigo-500/20 text-white'
-                      : 'bg-zinc-900/80 border-zinc-800 hover:border-zinc-700 text-zinc-300'
+                      ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
+                      : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
                   }`}
                 >
                   <div className="space-y-1">
                     <p className="font-bold text-sm text-white">{fmt.title}</p>
                     <p className="text-xs text-zinc-400">{fmt.desc}</p>
                   </div>
-                  {selectedFormat.id === fmt.id && <span className="text-indigo-400 font-bold">✓ Selected</span>}
+                  {selectedFormat.id === fmt.id && <span className="text-teal-400 font-bold">✓ Selected</span>}
                 </button>
               ))}
             </div>
@@ -225,7 +280,7 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
               </button>
               <button
                 onClick={() => setStep(4)}
-                className="py-3 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
+                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
               >
                 Review & Launch →
               </button>
@@ -242,16 +297,16 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
             </div>
 
             {/* Summary Card */}
-            <div className="bg-zinc-900/90 border border-zinc-800 p-5 rounded-2xl space-y-3 font-mono text-xs">
-              <div className="flex justify-between border-b border-zinc-800 pb-2">
+            <div className="bg-[#131318] border border-white/5 p-5 rounded-2xl space-y-3 font-mono text-xs">
+              <div className="flex justify-between border-b border-white/5 pb-2">
                 <span className="text-zinc-400">Target Role:</span>
                 <span className="text-white font-bold">{selectedRole.title} ({selectedRole.level})</span>
               </div>
-              <div className="flex justify-between border-b border-zinc-800 pb-2">
+              <div className="flex justify-between border-b border-white/5 pb-2">
                 <span className="text-zinc-400">Module:</span>
-                <span className="text-indigo-400 font-bold">{selectedType.title}</span>
+                <span className="text-teal-400 font-bold">{selectedType.title}</span>
               </div>
-              <div className="flex justify-between border-b border-zinc-800 pb-2">
+              <div className="flex justify-between border-b border-white/5 pb-2">
                 <span className="text-zinc-400">Format:</span>
                 <span className="text-emerald-400 font-bold">{selectedFormat.title}</span>
               </div>
@@ -289,18 +344,18 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
 
             {/* Explicit Audio Privacy Consent Checkbox */}
             {selectedFormat.id !== 'text-only' && (
-              <label className="flex items-start gap-3 bg-zinc-950 p-4 rounded-2xl border border-zinc-800 cursor-pointer">
+              <label className="flex items-start gap-3 bg-[#0B0B0E] p-4 rounded-2xl border border-white/5 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={audioConsent}
                   onChange={(e) => setAudioConsent(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500"
+                  className="mt-0.5 w-4 h-4 rounded text-teal-600 focus:ring-teal-500"
                 />
                 <div className="text-xs text-zinc-300 leading-relaxed text-pretty">
                   <span className="font-bold text-white">Explicit Audio Consent: </span>
                   I understand that my audio may be processed to generate a live transcript and practice feedback. You can stop anytime. Read our{' '}
-                  <button type="button" onClick={() => onNavigate('privacy')} className="text-indigo-400 underline">Privacy Policy</button>{' '}
-                  or learn about <button type="button" onClick={() => onNavigate('privacy')} className="text-indigo-400 underline font-mono">Data Deletion</button>.
+                  <button type="button" onClick={() => onNavigate('privacy')} className="text-teal-400 underline">Privacy Policy</button>{' '}
+                  or learn about <button type="button" onClick={() => onNavigate('privacy')} className="text-teal-400 underline font-mono">Data Deletion</button>.
                 </div>
               </label>
             )}
@@ -315,7 +370,7 @@ export default function InterviewSetup({ onStartModule, onNavigate }) {
 
               <button
                 onClick={() => handleLaunchSession(false)}
-                className="py-3.5 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xl shadow-indigo-600/30 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
+                className="py-3.5 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-xl shadow-teal-950/50 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
               >
                 <span>Launch Mock Session →</span>
               </button>
