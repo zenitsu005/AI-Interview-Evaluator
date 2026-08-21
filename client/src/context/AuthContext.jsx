@@ -90,10 +90,12 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     localStorage.removeItem('mockai_token');
+    localStorage.removeItem('mockai_user');
     setToken(null);
     setUser(null);
     setHistory([]);
   }, []);
+
 
   const openAuth = useCallback((mode = 'login') => {
     setAuthMode(mode);
