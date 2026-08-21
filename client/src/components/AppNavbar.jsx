@@ -7,11 +7,6 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   const { user, isAuthenticated, logout, openAuth, openHistory } = useAuth();
   const [featuresDropdownOpen, setFeaturesDropdownOpen] = useState(false);
 
-  const primaryLinks = [
-    { id: 'landing', label: 'Home' },
-    { id: 'setup', label: 'Mock Studio' },
-  ];
-
   const featureLinks = [
     { id: 'setup', label: 'Mock Interview Studio' },
     { id: 'dsa', label: 'DSA Studio' },
@@ -23,46 +18,29 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   ];
 
   return (
-    <header className="border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur-xl sticky top-0 z-50 transition-all">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 border-b border-zinc-800/60 bg-[#090A0F]/80 backdrop-blur-md transition-all">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         
         {/* Brand Logo */}
         <div
           onClick={() => setPhase('landing')}
-          className="flex items-center gap-2.5 cursor-pointer select-none group"
+          className="flex items-center gap-3 cursor-pointer select-none group"
         >
-          <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-xs text-white font-bold shadow-md group-hover:bg-indigo-500 transition-colors">
-            🎯
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 font-bold text-white text-xs shadow-inner shadow-indigo-400/30 group-hover:bg-indigo-500 transition-colors">
+            AI
           </div>
-          <span className="font-extrabold text-white text-sm sm:text-base tracking-tight group-hover:text-indigo-300 transition-colors">
-            AI Interview<span className="text-indigo-400"> Evaluator</span>
+          <span className="font-semibold tracking-tight text-white text-sm sm:text-base">
+            Interview Evaluator
           </span>
         </div>
 
-        {/* Clean Center Navigation */}
-        <nav className="hidden md:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800 text-xs font-semibold">
-          {primaryLinks.map((item) => {
-            const isActive = phase === item.id || currentActive === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => { setPhase(item.id); setFeaturesDropdownOpen(false); }}
-                className={`px-3.5 py-1.5 rounded-lg transition-all ${
-                  isActive
-                    ? 'bg-indigo-600 text-white shadow-sm font-bold'
-                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'
-                }`}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-
+        {/* Center Nav Links */}
+        <nav className="hidden md:flex items-center gap-6 text-xs sm:text-sm font-medium text-zinc-400">
           {/* Features Dropdown */}
           <div className="relative">
             <button
               onClick={() => setFeaturesDropdownOpen(!featuresDropdownOpen)}
-              className="px-3.5 py-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-all flex items-center gap-1 font-semibold"
+              className="flex items-center gap-1 transition hover:text-white text-zinc-300 font-semibold"
             >
               <span>Features</span>
               <span className="text-[10px] opacity-60">▾</span>
@@ -71,7 +49,7 @@ export default function AppNavbar({ currentActive = 'landing' }) {
             {featuresDropdownOpen && (
               <div
                 onMouseLeave={() => setFeaturesDropdownOpen(false)}
-                className="absolute top-full left-0 mt-1.5 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl p-1.5 z-50 animate-fade-in space-y-0.5 text-left"
+                className="absolute top-full left-0 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl p-1.5 z-50 animate-fade-in space-y-0.5 text-left"
               >
                 {featureLinks.map((f) => (
                   <button
@@ -85,23 +63,27 @@ export default function AppNavbar({ currentActive = 'landing' }) {
               </div>
             )}
           </div>
+
+          <button onClick={() => setPhase('setup')} className="transition hover:text-white">
+            Prep Modules
+          </button>
+          
+          <button onClick={() => setPhase('landing')} className="transition hover:text-white">
+            Pricing
+          </button>
+
+          <button onClick={openHistory} className="transition hover:text-white">
+            Past Mocks
+          </button>
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={openHistory}
-            className="py-1.5 px-3 text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-900 border border-zinc-800 hover:border-zinc-700 rounded-xl transition-all shadow-xs"
-            title="View Past Transcripts"
-          >
-            Past Mocks
-          </button>
-
+        <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPhase('profile')}
-                className="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded-xl transition-all text-xs font-semibold text-zinc-200"
+                className="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-3 py-1.5 rounded-lg transition-all text-xs font-semibold text-zinc-200"
               >
                 <div className="w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold text-white">
                   {user.name ? user.name[0].toUpperCase() : 'U'}
@@ -110,24 +92,24 @@ export default function AppNavbar({ currentActive = 'landing' }) {
               </button>
               <button
                 onClick={logout}
-                className="text-xs text-zinc-400 hover:text-red-400 border border-zinc-800 bg-zinc-900/60 px-2.5 py-1.5 rounded-xl transition-colors"
+                className="text-xs text-zinc-400 hover:text-red-400 border border-zinc-800 bg-zinc-900/60 px-2.5 py-1.5 rounded-lg transition-colors"
               >
                 Logout
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => openAuth('login')}
-                className="text-xs text-zinc-300 hover:text-white font-semibold px-3 py-1.5 rounded-xl transition-colors"
+                className="text-xs sm:text-sm font-medium text-zinc-300 transition hover:text-white px-3 py-1.5"
               >
-                Sign In
+                Log In
               </button>
               <button
                 onClick={() => openAuth('signup')}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-md transition-all active:scale-95"
+                className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-xs sm:text-sm font-medium text-white transition hover:bg-indigo-500 active:scale-95 shadow-sm shadow-indigo-500/20"
               >
-                Start Free
+                Start Free Trial
               </button>
             </div>
           )}

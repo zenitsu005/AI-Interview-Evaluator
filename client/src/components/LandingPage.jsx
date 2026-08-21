@@ -70,97 +70,76 @@ export default function LandingPage() {
       <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-24 flex-1 space-y-24">
         
         {/* Hero Section */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          <div className="lg:col-span-7 text-left space-y-6">
-            <div className="flex items-center gap-2.5">
-              <Badge variant="emerald" hasPulse>
-                Ek Baar Aaoge, Job Leke Jaoge
-              </Badge>
+        <section className="relative mx-auto max-w-7xl px-0 pt-4 pb-12 lg:grid lg:grid-cols-12 lg:gap-12 lg:items-center">
+          <div className="lg:col-span-7 space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3.5 py-1 text-xs font-medium text-indigo-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse" />
+              L7 & Bar-Raiser Simulation Engine
             </div>
 
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08] text-white text-balance">
-              Stop guessing how you perform in high-stakes tech interviews.
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+              Stop guessing your performance in <span className="text-indigo-400">high-stakes</span> interviews.
             </h1>
 
             <p className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed text-pretty">
-              Simulate actual Google L7 and Amazon Bar Raiser rounds. Receive real-time deterministic feedback on code efficiency, system architecture, and verbal composure.
+              Deterministic, real-time evaluation across system design, code architecture, and verbal composure—calibrated against top-tier tech benchmarks.
             </p>
 
-            <div className="pt-2 flex flex-col sm:flex-row items-center gap-3.5">
-              <Button
-                variant="primary"
-                size="lg"
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <button
                 onClick={() => setPhase('setup')}
-                className="w-full sm:w-auto"
+                className="rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 active:scale-95 shadow-lg shadow-indigo-600/20"
               >
-                Start Free Mock Interview →
-              </Button>
-
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={() => setPhase('hype-lab')}
-                icon="🧘"
-                className="w-full sm:w-auto"
+                Start Mock Interview →
+              </button>
+              <button
+                onClick={() => setPhase('setup')}
+                className="rounded-lg border border-zinc-800 bg-zinc-900/60 px-6 py-3 text-sm font-semibold text-zinc-300 transition hover:bg-zinc-800 hover:text-white active:scale-95"
               >
-                3-Min Hype Lab
-              </Button>
+                Explore Practice Modules
+              </button>
             </div>
           </div>
 
-          <div className="lg:col-span-5 relative">
-            {/* Subtle ambient glow behind card (15% opacity) */}
-            <div className="absolute -inset-2 bg-indigo-600/15 rounded-3xl blur-3xl pointer-events-none" />
-
-            <Card variant="bento" className="p-0 overflow-hidden relative shadow-2xl border-zinc-800/80">
-              {/* Application Window Header Bar with macOS Dots */}
-              <div className="bg-zinc-950/90 border-b border-zinc-800/80 px-4 py-2.5 flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f]" />
+          {/* Realistic Terminal / Assessment Window */}
+          <div className="mt-12 lg:mt-0 lg:col-span-5">
+            <div className="relative rounded-xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-2xl backdrop-blur-xl text-left">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="h-3 w-3 rounded-full bg-rose-500/80" />
+                  <span className="h-3 w-3 rounded-full bg-amber-500/80" />
+                  <span className="h-3 w-3 rounded-full bg-emerald-500/80" />
                 </div>
-                <span className="text-[10px] font-mono text-zinc-500 font-medium">mock-studio-app</span>
-                <Badge variant="emerald" hasPulse className="text-[10px] py-0.5 px-2">
-                  LIVE
-                </Badge>
+                <span className="text-xs font-mono text-zinc-500">session: live-evaluation</span>
               </div>
 
-              <div className="p-5 space-y-4">
-                <div className="flex items-center gap-2.5 border-b border-zinc-800/60 pb-3">
-                  <div className="w-8 h-8 rounded-xl bg-indigo-950/80 border border-indigo-700/50 flex items-center justify-center text-sm">
-                    👔
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-white">Marcus Vance</p>
-                    <p className="text-[10px] text-zinc-500 font-mono">Amazon Principal Bar Raiser</p>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Round 2 · System Architecture</p>
-                  <p className="text-xs text-zinc-200 leading-relaxed font-medium text-pretty">
-                    "How would you guarantee zero message loss during a 100x traffic surge on your Kafka ingestion stream?"
+              <div className="mt-4 space-y-4 font-mono text-xs">
+                <div className="rounded-lg bg-black/40 p-3.5 border border-zinc-800/80 space-y-1.5">
+                  <p className="text-indigo-300 font-medium">Interviewer: Marcus Vance (Principal Architect)</p>
+                  <p className="text-zinc-300 leading-relaxed">
+                    "How would you ensure zero message loss during a 100x traffic surge on your Kafka ingestion stream?"
                   </p>
                 </div>
 
-                <div className="bg-zinc-950 p-3.5 rounded-xl border border-zinc-800/80 space-y-2 text-[11px]">
-                  <div className="flex items-center justify-between text-zinc-400">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-zinc-400">
                     <span>Candidate Composure</span>
-                    <span className="font-mono text-emerald-400 font-bold">96% Steady</span>
+                    <span className="text-emerald-400 font-semibold">96% Steady</span>
                   </div>
-                  <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 w-[96%]" />
-                  </div>
-                  <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono pt-1">
-                    <span>Pacing: 132 WPM</span>
-                    <span>Fillers: 0 detected</span>
+                  <div className="h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden">
+                    <div className="h-full w-[96%] bg-emerald-500 rounded-full" />
                   </div>
                 </div>
+
+                <div className="flex justify-between text-zinc-500 pt-1">
+                  <span>Pacing: 132 WPM</span>
+                  <span>Fillers: 0 detected</span>
+                </div>
               </div>
-            </Card>
+            </div>
           </div>
         </section>
+
 
 
         {/* Metrics Bar */}
