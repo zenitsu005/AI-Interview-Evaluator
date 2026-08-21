@@ -191,14 +191,28 @@ export default function PreInterviewHypeLab() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070a12] text-slate-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-[#070a12] text-slate-100 flex flex-col justify-between select-none">
       {/* ── Universal Top Bar ── */}
-      <AppNavbar currentActive="hype-lab" />
+      <AppNavbar currentActive="anxiety-prep" />
 
       {/* ── Main Content ── */}
-      <main className="max-w-3xl mx-auto px-4 py-8 w-full space-y-6">
+      <main className="max-w-3xl mx-auto px-4 py-8 w-full space-y-6 text-left">
+        {/* Header & Disclaimer Banner */}
+        <div className="space-y-2 border-b border-zinc-800 pb-4">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Interview Confidence Lab</h1>
+            <span className="text-[10px] font-mono font-bold text-indigo-400 bg-indigo-950/60 border border-indigo-500/30 px-2.5 py-1 rounded-full">
+              Pacing & Anxiety Prep
+            </span>
+          </div>
+          <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
+            Guided practice for answer pacing, vocal resonance, and nervous system grounding. This lab provides educational coaching techniques—it is not medical or psychological treatment.
+          </p>
+        </div>
+
         {/* Step Progress Pills */}
         <div className="flex bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 justify-between gap-1 shadow-md">
+
           {[
             { step: 1, label: '🫁 Box Breathing', desc: 'Heart-Rate Reset' },
             { step: 2, label: '🎙️ Vocal Resonance', desc: 'Ground Shaky Tone' },

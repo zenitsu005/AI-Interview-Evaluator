@@ -3,7 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import { InterviewProvider, useInterview } from './context/InterviewContext';
 import ErrorBoundary from './components/ErrorBoundary';
 import LandingPage from './components/LandingPage';
-import ResumeSetup from './components/ResumeSetup';
+import InterviewSetup from './components/InterviewSetup';
 import AnalysisCard from './components/AnalysisCard';
 import InterviewChat from './components/InterviewChat';
 import VideoInterview from './components/VideoInterview';
@@ -17,31 +17,47 @@ import BugHunterMode from './components/BugHunterMode';
 import PreInterviewHypeLab from './components/PreInterviewHypeLab';
 import AuthModal from './components/AuthModal';
 import HistoryModal from './components/HistoryModal';
+import {
+  HowItWorksPage,
+  PrivacyPage,
+  TermsPage,
+  SecurityPage,
+  AccessibilityPage,
+  SupportPage,
+  AnalyticsPage,
+} from './components/StaticPages';
 
 const AppContent = () => {
-  const { phase, interviewMode } = useInterview();
+  const { phase, setPhase, interviewMode } = useInterview();
   const isInterviewing = phase === 'interview' || phase === 'evaluating';
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#090A0F] text-zinc-100 relative overflow-x-hidden">
       {/* Ambient background glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl" />
         <div className="absolute top-1/3 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10">
-        {phase === 'landing' && <LandingPage />}
-        {phase === 'setup' && <ResumeSetup />}
+        {phase === 'landing' && <LandingPage onNavigate={setPhase} />}
+        {phase === 'setup' && <InterviewSetup onNavigate={setPhase} />}
         {phase === 'analysis' && <AnalysisCard />}
         {phase === 'profile' && <ProfilePage />}
-        {phase === 'resume-builder' && <ResumeOptimizer />}
-        {phase === 'negotiate' && <SalaryNegotiator />}
+        {(phase === 'resume-builder' || phase === 'resume') && <ResumeOptimizer />}
+        {(phase === 'negotiate' || phase === 'salary') && <SalaryNegotiator />}
         {phase === 'blitz' && <RapidFireBlitz />}
         {phase === 'dsa' && <DsaPractice />}
         {phase === 'bug-hunter' && <BugHunterMode />}
-        {phase === 'hype-lab' && <PreInterviewHypeLab />}
+        {(phase === 'anxiety-prep' || phase === 'hype-lab') && <PreInterviewHypeLab />}
+        {phase === 'how-it-works' && <HowItWorksPage onNavigate={setPhase} />}
+        {phase === 'privacy' && <PrivacyPage onNavigate={setPhase} />}
+        {phase === 'terms' && <TermsPage onNavigate={setPhase} />}
+        {phase === 'security' && <SecurityPage onNavigate={setPhase} />}
+        {phase === 'accessibility' && <AccessibilityPage onNavigate={setPhase} />}
+        {phase === 'support' && <SupportPage onNavigate={setPhase} />}
+        {phase === 'analytics' && <AnalyticsPage onNavigate={setPhase} />}
         {isInterviewing && interviewMode === 'video' && <VideoInterview />}
         {isInterviewing && interviewMode === 'text' && <InterviewChat />}
         {phase === 'report' && <ReportPanel />}
