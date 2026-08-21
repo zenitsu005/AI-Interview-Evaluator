@@ -45,6 +45,8 @@ export default function DopamineCelebrationModal({
   const canvasRef = useRef(null);
   const [starsVisible, setStarsVisible] = useState([false, false, false]);
 
+  const displayRole = targetRole && targetRole.trim() ? targetRole : 'Software Engineer';
+
   // Canvas Confetti Burst Logic
   useEffect(() => {
     if (!isOpen) return;
@@ -54,9 +56,9 @@ export default function DopamineCelebrationModal({
     // Sequential Star Pop Timers
     setStarsVisible([false, false, false]);
     const starTimers = [
-      setTimeout(() => { setStarsVisible([true, false, false]); playStarChime(0); }, 300),
-      setTimeout(() => { setStarsVisible([true, true, false]); playStarChime(1); }, 600),
-      setTimeout(() => { setStarsVisible([true, true, true]); playStarChime(2); }, 900),
+      setTimeout(() => { setStarsVisible([true, false, false]); playStarChime(0); }, 250),
+      setTimeout(() => { setStarsVisible([true, true, false]); playStarChime(1); }, 500),
+      setTimeout(() => { setStarsVisible([true, true, true]); playStarChime(2); }, 750),
     ];
 
     // Canvas Confetti Particle System
@@ -66,31 +68,31 @@ export default function DopamineCelebrationModal({
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const colors = ['#f59e0b', '#10b981', '#6366f1', '#ec4899', '#3b82f6', '#fbbf24'];
+    const colors = ['#14b8a6', '#f59e0b', '#10b981', '#38bdf8', '#fbbf24'];
     let particles = [];
 
-    // Left and Right Cannons
-    for (let i = 0; i < 60; i++) {
+    // Left and Right subtle celebratory burst
+    for (let i = 0; i < 50; i++) {
       particles.push({
-        x: canvas.width * 0.1,
-        y: canvas.height * 0.9,
-        vx: Math.random() * 12 + 4,
-        vy: -Math.random() * 16 - 8,
-        size: Math.random() * 8 + 4,
+        x: canvas.width * 0.15,
+        y: canvas.height * 0.85,
+        vx: Math.random() * 10 + 3,
+        vy: -Math.random() * 14 - 6,
+        size: Math.random() * 6 + 3,
         color: colors[Math.floor(Math.random() * colors.length)],
         rotation: Math.random() * 360,
-        vr: Math.random() * 10 - 5,
+        vr: Math.random() * 8 - 4,
         opacity: 1,
       });
       particles.push({
-        x: canvas.width * 0.9,
-        y: canvas.height * 0.9,
-        vx: -Math.random() * 12 - 4,
-        vy: -Math.random() * 16 - 8,
-        size: Math.random() * 8 + 4,
+        x: canvas.width * 0.85,
+        y: canvas.height * 0.85,
+        vx: -Math.random() * 10 - 3,
+        vy: -Math.random() * 14 - 6,
+        size: Math.random() * 6 + 3,
         color: colors[Math.floor(Math.random() * colors.length)],
         rotation: Math.random() * 360,
-        vr: Math.random() * 10 - 5,
+        vr: Math.random() * 8 - 4,
         opacity: 1,
       });
     }
@@ -101,9 +103,9 @@ export default function DopamineCelebrationModal({
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.4;
+        p.vy += 0.35;
         p.rotation += p.vr;
-        p.opacity -= 0.008;
+        p.opacity -= 0.01;
 
         ctx.save();
         ctx.translate(p.x, p.y);
@@ -131,65 +133,86 @@ export default function DopamineCelebrationModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#05070e]/90 backdrop-blur-xl overflow-hidden animate-fade-in select-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B0B0E]/90 backdrop-blur-xl overflow-hidden animate-fade-in select-none">
       
-      {/* Background Radial Starburst */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden opacity-20">
-        <div className="w-[1200px] h-[1200px] rounded-full bg-[conic-gradient(from_0deg,#f59e0b_0deg,transparent_20deg,#6366f1_40deg,transparent_60deg,#10b981_80deg,transparent_100deg,#ec4899_120deg,transparent_140deg)] animate-[spin_30s_linear_infinite]" />
+      {/* Background Ambient Glow */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+        <div className="w-[600px] h-[600px] rounded-full bg-teal-500/10 blur-[120px]" />
+        <div className="w-[400px] h-[400px] rounded-full bg-amber-500/5 blur-[100px]" />
       </div>
 
       {/* Confetti Canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-10" />
 
-      {/* Main Celebration Modal Window */}
-      <div className="relative z-20 max-w-md w-full bg-zinc-950 border border-zinc-800 rounded-3xl p-6 sm:p-8 text-center space-y-7 shadow-2xl relative overflow-hidden">
+      {/* Main Executive Celebration Modal */}
+      <div className="relative z-20 max-w-md w-full bg-[#121217] border border-white/10 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl shadow-black/80 overflow-hidden">
         
-        {/* Animated Party Popper Icon */}
+        {/* Glow Halo & Trophy Emblem */}
         <div className="relative inline-block">
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 flex items-center justify-center text-3xl sm:text-4xl mx-auto shadow-2xl shadow-amber-500/40 border-2 border-amber-200 animate-bounce">
-            🎉
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-teal-950 to-[#181820] border border-teal-500/40 flex items-center justify-center text-3xl mx-auto shadow-xl shadow-teal-950/60 ring-4 ring-teal-500/10 animate-bounce">
+            🏆
           </div>
         </div>
 
-        {/* Banner */}
+        {/* Title & Role Info */}
         <div className="space-y-1.5">
-          <span className="text-2xl sm:text-3xl font-extrabold tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-200 drop-shadow-[0_2px_10px_rgba(245,158,11,0.5)] font-mono">
-            CONGRATULATIONS!
-          </span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/60 border border-teal-500/30 text-teal-300 text-[11px] font-mono font-semibold uppercase tracking-wider mb-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping" />
+            Interview Loop Complete
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-sans">
+            Evaluation Synthesized
+          </h2>
           <p className="text-xs text-zinc-400 font-medium">
-            Interview round completed for <strong className="text-white font-bold">{targetRole}</strong>
+            Full multimodal scorecard generated for <span className="text-teal-300 font-semibold">{displayRole}</span>
           </p>
         </div>
 
+        {/* Executive Metric Pillars */}
+        <div className="grid grid-cols-3 gap-2 py-1">
+          <div className="p-2.5 rounded-xl bg-[#0B0B0E] border border-white/5 text-center">
+            <p className="text-[10px] font-mono text-zinc-500 uppercase">Aptitude</p>
+            <p className="text-xs font-bold text-white mt-0.5">Evaluated ✓</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-[#0B0B0E] border border-white/5 text-center">
+            <p className="text-[10px] font-mono text-zinc-500 uppercase">Technical</p>
+            <p className="text-xs font-bold text-teal-400 mt-0.5">Calibrated ✓</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-[#0B0B0E] border border-white/5 text-center">
+            <p className="text-[10px] font-mono text-zinc-500 uppercase">STAR Matrix</p>
+            <p className="text-xs font-bold text-amber-400 mt-0.5">Scored ✓</p>
+          </div>
+        </div>
 
-        {/* High-Contrast Stars Container */}
-        <div className="p-5 rounded-2xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-center gap-5 shadow-inner">
+        {/* Refined Gold Star Badges */}
+        <div className="p-4 rounded-2xl bg-[#0B0B0E] border border-white/5 flex items-center justify-center gap-4 shadow-inner">
           {starsVisible.map((visible, idx) => (
             <div
               key={idx}
-              className={`transform transition-all duration-300 ${
+              className={`transform transition-all duration-500 ${
                 visible
                   ? 'scale-100 rotate-0 opacity-100'
-                  : 'scale-0 -rotate-45 opacity-0'
+                  : 'scale-50 -rotate-12 opacity-0'
               }`}
             >
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 flex items-center justify-center text-4xl shadow-lg shadow-amber-500/50 border-2 border-amber-200">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500/20 to-yellow-500/10 border border-amber-500/40 flex items-center justify-center text-2xl shadow-lg shadow-amber-500/20">
                 ⭐
               </div>
             </div>
           ))}
         </div>
 
-        {/* View Report Button */}
+        {/* View Report CTA */}
         <button
           type="button"
           onClick={onClose}
-          className="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-indigo-600/30 transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+          className="w-full py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-teal-950/60 transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
         >
-          <span>View Report →</span>
+          <span>Access Full Report & Scorecard →</span>
         </button>
 
       </div>
     </div>
   );
 }
+

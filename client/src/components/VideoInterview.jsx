@@ -147,26 +147,60 @@ export default function VideoInterview() {
   // ── Feature 1: Request Socratic Hint (-5 pts penalty) ─────────────────────
   const handleRequestHint = async () => {
     if (isHintLoading || hint) return;
+
+    // 1. Instant check for embedded hints on current question
+    if (currentQuestion?.hints && currentQuestion.hints.length > 0) {
+      const embeddedHint = Array.isArray(currentQuestion.hints)
+        ? currentQuestion.hints.join(' ')
+        : currentQuestion.hints;
+      setHint(embeddedHint);
+      setHintsUsed((h) => h + 1);
+      setStatusMessage('💡 Socratic hint unlocked (-5 pts score penalty applied)');
+      setTimeout(() => setStatusMessage(null), 4000);
+      return;
+    }
+
+    if (currentQuestion?.hint) {
+      setHint(currentQuestion.hint);
+      setHintsUsed((h) => h + 1);
+      setStatusMessage('💡 Socratic hint unlocked (-5 pts score penalty applied)');
+      setTimeout(() => setStatusMessage(null), 4000);
+      return;
+    }
+
+    // 2. Fetch bespoke hint from backend with instant fallback
     setIsHintLoading(true);
     try {
       const res = await getQuestionHint({
-        question: currentQuestion.question,
-        round: currentRound?.id,
-        targetRole,
-        companyTrack,
+        question: currentQuestion?.question || 'Technical problem solving question',
+        round: currentRound?.id || 'technical',
+        targetRole: targetRole || 'Software Engineer',
+        companyTrack: companyTrack || 'General',
       });
       if (res?.hint) {
         setHint(res.hint);
         setHintsUsed((h) => h + 1);
         setStatusMessage('💡 Socratic hint unlocked (-5 pts score penalty applied)');
         setTimeout(() => setStatusMessage(null), 4000);
+      } else {
+        const fallbackHint = `Consider the core scalability trade-offs: Analyze time/space complexity, data consistency requirements (CAP theorem), and identify the primary I/O bottleneck in the workflow.`;
+        setHint(fallbackHint);
+        setHintsUsed((h) => h + 1);
+        setStatusMessage('💡 Socratic hint unlocked (-5 pts score penalty applied)');
+        setTimeout(() => setStatusMessage(null), 4000);
       }
     } catch (e) {
-      console.warn(e);
+      console.warn('Hint fetch fallback:', e);
+      const fallbackHint = `Focus on the foundational invariants: Break the problem into inputs, state mutations, and edge cases. Outline an iterative approach before optimizing for scale.`;
+      setHint(fallbackHint);
+      setHintsUsed((h) => h + 1);
+      setStatusMessage('💡 Socratic hint unlocked (-5 pts score penalty applied)');
+      setTimeout(() => setStatusMessage(null), 4000);
     } finally {
       setIsHintLoading(false);
     }
   };
+
 
   // ── Robust Camera Initialization ──────────────────────────────────────────
   const startCamera = useCallback(async () => {
