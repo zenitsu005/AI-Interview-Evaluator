@@ -1221,20 +1221,20 @@ export default function DsaPractice() {
                   {testResults.cases.map((tc) => (
                     <div
                       key={tc.id}
-                      className={`p-3 rounded-xl border font-mono text-xs space-y-1 ${
+                      className={`p-3.5 rounded-xl border font-mono text-xs space-y-1.5 ${
                         tc.status === 'passed'
-                          ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                          : 'bg-rose-50 border-rose-200 text-rose-800'
+                          ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                          : 'bg-rose-50 border-rose-300 text-rose-950'
                       }`}
                     >
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="font-bold">Case #{tc.id}</span>
-                        <span>{tc.time}</span>
+                      <div className="flex items-center justify-between text-xs font-bold">
+                        <span>Case #{tc.id}</span>
+                        <span className="text-slate-600 font-normal">{tc.time}</span>
                       </div>
-                      <p><span className="text-slate-500">Input:</span> {tc.input}</p>
-                      <p><span className="text-slate-500">Expected:</span> {tc.expected}</p>
-                      <p><span className="text-slate-500">Actual:</span> {tc.actual}</p>
-                      {tc.error && <p className="text-rose-600 text-[11px] font-bold">Error: {tc.error}</p>}
+                      <p><span className="text-slate-700 font-semibold">Input:</span> {tc.input}</p>
+                      <p><span className="text-slate-700 font-semibold">Expected:</span> {tc.expected}</p>
+                      <p><span className="text-slate-700 font-semibold">Actual:</span> {tc.actual}</p>
+                      {tc.error && <p className="text-rose-700 text-xs font-bold">Error: {tc.error}</p>}
                     </div>
                   ))}
                 </div>

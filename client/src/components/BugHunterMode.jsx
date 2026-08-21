@@ -368,16 +368,16 @@ export default function BugHunterMode() {
             <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center font-mono">
-                  <span className="text-xl font-black text-amber-600">{timeLeft}</span>
-                  <span className="text-[9px] uppercase text-slate-500">SEC</span>
+                  <span className="text-xl font-black text-amber-700">{timeLeft}</span>
+                  <span className="text-[10px] uppercase text-slate-700 font-bold">SEC</span>
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-500 uppercase font-bold">Bug Triage Score</p>
+                  <p className="text-xs text-slate-600 uppercase font-bold">Bug Triage Score</p>
                   <p className="text-2xl font-black text-slate-900 font-mono">{score}</p>
                 </div>
               </div>
 
-              <span className="text-xs font-mono text-slate-600 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200">
+              <span className="text-xs font-mono font-bold text-slate-700 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200">
                 Drill {currentIndex + 1} / {drills.length}
               </span>
             </div>
@@ -388,29 +388,29 @@ export default function BugHunterMode() {
                 <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
                   <span>🚨</span> {currentDrill.title}
                 </h2>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-rose-200 bg-rose-50 text-rose-700">
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full border border-rose-200 bg-rose-50 text-rose-800">
                   {currentDrill.category}
                 </span>
               </div>
 
-              <pre className="p-4 bg-slate-900 rounded-xl border border-slate-800 font-mono text-xs text-slate-200 overflow-x-auto leading-relaxed select-text">
+              <pre className="p-4 bg-slate-900 rounded-xl border border-slate-800 font-mono text-xs sm:text-sm text-slate-100 overflow-x-auto leading-relaxed select-text font-medium">
                 {currentDrill.code}
               </pre>
 
               <div className="space-y-2 pt-2">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <p className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Select the Correct Code Fix:
                 </p>
                 <div className="grid grid-cols-1 gap-2.5">
                   {currentDrill.fixOptions.map((opt, optIdx) => {
-                    let style = 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800';
+                    let style = 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-900 font-medium';
                     if (isAnswered) {
                       if (optIdx === currentDrill.correctFixIndex) {
-                        style = 'border-emerald-600 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-500/20';
+                        style = 'border-emerald-600 bg-emerald-50 text-emerald-950 font-bold ring-2 ring-emerald-500/30';
                       } else if (optIdx === selectedOption) {
-                        style = 'border-rose-500 bg-rose-50 text-rose-900';
+                        style = 'border-rose-500 bg-rose-50 text-rose-950 font-bold';
                       } else {
-                        style = 'opacity-40 border-slate-200 bg-slate-50 text-slate-400';
+                        style = 'opacity-70 border-slate-200 bg-slate-50 text-slate-700';
                       }
                     }
 
@@ -419,7 +419,7 @@ export default function BugHunterMode() {
                         key={optIdx}
                         onClick={() => handleSelectOption(optIdx)}
                         disabled={isAnswered}
-                        className={`p-3.5 rounded-xl border text-left font-mono text-xs transition-all active:scale-95 flex items-center justify-between cursor-pointer ${style}`}
+                        className={`p-3.5 rounded-xl border text-left font-mono text-xs sm:text-sm transition-all active:scale-95 flex items-center justify-between cursor-pointer shadow-sm ${style}`}
                       >
                         <span>{opt}</span>
                         {isAnswered && optIdx === currentDrill.correctFixIndex && <span>✅</span>}
@@ -433,8 +433,8 @@ export default function BugHunterMode() {
               </div>
 
               {isAnswered && (
-                <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 animate-fade-in">
-                  💡 <strong className="text-amber-800">Security / Logic Analysis:</strong> {currentDrill.bugExplanation}
+                <div className="p-4 bg-amber-50 rounded-xl border border-amber-300 text-xs sm:text-sm text-amber-950 animate-fade-in font-sans leading-relaxed">
+                  💡 <strong className="text-amber-900 font-bold">Security / Logic Analysis:</strong> {currentDrill.bugExplanation}
                 </div>
               )}
             </div>

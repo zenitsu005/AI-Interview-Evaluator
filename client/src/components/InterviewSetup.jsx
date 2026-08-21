@@ -160,7 +160,7 @@ export default function InterviewSetup({ onNavigate }) {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-left">
         
         {/* Breadcrumb Steps Header */}
-        <div className="mb-8 flex items-center justify-between border-b border-slate-200 pb-4 flex-wrap gap-2 text-xs font-mono">
+        <div className="mb-8 flex items-center justify-between border-b border-slate-200 pb-4 flex-wrap gap-2 text-xs font-sans">
           <div className="flex items-center gap-2 text-slate-500">
             <span className={step >= 1 ? 'text-teal-700 font-bold' : ''}>1. Target Role</span>
             <span>→</span>
@@ -170,7 +170,7 @@ export default function InterviewSetup({ onNavigate }) {
             <span>→</span>
             <span className={step >= 4 ? 'text-teal-700 font-bold' : ''}>4. Review & Consent</span>
           </div>
-          <span className="text-slate-400 font-medium">Step {step} of 4</span>
+          <span className="text-slate-500 font-medium">Step {step} of 4</span>
         </div>
 
         {/* ── STEP 1: TARGET ROLE CONFIGURATION ── */}
@@ -180,14 +180,14 @@ export default function InterviewSetup({ onNavigate }) {
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
                 Select or Type Target Engineering Role
               </h1>
-              <p className="text-xs text-slate-500">
+              <p className="text-sm text-slate-500">
                 Type your specific specialization or click a suggestion below.
               </p>
             </div>
 
             {/* Custom Role Input Box */}
             <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
-              <label className="block text-[11px] font-mono font-bold text-teal-700 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-teal-800 uppercase tracking-wider">
                 ✏️ Target Role / Tech Stack (Type Freely):
               </label>
               <input
@@ -201,32 +201,36 @@ export default function InterviewSetup({ onNavigate }) {
                 className="w-full bg-slate-50 border border-slate-300 focus:border-teal-500 rounded-xl p-3.5 text-sm sm:text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 font-sans shadow-sm"
               />
 
-              {/* Quick Suggestion Chips */}
-              <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                <span className="text-[10px] font-mono text-slate-500 mr-1">Quick Suggestions:</span>
-                {POPULAR_CHIPS.map((chip, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setCustomRoleText(chip);
-                      setSelectedRole({ id: `chip-${idx}`, title: chip, level: 'Suggested Role' });
-                    }}
-                    className={`text-[11px] px-2.5 py-1 rounded-lg border font-mono transition-all cursor-pointer ${
-                      customRoleText === chip
-                        ? 'bg-teal-50 text-teal-800 border-teal-500 font-bold'
-                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
-                    }`}
-                  >
-                    {chip}
-                  </button>
-                ))}
+              {/* Popular Role Chips */}
+              <div className="space-y-2 pt-1">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Quick Suggestions:</p>
+                <div className="flex flex-wrap gap-2">
+                  {POPULAR_CHIPS.map((chip) => (
+                    <button
+                      key={chip}
+                      type="button"
+                      onClick={() => {
+                        setCustomRoleText(chip);
+                        setSelectedRole({ id: 'custom', title: chip, level: chip });
+                      }}
+                      className={`text-xs sm:text-sm px-3.5 py-1.5 rounded-xl border transition-all cursor-pointer ${
+                        customRoleText === chip
+                          ? 'bg-teal-600 text-white border-teal-600 font-semibold shadow-sm'
+                          : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-medium'
+                      }`}
+                    >
+                      {chip}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="relative flex py-1 items-center">
+            <div className="relative flex py-2 items-center">
               <div className="flex-grow border-t border-slate-200"></div>
-              <span className="flex-shrink mx-4 text-[11px] font-mono text-slate-400 uppercase tracking-wider">Or Select Domain Specialization</span>
+              <span className="flex-shrink mx-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Or pick standard track
+              </span>
               <div className="flex-grow border-t border-slate-200"></div>
             </div>
 
@@ -240,19 +244,19 @@ export default function InterviewSetup({ onNavigate }) {
                     setSelectedRole(role);
                     setCustomRoleText(role.title);
                   }}
-                  className={`p-4 rounded-2xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
+                  className={`p-4 sm:p-5 rounded-2xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
                     customRoleText === role.title
                       ? 'bg-teal-50/70 border-teal-600 ring-2 ring-teal-500/20 text-slate-900 shadow-sm'
                       : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 shadow-sm'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <p className="font-bold text-sm text-slate-900">{role.title}</p>
+                    <p className="font-bold text-sm sm:text-base text-slate-900">{role.title}</p>
                     {customRoleText === role.title && (
                       <span className="text-teal-700 font-bold text-xs">✓ Selected</span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 font-mono leading-relaxed">{role.level}</p>
+                  <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed">{role.level}</p>
                 </button>
               ))}
             </div>
@@ -266,7 +270,7 @@ export default function InterviewSetup({ onNavigate }) {
                   }
                   setStep(2);
                 }}
-                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md transition-all active:scale-98 cursor-pointer"
+                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-98 cursor-pointer"
               >
                 Continue to Level & Persona →
               </button>
@@ -281,7 +285,7 @@ export default function InterviewSetup({ onNavigate }) {
             <div className="space-y-4">
               <div className="space-y-1">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Select Difficulty Level</h1>
-                <p className="text-xs text-slate-500">Calibrates technical depth, rubric rigor, and follow-up probes.</p>
+                <p className="text-sm text-slate-500">Calibrates technical depth, rubric rigor, and follow-up probes.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -290,19 +294,19 @@ export default function InterviewSetup({ onNavigate }) {
                     key={lvl.id}
                     type="button"
                     onClick={() => setDifficulty(lvl.id)}
-                    className={`p-4 rounded-2xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
+                    className={`p-4 sm:p-5 rounded-2xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
                       difficulty === lvl.id
                         ? 'bg-teal-50/70 border-teal-600 ring-2 ring-teal-500/20 text-slate-900 shadow-sm'
                         : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 shadow-sm'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <p className="font-bold text-sm text-slate-900">{lvl.label}</p>
+                      <p className="font-bold text-sm sm:text-base text-slate-900">{lvl.label}</p>
                       {difficulty === lvl.id && (
                         <span className="text-teal-700 font-bold text-xs">✓</span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-500 font-sans leading-relaxed">{lvl.desc}</p>
+                    <p className="text-xs sm:text-sm text-slate-600 font-sans leading-relaxed">{lvl.desc}</p>
                   </button>
                 ))}
               </div>
@@ -313,7 +317,7 @@ export default function InterviewSetup({ onNavigate }) {
               <div className="space-y-4 pt-2 border-t border-slate-200">
                 <div className="space-y-1">
                   <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Select Interviewer Persona & Track</h2>
-                  <p className="text-xs text-slate-500">Simulates real interview styles from top-tier tech firms.</p>
+                  <p className="text-sm text-slate-500">Simulates real interview styles from top-tier tech firms.</p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -322,20 +326,20 @@ export default function InterviewSetup({ onNavigate }) {
                       key={p.id}
                       type="button"
                       onClick={() => setSelectedPersona(p)}
-                      className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all cursor-pointer ${
+                      className={`p-4 sm:p-5 rounded-2xl border text-left flex items-start gap-3.5 transition-all cursor-pointer ${
                         selectedPersona?.id === p.id
                           ? 'bg-teal-50/70 border-teal-600 ring-2 ring-teal-500/20 text-slate-900 shadow-sm'
                           : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 shadow-sm'
                       }`}
                     >
-                      <span className="text-2xl">{p.avatar}</span>
-                      <div className="space-y-1 flex-1">
-                        <div className="flex items-center justify-between">
-                          <p className="font-bold text-xs sm:text-sm text-slate-900">{p.name}</p>
-                          <span className="text-[10px] font-mono text-slate-500">{p.company}</span>
+                      <span className="text-3xl flex-shrink-0 mt-0.5">{p.avatar}</span>
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="font-bold text-sm sm:text-base text-slate-900 truncate">{p.name}</p>
+                          <span className="text-xs font-semibold text-slate-500 flex-shrink-0">{p.company}</span>
                         </div>
-                        <p className="text-[11px] text-slate-600 leading-snug">{p.title}</p>
-                        <p className="text-[10px] text-teal-700 font-mono mt-1 font-semibold">{p.focus}</p>
+                        <p className="text-xs sm:text-sm text-slate-600 font-medium leading-snug">{p.title}</p>
+                        <p className="text-xs sm:text-sm text-teal-800 font-sans leading-relaxed mt-1.5 font-normal">{p.focus}</p>
                       </div>
                     </button>
                   ))}
@@ -346,13 +350,13 @@ export default function InterviewSetup({ onNavigate }) {
             <div className="flex justify-between pt-4">
               <button
                 onClick={() => setStep(1)}
-                className="py-3 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold cursor-pointer shadow-sm"
+                className="py-3 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs sm:text-sm font-semibold cursor-pointer shadow-sm"
               >
                 ← Back
               </button>
               <button
                 onClick={() => setStep(3)}
-                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md transition-all active:scale-98 cursor-pointer"
+                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-98 cursor-pointer"
               >
                 Continue to Format →
               </button>
@@ -365,7 +369,7 @@ export default function InterviewSetup({ onNavigate }) {
           <div className="space-y-6 animate-fade-in">
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Select Input Format & Timing</h1>
-              <p className="text-xs text-slate-500">Choose between live audio analysis or quiet text-only mode.</p>
+              <p className="text-sm text-slate-500">Choose between live audio analysis or quiet text-only mode.</p>
             </div>
 
             <div className="space-y-3">
@@ -373,23 +377,23 @@ export default function InterviewSetup({ onNavigate }) {
                 <button
                   key={fmt.id}
                   onClick={() => setSelectedFormat(fmt)}
-                  className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                  className={`w-full p-4 sm:p-5 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                     selectedFormat.id === fmt.id
                       ? 'bg-teal-50/70 border-teal-600 ring-2 ring-teal-500/20 text-slate-900 shadow-sm'
                       : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 shadow-sm'
                   }`}
                 >
                   <div className="space-y-1">
-                    <p className="font-bold text-sm text-slate-900">{fmt.title}</p>
-                    <p className="text-xs text-slate-500">{fmt.desc}</p>
+                    <p className="font-bold text-sm sm:text-base text-slate-900">{fmt.title}</p>
+                    <p className="text-xs sm:text-sm text-slate-600">{fmt.desc}</p>
                   </div>
-                  {selectedFormat.id === fmt.id && <span className="text-teal-700 font-bold">✓ Selected</span>}
+                  {selectedFormat.id === fmt.id && <span className="text-teal-700 font-bold text-sm">✓ Selected</span>}
                 </button>
               ))}
             </div>
 
-            <div className="space-y-1.5 pt-2">
-              <label className="text-xs font-bold text-slate-700">Target Duration</label>
+            <div className="space-y-2 pt-2">
+              <label className="text-xs sm:text-sm font-bold text-slate-700">Target Duration</label>
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { id: '15', label: '15 Min', desc: '3 Qs / Round', count: '9 Questions Total' },
@@ -400,15 +404,15 @@ export default function InterviewSetup({ onNavigate }) {
                     key={d.id}
                     type="button"
                     onClick={() => setDuration(d.id)}
-                    className={`p-3.5 rounded-xl border text-center transition-all cursor-pointer ${
+                    className={`p-3.5 sm:p-4 rounded-xl border text-center transition-all cursor-pointer ${
                       duration === d.id
                         ? 'bg-teal-50 border-teal-600 text-teal-900 font-bold ring-1 ring-teal-500/50 shadow-sm'
-                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-sm'
                     }`}
                   >
-                    <p className="text-xs font-bold text-slate-900">{d.label}</p>
-                    <p className="text-[11px] font-mono text-teal-700 font-semibold mt-0.5">{d.count}</p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">{d.desc}</p>
+                    <p className="text-xs sm:text-sm font-bold text-slate-900">{d.label}</p>
+                    <p className="text-xs font-semibold text-teal-700 mt-0.5">{d.count}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{d.desc}</p>
                   </button>
                 ))}
               </div>
@@ -417,13 +421,13 @@ export default function InterviewSetup({ onNavigate }) {
             <div className="flex justify-between pt-4">
               <button
                 onClick={() => setStep(2)}
-                className="py-3 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold cursor-pointer shadow-sm"
+                className="py-3 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs sm:text-sm font-semibold cursor-pointer shadow-sm"
               >
                 ← Back
               </button>
               <button
                 onClick={() => setStep(4)}
-                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md transition-all active:scale-98 cursor-pointer"
+                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-98 cursor-pointer"
               >
                 Review & Launch →
               </button>
@@ -436,37 +440,37 @@ export default function InterviewSetup({ onNavigate }) {
           <div className="space-y-6 animate-fade-in">
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Review & Launch Mock Interview</h1>
-              <p className="text-xs text-slate-500">Confirm your session parameters and audio consent prior to launch.</p>
+              <p className="text-sm text-slate-500">Confirm your session parameters and audio consent prior to launch.</p>
             </div>
 
             {/* Error Banner */}
             {launchError && (
-              <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+              <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm">
                 ⚠️ {launchError}
               </div>
             )}
 
             {/* Summary Card */}
-            <div className="bg-white border border-slate-200 shadow-sm p-5 rounded-2xl space-y-3 font-mono text-xs">
-              <div className="flex justify-between border-b border-slate-100 pb-2">
+            <div className="bg-white border border-slate-200 shadow-sm p-5 sm:p-6 rounded-2xl space-y-3 text-xs sm:text-sm font-sans">
+              <div className="flex justify-between border-b border-slate-100 pb-2.5">
                 <span className="text-slate-500">Target Role:</span>
                 <span className="text-slate-900 font-bold">{customRoleText || selectedRole.title}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-100 pb-2">
+              <div className="flex justify-between border-b border-slate-100 pb-2.5">
                 <span className="text-slate-500">Difficulty Level:</span>
                 <span className="text-amber-700 font-bold">{difficulty}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-100 pb-2">
+              <div className="flex justify-between border-b border-slate-100 pb-2.5">
                 <span className="text-slate-500">Interviewer Persona:</span>
                 <span className="text-teal-700 font-bold">{selectedPersona?.name} ({selectedPersona?.company})</span>
               </div>
-              <div className="flex justify-between border-b border-slate-100 pb-2">
+              <div className="flex justify-between border-b border-slate-100 pb-2.5">
                 <span className="text-slate-500">Format:</span>
                 <span className="text-teal-700 font-bold">{selectedFormat.title}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Session Length:</span>
-                <span className="text-slate-800 font-bold">
+                <span className="text-slate-900 font-bold">
                   {duration === '15' ? '15 Min (3 Qs / Round • 9 Total)' : duration === '45' ? '45 Min (7 Qs / Round • 21 Total)' : '30 Min (5 Qs / Round • 15 Total)'}
                 </span>
               </div>
@@ -474,14 +478,14 @@ export default function InterviewSetup({ onNavigate }) {
 
             {/* Microphone Permission Status Banner */}
             {selectedFormat.id !== 'text-only' && (
-              <div className={`p-4 rounded-xl border text-xs flex items-center justify-between ${
+              <div className={`p-4 rounded-xl border text-xs sm:text-sm flex items-center justify-between ${
                 micState === 'granted'
                   ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                   : 'bg-amber-50 border-amber-200 text-amber-800'
               }`}>
                 <div>
                   <p className="font-bold">Microphone Access Status:</p>
-                  <p className="text-[11px] opacity-90">
+                  <p className="text-xs opacity-90">
                     {micState === 'granted'
                       ? '✓ Browser microphone permission granted.'
                       : '⚠️ Microphone not detected or permission pending.'}
@@ -490,7 +494,7 @@ export default function InterviewSetup({ onNavigate }) {
                 {micState !== 'granted' && (
                   <button
                     onClick={() => handleLaunchSession(true)}
-                    className="py-1.5 px-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-semibold text-[11px] shadow-sm cursor-pointer"
+                    className="py-1.5 px-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-semibold text-xs shadow-sm cursor-pointer"
                   >
                     Switch to Text-Only Mode
                   </button>
@@ -507,11 +511,11 @@ export default function InterviewSetup({ onNavigate }) {
                   onChange={(e) => setAudioConsent(e.target.checked)}
                   className="mt-0.5 w-4 h-4 rounded text-teal-600 focus:ring-teal-500"
                 />
-                <div className="text-xs text-slate-600 leading-relaxed text-pretty">
+                <div className="text-xs sm:text-sm text-slate-600 leading-relaxed text-pretty">
                   <span className="font-bold text-slate-900">Explicit Audio Consent: </span>
                   I understand that my audio may be processed to generate a live transcript and practice feedback. You can stop anytime. Read our{' '}
                   <button type="button" onClick={() => onNavigate('privacy')} className="text-teal-700 underline font-semibold">Privacy Policy</button>{' '}
-                  or learn about <button type="button" onClick={() => onNavigate('privacy')} className="text-teal-700 underline font-mono font-semibold">Data Deletion</button>.
+                  or learn about <button type="button" onClick={() => onNavigate('privacy')} className="text-teal-700 underline font-semibold">Data Deletion</button>.
                 </div>
               </label>
             )}
@@ -519,14 +523,14 @@ export default function InterviewSetup({ onNavigate }) {
             <div className="flex justify-between pt-4">
               <button
                 onClick={() => setStep(3)}
-                className="py-3 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold cursor-pointer shadow-sm"
+                className="py-3 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs sm:text-sm font-semibold cursor-pointer shadow-sm"
               >
                 ← Back
               </button>
 
               <button
                 onClick={() => handleLaunchSession(false)}
-                className="py-3.5 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md shadow-teal-700/20 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
+                className="py-3.5 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs sm:text-sm font-bold shadow-md shadow-teal-700/20 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
               >
                 <span>Launch Mock Session →</span>
               </button>

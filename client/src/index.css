@@ -86,7 +86,7 @@
     @apply bg-white/90 border border-slate-200 hover:border-teal-500/40 rounded-2xl p-6 shadow-md backdrop-blur-md transition-all duration-200 text-slate-900;
   }
   .input-field-dark {
-    @apply w-full bg-white border border-slate-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none transition-all duration-200 resize-none shadow-sm;
+    @apply w-full bg-white border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-500 focus:outline-none transition-all duration-200 resize-none shadow-sm;
   }
   .input-error {
     @apply border-red-500/80 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 bg-red-50 animate-shake;

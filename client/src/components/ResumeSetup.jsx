@@ -253,7 +253,7 @@ export default function ResumeSetup() {
                       setSelectedPersona(persona);
                       setSelectedCompany(persona.company);
                     }}
-                    className={`p-3.5 rounded-2xl border text-left transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
+                    className={`p-4 rounded-2xl border text-left transition-all relative overflow-hidden flex flex-col justify-between cursor-pointer ${
                       isSelected
                         ? 'border-teal-600 bg-teal-50/70 ring-2 ring-teal-500/30 shadow-md scale-[1.02]'
                         : 'border-slate-200 bg-slate-50 hover:bg-slate-100 shadow-sm'
@@ -261,28 +261,28 @@ export default function ResumeSetup() {
                   >
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2.5">
                           <span className="text-2xl">{persona.avatar}</span>
                           <div>
-                            <p className="font-extrabold text-slate-900 text-xs leading-tight">{persona.name}</p>
-                            <p className="text-[10px] text-teal-700 font-semibold">{persona.company}</p>
+                            <p className="font-bold text-slate-900 text-sm leading-tight">{persona.name}</p>
+                            <p className="text-xs text-teal-700 font-semibold">{persona.company}</p>
                           </div>
                         </div>
                         {isSelected && (
-                          <span className="text-[10px] font-bold bg-teal-600 text-white px-2 py-0.5 rounded-full shadow-sm">
+                          <span className="text-xs font-bold bg-teal-600 text-white px-2 py-0.5 rounded-full shadow-sm">
                             SELECTED
                           </span>
                         )}
                       </div>
 
-                      <p className="text-[10px] font-bold text-slate-800 mb-1">{persona.badge}</p>
-                      <p className="text-[10px] text-slate-500 line-clamp-2 leading-relaxed">
+                      <p className="text-xs font-semibold text-slate-800 mb-1">{persona.badge}</p>
+                      <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
                         {persona.focus}
                       </p>
                     </div>
 
                     <div className="mt-2.5 pt-2 border-t border-slate-200">
-                      <p className="text-[9px] text-amber-800 font-mono italic truncate">
+                      <p className="text-xs text-amber-800 font-sans italic truncate">
                         "{persona.catchphrase}"
                       </p>
                     </div>
@@ -303,14 +303,14 @@ export default function ResumeSetup() {
                   key={lvl.id}
                   type="button"
                   onClick={() => setSelectedLevel(lvl.id)}
-                  className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
                     selectedLevel === lvl.id
                       ? 'border-teal-600 bg-teal-50 ring-2 ring-teal-500/20 shadow-sm'
                       : 'border-slate-200 bg-slate-50 hover:bg-slate-100 shadow-sm'
                   }`}
                 >
-                  <p className="font-bold text-slate-900 text-xs">{lvl.label}</p>
-                  <p className="text-[11px] text-slate-500 mt-1 leading-snug">{lvl.sub}</p>
+                  <p className="font-bold text-slate-900 text-sm">{lvl.label}</p>
+                  <p className="text-xs text-slate-600 mt-1 leading-snug">{lvl.sub}</p>
                 </button>
               ))}
             </div>
