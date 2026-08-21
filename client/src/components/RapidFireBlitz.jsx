@@ -221,25 +221,25 @@ export default function RapidFireBlitz() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070a12] text-slate-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
       {/* ── Universal Top Bar ── */}
       <AppNavbar currentActive="blitz" />
 
       {/* Main Container */}
-      <main className="max-w-3xl mx-auto w-full p-4 sm:p-6 space-y-5 flex-1 flex flex-col justify-center">
+      <main className="max-w-3xl mx-auto w-full p-4 sm:p-6 space-y-5 flex-1 flex flex-col justify-center text-left">
         {/* Top Controls Bar */}
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div>
-            <h1 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+            <h1 className="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
               <span>⚡</span> 60-Second Rapid-Fire Blitz
             </h1>
-            <p className="text-xs text-slate-400">Warmup Drill for <strong className="text-amber-300">{targetRole || 'Software Engineer'}</strong></p>
+            <p className="text-xs text-slate-500">Warmup Drill for <strong className="text-amber-700">{targetRole || 'Software Engineer'}</strong></p>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleShufflePool}
-              className="text-xs bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 px-3 py-1.5 rounded-xl transition-all font-semibold"
+              className="text-xs bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-3 py-1.5 rounded-xl transition-all font-semibold shadow-sm cursor-pointer"
             >
               🔀 Shuffle Pool
             </button>
@@ -247,7 +247,7 @@ export default function RapidFireBlitz() {
               type="button"
               onClick={fetchAiQuestions}
               disabled={isLoading}
-              className="text-xs bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 text-white font-bold px-3.5 py-1.5 rounded-xl shadow-md transition-all flex items-center gap-1.5"
+              className="text-xs bg-teal-600 hover:bg-teal-500 text-white font-bold px-3.5 py-1.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
               <span>{isLoading ? '⏳ Loading...' : '✨ New AI Questions'}</span>
             </button>
@@ -256,47 +256,47 @@ export default function RapidFireBlitz() {
         {!gameOver ? (
           <div className="space-y-6 animate-fade-in">
             {/* Status Bar */}
-            <div className="flex items-center justify-between bg-slate-900/90 p-4 rounded-2xl border border-slate-800 shadow-xl">
+            <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center font-mono">
-                  <span className="text-xl font-black text-amber-400">{timeLeft}</span>
+                <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex flex-col items-center justify-center font-mono">
+                  <span className="text-xl font-black text-amber-600">{timeLeft}</span>
                   <span className="text-[9px] uppercase text-slate-500">SEC</span>
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-400 uppercase font-bold">Total Score</p>
-                  <p className="text-2xl font-black text-white font-mono">{score}</p>
+                  <p className="text-[10px] text-slate-500 uppercase font-bold">Total Score</p>
+                  <p className="text-2xl font-black text-slate-900 font-mono">{score}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 {streak > 1 && (
-                  <div className="bg-amber-950/80 border border-amber-800/80 text-amber-300 text-xs px-3 py-1.5 rounded-xl font-black flex items-center gap-1 shadow-sm animate-pulse">
+                  <div className="bg-amber-50 border border-amber-200 text-amber-800 text-xs px-3 py-1.5 rounded-xl font-black flex items-center gap-1 shadow-sm animate-pulse">
                     <span>🔥</span>
                     <span>{streak}x Streak</span>
                   </div>
                 )}
-                <span className="text-xs font-mono text-slate-400 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800">
+                <span className="text-xs font-mono text-slate-600 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200">
                   Q {currentIndex + 1} / {questions.length}
                 </span>
               </div>
             </div>
 
             {/* Question Card */}
-            <div className="card-dark border-indigo-900/40 p-6 space-y-5 shadow-2xl">
-              <h2 className="text-base sm:text-lg font-bold text-white leading-relaxed">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-5 shadow-sm">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-relaxed">
                 {currentQ.prompt}
               </h2>
 
               <div className="grid grid-cols-1 gap-2.5">
                 {currentQ.options.map((opt, optIdx) => {
-                  let btnStyle = 'border-slate-800 bg-slate-950/80 hover:border-slate-700 text-slate-200';
+                  let btnStyle = 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800';
                   if (isAnswered) {
                     if (optIdx === currentQ.correctIndex) {
-                      btnStyle = 'border-emerald-500 bg-emerald-950/60 text-emerald-300 ring-2 ring-emerald-500/20';
+                      btnStyle = 'border-emerald-600 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-500/20';
                     } else if (optIdx === selectedOption) {
-                      btnStyle = 'border-red-500 bg-red-950/60 text-red-300';
+                      btnStyle = 'border-rose-500 bg-rose-50 text-rose-900';
                     } else {
-                      btnStyle = 'opacity-40 border-slate-900 bg-slate-950 text-slate-500';
+                      btnStyle = 'opacity-40 border-slate-200 bg-slate-50 text-slate-400';
                     }
                   }
 
@@ -305,7 +305,7 @@ export default function RapidFireBlitz() {
                       key={optIdx}
                       onClick={() => handleSelectOption(optIdx)}
                       disabled={isAnswered}
-                      className={`p-3.5 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all active:scale-95 flex items-center justify-between ${btnStyle}`}
+                      className={`p-3.5 rounded-xl border text-left text-xs sm:text-sm font-medium transition-all active:scale-95 flex items-center justify-between cursor-pointer ${btnStyle}`}
                     >
                       <span>{opt}</span>
                       {isAnswered && optIdx === currentQ.correctIndex && <span>✅</span>}
@@ -316,39 +316,39 @@ export default function RapidFireBlitz() {
               </div>
 
               {isAnswered && (
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 animate-fade-in">
-                  💡 <strong className="text-amber-400">Analysis:</strong> {currentQ.explanation}
+                <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 animate-fade-in">
+                  💡 <strong className="text-amber-800">Analysis:</strong> {currentQ.explanation}
                 </div>
               )}
             </div>
           </div>
         ) : (
           /* Finished Scorecard */
-          <div className="card-dark border-amber-900/60 p-8 text-center space-y-6 shadow-2xl animate-fade-in">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-3xl mx-auto shadow-lg">
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center space-y-6 shadow-sm animate-fade-in">
+            <div className="w-16 h-16 rounded-2xl bg-teal-600 flex items-center justify-center text-3xl mx-auto shadow-md">
               🏆
             </div>
 
             <div className="space-y-1">
-              <h1 className="text-2xl font-black text-white">60s Rapid-Fire Blitz Complete!</h1>
-              <p className="text-xs text-slate-400">Warmup Speed & Technical Reflex Evaluation</p>
+              <h1 className="text-2xl font-black text-slate-900">60s Rapid-Fire Blitz Complete!</h1>
+              <p className="text-xs text-slate-500">Warmup Speed & Technical Reflex Evaluation</p>
             </div>
 
             <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto">
-              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                 <p className="text-[10px] uppercase text-slate-500 font-bold">Final Score</p>
-                <p className="text-2xl font-black text-amber-400 mt-0.5">{score}</p>
+                <p className="text-2xl font-black text-amber-600 mt-0.5">{score}</p>
               </div>
-              <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                 <p className="text-[10px] uppercase text-slate-500 font-bold">Max Streak</p>
-                <p className="text-2xl font-black text-orange-400 mt-0.5">{maxStreak}x 🔥</p>
+                <p className="text-2xl font-black text-teal-700 mt-0.5">{maxStreak}x 🔥</p>
               </div>
             </div>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={fetchAiQuestions}
-                className="btn-secondary py-3 px-6 text-xs font-semibold w-full sm:w-auto flex items-center justify-center gap-2"
+                className="py-3 px-6 text-xs font-semibold w-full sm:w-auto flex items-center justify-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 rounded-xl shadow-sm cursor-pointer"
               >
                 <span>🔄</span>
                 <span>Refresh Questions</span>
@@ -356,7 +356,7 @@ export default function RapidFireBlitz() {
 
               <button
                 onClick={() => setPhase('setup')}
-                className="btn-primary py-3 px-8 text-xs font-bold btn-glow shadow-xl w-full sm:w-auto"
+                className="py-3 px-8 text-xs font-bold bg-teal-600 hover:bg-teal-500 text-white rounded-xl shadow-md w-full sm:w-auto cursor-pointer"
               >
                 🎯 Jump to Full AI Interview →
               </button>
@@ -365,7 +365,7 @@ export default function RapidFireBlitz() {
         )}
       </main>
 
-      <footer className="py-4 border-t border-slate-900 bg-slate-950/80 text-center" />
+      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }

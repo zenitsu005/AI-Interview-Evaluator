@@ -98,81 +98,94 @@ export default function InterviewSetup({ onNavigate }) {
   const [selectedPersona, setSelectedPersona] = useState(BAR_RAISER_PERSONAS?.[0] || null);
   const [selectedFormat, setSelectedFormat] = useState(FORMATS[0]);
   const [duration, setDuration] = useState('15');
-  const [audioConsent, setAudioConsent] = useState(false);
-  const [micState, setMicState] = useState('checking');
-  const [isLaunching, setIsLaunching] = useState(false);
+  const [audioConsent, setAudioConsent] = useState(true);
+  const [micState, setMicState] = useState('prompt'); // 'prompt' | 'granted' | 'denied'
   const [launchError, setLaunchError] = useState(null);
 
-  // Check microphone permissions safely
+  // Auto-check mic permissions on step 3
   useEffect(() => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(() => setMicState('granted'))
-        .catch(() => setMicState('denied'));
-    } else {
-      setMicState('denied');
+    if (step === 3 || step === 4) {
+      if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions
+          .query({ name: 'microphone' })
+          .then((permissionStatus) => {
+            setMicState(permissionStatus.state);
+            permissionStatus.onchange = () => setMicState(permissionStatus.state);
+          })
+          .catch(() => setMicState('prompt'));
+      }
     }
-  }, []);
+  }, [step]);
 
-  const handleLaunchSession = (forceTextMode = false) => {
-    if (selectedFormat.id !== 'text-only' && !audioConsent && !forceTextMode) {
-      alert('Please check the audio processing consent box before launching voice mode, or choose Text-Only mode.');
+  const handleLaunchSession = async (fallbackToText = false) => {
+    setLaunchError(null);
+    const chosenFormat = fallbackToText ? 'text-only' : selectedFormat.id;
+
+    if (chosenFormat === 'voice-transcript' && !audioConsent) {
+      setLaunchError('Please confirm the audio consent checkbox before proceeding to the live audio session.');
       return;
     }
 
     try {
-      const targetRoleTitle = customRoleText.trim() || selectedRole.title;
-      const selectedCompany = selectedPersona?.company || 'General';
-      const selectedMode = forceTextMode || selectedFormat.id === 'text-only' ? 'text' : 'video';
+      const finalRoleTitle = customRoleText.trim() || selectedRole.title;
+      setRole(finalRoleTitle);
+      setDifficultyLevel(difficulty);
+      setInterviewMode(chosenFormat);
 
-      // Synchronous instant launch (<10ms) with explicit duration calibration
-      startInterview({
-        duration: duration || '15',
-        targetRole: targetRoleTitle,
+      if (selectedPersona) {
+        setInterviewerPersona(selectedPersona.id);
+        setCompanyTrack(selectedPersona.companyTrack || 'General');
+      }
+
+      await startInterview({
+        targetRole: finalRoleTitle,
         difficultyLevel: difficulty,
-        companyTrack: selectedCompany,
-        interviewerPersona: selectedPersona,
-        interviewMode: selectedMode,
+        interviewerPersona: selectedPersona?.id || 'standard',
+        companyTrack: selectedPersona?.companyTrack || 'General',
+        mode: chosenFormat,
+        durationMinutes: parseInt(duration, 10) || 15,
       });
     } catch (err) {
-      console.error('Launch interview error:', err);
-      setLaunchError(err.message || 'Failed to start interview session. Please try again.');
+      setLaunchError(err.message || 'Failed to initialize the mock interview session. Please try again.');
     }
   };
 
-
-
   return (
-    <div className="min-h-screen bg-[#0B0B0E] text-zinc-100 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-teal-500 selection:text-white select-none">
       <AppNavbar currentActive="setup" />
 
-      <main className="max-w-3xl mx-auto w-full px-6 py-10 space-y-8 text-left flex-1">
-        {/* Step Indicator Breadcrumb */}
-        <div className="flex items-center justify-between border-b border-white/5 pb-4 text-xs font-mono">
-          <div className="flex items-center gap-2 text-zinc-400">
-            <span className={step >= 1 ? 'text-teal-400 font-bold' : ''}>1. Target Role</span>
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 text-left">
+        
+        {/* Breadcrumb Steps Header */}
+        <div className="mb-8 flex items-center justify-between border-b border-slate-200 pb-4 flex-wrap gap-2 text-xs font-mono">
+          <div className="flex items-center gap-2 text-slate-500">
+            <span className={step >= 1 ? 'text-teal-700 font-bold' : ''}>1. Target Role</span>
             <span>→</span>
-            <span className={step >= 2 ? 'text-teal-400 font-bold' : ''}>2. Level & Bar Raiser</span>
+            <span className={step >= 2 ? 'text-teal-700 font-bold' : ''}>2. Level & Bar Raiser</span>
             <span>→</span>
-            <span className={step >= 3 ? 'text-teal-400 font-bold' : ''}>3. Input Format</span>
+            <span className={step >= 3 ? 'text-teal-700 font-bold' : ''}>3. Input Format</span>
             <span>→</span>
-            <span className={step >= 4 ? 'text-teal-400 font-bold' : ''}>4. Review & Consent</span>
+            <span className={step >= 4 ? 'text-teal-700 font-bold' : ''}>4. Review & Consent</span>
           </div>
-          <span className="text-zinc-500 font-bold">Step {step} of 4</span>
+          <span className="text-slate-400 font-medium">Step {step} of 4</span>
         </div>
 
-        {/* ── STEP 1: DIVERSE DOMAIN ROLE SELECTION OR CUSTOM INPUT ── */}
+        {/* ── STEP 1: TARGET ROLE CONFIGURATION ── */}
         {step === 1 && (
           <div className="space-y-6 animate-fade-in">
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Select or Type Target Engineering Role</h1>
-              <p className="text-xs text-zinc-400">Type your specific specialization or click a suggestion below.</p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+                Select or Type Target Engineering Role
+              </h1>
+              <p className="text-xs text-slate-500">
+                Type your specific specialization or click a suggestion below.
+              </p>
             </div>
 
-            {/* Direct Input Field Always Visible */}
-            <div className="bg-[#131318] border border-teal-500/60 p-4 rounded-2xl space-y-3 shadow-xl">
-              <label className="block text-xs font-bold text-teal-400 font-mono uppercase tracking-wider">
-                ✏️ Target Role / Tech Stack (Type freely):
+            {/* Custom Role Input Box */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
+              <label className="block text-[11px] font-mono font-bold text-teal-700 uppercase tracking-wider">
+                ✏️ Target Role / Tech Stack (Type Freely):
               </label>
               <input
                 type="text"
@@ -182,12 +195,12 @@ export default function InterviewSetup({ onNavigate }) {
                   setSelectedRole({ id: 'custom', title: e.target.value || 'Custom Role', level: 'Custom Role' });
                 }}
                 placeholder="e.g. Backend Engineer (Go/Rust), Full Stack Developer, ML Engineer..."
-                className="w-full bg-[#0B0B0E] border border-zinc-700 focus:border-teal-500 rounded-xl p-3.5 text-sm sm:text-base text-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 font-sans shadow-inner"
+                className="w-full bg-slate-50 border border-slate-300 focus:border-teal-500 rounded-xl p-3.5 text-sm sm:text-base text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 font-sans shadow-sm"
               />
 
               {/* Quick Suggestion Chips */}
               <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                <span className="text-[10px] font-mono text-zinc-500 mr-1">Quick Suggestions:</span>
+                <span className="text-[10px] font-mono text-slate-500 mr-1">Quick Suggestions:</span>
                 {POPULAR_CHIPS.map((chip, idx) => (
                   <button
                     key={idx}
@@ -198,8 +211,8 @@ export default function InterviewSetup({ onNavigate }) {
                     }}
                     className={`text-[11px] px-2.5 py-1 rounded-lg border font-mono transition-all cursor-pointer ${
                       customRoleText === chip
-                        ? 'bg-teal-950 text-teal-300 border-teal-500/80 font-bold'
-                        : 'bg-[#0B0B0E] text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700'
+                        ? 'bg-teal-50 text-teal-800 border-teal-500 font-bold'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
                     }`}
                   >
                     {chip}
@@ -209,9 +222,9 @@ export default function InterviewSetup({ onNavigate }) {
             </div>
 
             <div className="relative flex py-1 items-center">
-              <div className="flex-grow border-t border-white/5"></div>
-              <span className="flex-shrink mx-4 text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Or Select Domain Specialization</span>
-              <div className="flex-grow border-t border-white/5"></div>
+              <div className="flex-grow border-t border-slate-200"></div>
+              <span className="flex-shrink mx-4 text-[11px] font-mono text-slate-400 uppercase tracking-wider">Or Select Domain Specialization</span>
+              <div className="flex-grow border-t border-slate-200"></div>
             </div>
 
             {/* Diverse Role Domain Cards */}
@@ -226,17 +239,17 @@ export default function InterviewSetup({ onNavigate }) {
                   }}
                   className={`p-4 rounded-2xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
                     customRoleText === role.title
-                      ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
-                      : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
+                      ? 'bg-teal-50/70 border-teal-600 ring-2 ring-teal-500/20 text-slate-900 shadow-sm'
+                      : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 shadow-sm'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <p className="font-bold text-sm text-white">{role.title}</p>
+                    <p className="font-bold text-sm text-slate-900">{role.title}</p>
                     {customRoleText === role.title && (
-                      <span className="text-teal-400 font-bold text-xs">✓ Selected</span>
+                      <span className="text-teal-700 font-bold text-xs">✓ Selected</span>
                     )}
                   </div>
-                  <p className="text-xs text-zinc-400 font-mono leading-relaxed">{role.level}</p>
+                  <p className="text-xs text-slate-500 font-mono leading-relaxed">{role.level}</p>
                 </button>
               ))}
             </div>
@@ -250,7 +263,7 @@ export default function InterviewSetup({ onNavigate }) {
                   }
                   setStep(2);
                 }}
-                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
+                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md transition-all active:scale-98 cursor-pointer"
               >
                 Continue to Level & Persona →
               </button>
@@ -264,8 +277,8 @@ export default function InterviewSetup({ onNavigate }) {
             {/* Difficulty Level Picker */}
             <div className="space-y-4">
               <div className="space-y-1">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Select Difficulty Level</h1>
-                <p className="text-xs text-zinc-400">Calibrates the technical depth, rubric rigor, and follow-up probes.</p>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Select Difficulty Level</h1>
+                <p className="text-xs text-slate-500">Calibrates technical depth, rubric rigor, and follow-up probes.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -276,17 +289,17 @@ export default function InterviewSetup({ onNavigate }) {
                     onClick={() => setDifficulty(lvl.id)}
                     className={`p-4 rounded-2xl border text-left flex flex-col justify-between gap-2 transition-all cursor-pointer ${
                       difficulty === lvl.id
-                        ? 'bg-teal-950/60 border-teal-500 ring-2 ring-teal-500/30 text-white'
-                        : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
+                        ? 'bg-teal-50/70 border-teal-600 ring-2 ring-teal-500/20 text-slate-900 shadow-sm'
+                        : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 shadow-sm'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <p className="font-bold text-sm text-white">{lvl.label}</p>
+                      <p className="font-bold text-sm text-slate-900">{lvl.label}</p>
                       {difficulty === lvl.id && (
-                        <span className="text-teal-400 font-bold text-xs">✓</span>
+                        <span className="text-teal-700 font-bold text-xs">✓</span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-400 font-sans leading-relaxed">{lvl.desc}</p>
+                    <p className="text-xs text-slate-500 font-sans leading-relaxed">{lvl.desc}</p>
                   </button>
                 ))}
               </div>
@@ -294,10 +307,10 @@ export default function InterviewSetup({ onNavigate }) {
 
             {/* Bar Raiser Persona Track */}
             {BAR_RAISER_PERSONAS && BAR_RAISER_PERSONAS.length > 0 && (
-              <div className="space-y-4 pt-2 border-t border-white/5">
+              <div className="space-y-4 pt-2 border-t border-slate-200">
                 <div className="space-y-1">
-                  <h2 className="text-xl sm:text-2xl font-extrabold text-white">Select Interviewer Persona & Track</h2>
-                  <p className="text-xs text-zinc-400">Simulates real interview styles from top-tier tech firms.</p>
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">Select Interviewer Persona & Track</h2>
+                  <p className="text-xs text-slate-500">Simulates real interview styles from top-tier tech firms.</p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -308,18 +321,18 @@ export default function InterviewSetup({ onNavigate }) {
                       onClick={() => setSelectedPersona(p)}
                       className={`p-4 rounded-2xl border text-left flex items-start gap-3 transition-all cursor-pointer ${
                         selectedPersona?.id === p.id
-                          ? 'bg-teal-950/60 border-teal-500 ring-2 ring-teal-500/30 text-white'
-                          : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
+                          ? 'bg-teal-50/70 border-teal-600 ring-2 ring-teal-500/20 text-slate-900 shadow-sm'
+                          : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 shadow-sm'
                       }`}
                     >
                       <span className="text-2xl">{p.avatar}</span>
                       <div className="space-y-1 flex-1">
                         <div className="flex items-center justify-between">
-                          <p className="font-bold text-xs sm:text-sm text-white">{p.name}</p>
-                          <span className="text-[10px] font-mono text-zinc-400">{p.company}</span>
+                          <p className="font-bold text-xs sm:text-sm text-slate-900">{p.name}</p>
+                          <span className="text-[10px] font-mono text-slate-500">{p.company}</span>
                         </div>
-                        <p className="text-[11px] text-zinc-400 leading-snug">{p.title}</p>
-                        <p className="text-[10px] text-teal-300/80 font-mono mt-1">{p.focus}</p>
+                        <p className="text-[11px] text-slate-600 leading-snug">{p.title}</p>
+                        <p className="text-[10px] text-teal-700 font-mono mt-1 font-semibold">{p.focus}</p>
                       </div>
                     </button>
                   ))}
@@ -330,13 +343,13 @@ export default function InterviewSetup({ onNavigate }) {
             <div className="flex justify-between pt-4">
               <button
                 onClick={() => setStep(1)}
-                className="py-3 px-5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-xs font-semibold cursor-pointer"
+                className="py-3 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold cursor-pointer shadow-sm"
               >
                 ← Back
               </button>
               <button
                 onClick={() => setStep(3)}
-                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
+                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md transition-all active:scale-98 cursor-pointer"
               >
                 Continue to Format →
               </button>
@@ -348,8 +361,8 @@ export default function InterviewSetup({ onNavigate }) {
         {step === 3 && (
           <div className="space-y-6 animate-fade-in">
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Select Input Format & Timing</h1>
-              <p className="text-xs text-zinc-400">Choose between live audio analysis or quiet text-only mode.</p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Select Input Format & Timing</h1>
+              <p className="text-xs text-slate-500">Choose between live audio analysis or quiet text-only mode.</p>
             </div>
 
             <div className="space-y-3">
@@ -359,21 +372,21 @@ export default function InterviewSetup({ onNavigate }) {
                   onClick={() => setSelectedFormat(fmt)}
                   className={`w-full p-4 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                     selectedFormat.id === fmt.id
-                      ? 'bg-teal-950/50 border-teal-500 ring-2 ring-teal-500/20 text-white'
-                      : 'bg-[#131318] border-white/5 hover:border-zinc-700 text-zinc-300'
+                      ? 'bg-teal-50/70 border-teal-600 ring-2 ring-teal-500/20 text-slate-900 shadow-sm'
+                      : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 shadow-sm'
                   }`}
                 >
                   <div className="space-y-1">
-                    <p className="font-bold text-sm text-white">{fmt.title}</p>
-                    <p className="text-xs text-zinc-400">{fmt.desc}</p>
+                    <p className="font-bold text-sm text-slate-900">{fmt.title}</p>
+                    <p className="text-xs text-slate-500">{fmt.desc}</p>
                   </div>
-                  {selectedFormat.id === fmt.id && <span className="text-teal-400 font-bold">✓ Selected</span>}
+                  {selectedFormat.id === fmt.id && <span className="text-teal-700 font-bold">✓ Selected</span>}
                 </button>
               ))}
             </div>
 
             <div className="space-y-1.5 pt-2">
-              <label className="text-xs font-bold text-zinc-300">Target Duration</label>
+              <label className="text-xs font-bold text-slate-700">Target Duration</label>
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { id: '15', label: '15 Min', desc: '3 Qs / Round', count: '9 Questions Total' },
@@ -386,29 +399,28 @@ export default function InterviewSetup({ onNavigate }) {
                     onClick={() => setDuration(d.id)}
                     className={`p-3.5 rounded-xl border text-center transition-all cursor-pointer ${
                       duration === d.id
-                        ? 'bg-teal-950 border-teal-500 text-white font-bold ring-1 ring-teal-500/50'
-                        : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
+                        ? 'bg-teal-50 border-teal-600 text-teal-900 font-bold ring-1 ring-teal-500/50 shadow-sm'
+                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 shadow-sm'
                     }`}
                   >
-                    <p className="text-xs font-bold text-white">{d.label}</p>
-                    <p className="text-[11px] font-mono text-teal-400 font-semibold mt-0.5">{d.count}</p>
-                    <p className="text-[10px] text-zinc-400 opacity-80 mt-0.5">{d.desc}</p>
+                    <p className="text-xs font-bold text-slate-900">{d.label}</p>
+                    <p className="text-[11px] font-mono text-teal-700 font-semibold mt-0.5">{d.count}</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">{d.desc}</p>
                   </button>
                 ))}
               </div>
-
             </div>
 
             <div className="flex justify-between pt-4">
               <button
                 onClick={() => setStep(2)}
-                className="py-3 px-5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-xs font-semibold cursor-pointer"
+                className="py-3 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold cursor-pointer shadow-sm"
               >
                 ← Back
               </button>
               <button
                 onClick={() => setStep(4)}
-                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
+                className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md transition-all active:scale-98 cursor-pointer"
               >
                 Review & Launch →
               </button>
@@ -420,50 +432,49 @@ export default function InterviewSetup({ onNavigate }) {
         {step === 4 && (
           <div className="space-y-6 animate-fade-in">
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Review & Launch Mock Interview</h1>
-              <p className="text-xs text-zinc-400">Confirm your session parameters and audio consent prior to launch.</p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Review & Launch Mock Interview</h1>
+              <p className="text-xs text-slate-500">Confirm your session parameters and audio consent prior to launch.</p>
             </div>
 
             {/* Error Banner */}
             {launchError && (
-              <div className="p-4 rounded-xl bg-rose-950/50 border border-rose-800 text-rose-300 text-xs">
+              <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
                 ⚠️ {launchError}
               </div>
             )}
 
             {/* Summary Card */}
-            <div className="bg-[#131318] border border-white/5 p-5 rounded-2xl space-y-3 font-mono text-xs">
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span className="text-zinc-400">Target Role:</span>
-                <span className="text-white font-bold">{customRoleText || selectedRole.title}</span>
+            <div className="bg-white border border-slate-200 shadow-sm p-5 rounded-2xl space-y-3 font-mono text-xs">
+              <div className="flex justify-between border-b border-slate-100 pb-2">
+                <span className="text-slate-500">Target Role:</span>
+                <span className="text-slate-900 font-bold">{customRoleText || selectedRole.title}</span>
               </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span className="text-zinc-400">Difficulty Level:</span>
-                <span className="text-amber-400 font-bold">{difficulty}</span>
+              <div className="flex justify-between border-b border-slate-100 pb-2">
+                <span className="text-slate-500">Difficulty Level:</span>
+                <span className="text-amber-700 font-bold">{difficulty}</span>
               </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span className="text-zinc-400">Interviewer Persona:</span>
-                <span className="text-teal-400 font-bold">{selectedPersona?.name} ({selectedPersona?.company})</span>
+              <div className="flex justify-between border-b border-slate-100 pb-2">
+                <span className="text-slate-500">Interviewer Persona:</span>
+                <span className="text-teal-700 font-bold">{selectedPersona?.name} ({selectedPersona?.company})</span>
               </div>
-              <div className="flex justify-between border-b border-white/5 pb-2">
-                <span className="text-zinc-400">Format:</span>
-                <span className="text-emerald-400 font-bold">{selectedFormat.title}</span>
+              <div className="flex justify-between border-b border-slate-100 pb-2">
+                <span className="text-slate-500">Format:</span>
+                <span className="text-teal-700 font-bold">{selectedFormat.title}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-400">Session Length:</span>
-                <span className="text-zinc-200 font-bold">
+                <span className="text-slate-500">Session Length:</span>
+                <span className="text-slate-800 font-bold">
                   {duration === '15' ? '15 Min (3 Qs / Round • 9 Total)' : duration === '45' ? '45 Min (7 Qs / Round • 21 Total)' : '30 Min (5 Qs / Round • 15 Total)'}
                 </span>
               </div>
             </div>
 
-
             {/* Microphone Permission Status Banner */}
             {selectedFormat.id !== 'text-only' && (
               <div className={`p-4 rounded-xl border text-xs flex items-center justify-between ${
                 micState === 'granted'
-                  ? 'bg-emerald-950/40 border-emerald-800 text-emerald-300'
-                  : 'bg-amber-950/40 border-amber-800 text-amber-300'
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                  : 'bg-amber-50 border-amber-200 text-amber-800'
               }`}>
                 <div>
                   <p className="font-bold">Microphone Access Status:</p>
@@ -476,7 +487,7 @@ export default function InterviewSetup({ onNavigate }) {
                 {micState !== 'granted' && (
                   <button
                     onClick={() => handleLaunchSession(true)}
-                    className="py-1.5 px-3 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white font-semibold text-[11px]"
+                    className="py-1.5 px-3 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-semibold text-[11px] shadow-sm cursor-pointer"
                   >
                     Switch to Text-Only Mode
                   </button>
@@ -486,18 +497,18 @@ export default function InterviewSetup({ onNavigate }) {
 
             {/* Explicit Audio Privacy Consent Checkbox */}
             {selectedFormat.id !== 'text-only' && (
-              <label className="flex items-start gap-3 bg-[#0B0B0E] p-4 rounded-2xl border border-white/5 cursor-pointer">
+              <label className="flex items-start gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm cursor-pointer">
                 <input
                   type="checkbox"
                   checked={audioConsent}
                   onChange={(e) => setAudioConsent(e.target.checked)}
                   className="mt-0.5 w-4 h-4 rounded text-teal-600 focus:ring-teal-500"
                 />
-                <div className="text-xs text-zinc-300 leading-relaxed text-pretty">
-                  <span className="font-bold text-white">Explicit Audio Consent: </span>
+                <div className="text-xs text-slate-600 leading-relaxed text-pretty">
+                  <span className="font-bold text-slate-900">Explicit Audio Consent: </span>
                   I understand that my audio may be processed to generate a live transcript and practice feedback. You can stop anytime. Read our{' '}
-                  <button type="button" onClick={() => onNavigate('privacy')} className="text-teal-400 underline">Privacy Policy</button>{' '}
-                  or learn about <button type="button" onClick={() => onNavigate('privacy')} className="text-teal-400 underline font-mono">Data Deletion</button>.
+                  <button type="button" onClick={() => onNavigate('privacy')} className="text-teal-700 underline font-semibold">Privacy Policy</button>{' '}
+                  or learn about <button type="button" onClick={() => onNavigate('privacy')} className="text-teal-700 underline font-mono font-semibold">Data Deletion</button>.
                 </div>
               </label>
             )}
@@ -505,14 +516,14 @@ export default function InterviewSetup({ onNavigate }) {
             <div className="flex justify-between pt-4">
               <button
                 onClick={() => setStep(3)}
-                className="py-3 px-5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-xs font-semibold cursor-pointer"
+                className="py-3 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold cursor-pointer shadow-sm"
               >
                 ← Back
               </button>
 
               <button
                 onClick={() => handleLaunchSession(false)}
-                className="py-3.5 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-xl shadow-teal-950/50 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
+                className="py-3.5 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md shadow-teal-700/20 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
               >
                 <span>Launch Mock Session →</span>
               </button>

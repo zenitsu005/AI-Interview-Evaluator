@@ -6,70 +6,70 @@ import AppNavbar from './AppNavbar';
 // ─────────────────────────────────────────────────────────────
 export function HowItWorksPage({ onNavigate }) {
   return (
-    <div className="min-h-screen bg-[#090A0F] text-zinc-100 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
       <AppNavbar currentActive="how-it-works" />
 
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-12 text-left flex-1">
         {/* Header */}
-        <div className="space-y-4 border-b border-zinc-800 pb-8">
-          <span className="text-xs font-bold font-mono uppercase tracking-wider text-indigo-400">
+        <div className="space-y-4 border-b border-slate-200 pb-8">
+          <span className="text-xs font-bold font-mono uppercase tracking-wider text-teal-700">
             Methodology & Transparency Disclosures
           </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
             How Evaluation Works
           </h1>
-          <p className="text-base text-zinc-400 leading-relaxed text-pretty">
-            AI Interview Evaluator uses structured role rubrics and transparent scoring signals to provide objective practice feedback. Scores are coaching indicators designed to help you prepare—not hiring decisions.
+          <p className="text-base text-slate-500 leading-relaxed text-pretty">
+            AI Interview Evaluator uses structured role rubrics and transparent scoring signals to provide objective practice feedback. Scores are coaching indicators designed to help you prepare.
           </p>
         </div>
 
         {/* 3-Step Process */}
         <section className="space-y-6">
-          <h2 className="text-2xl font-bold text-white tracking-tight">The 3-Step Practice Workflow</h2>
+          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">The 3-Step Practice Workflow</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-950 border border-indigo-500/30 flex items-center justify-center font-bold font-mono text-indigo-400">
+            <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-3 shadow-sm">
+              <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center font-bold font-mono text-teal-800">
                 01
               </div>
-              <h3 className="text-base font-bold text-white">Select Role & Format</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
-                Configure your target level (L4 to L8 / Principal) and choose from DSA, System Design, Bug Hunting, or STAR Behavioral.
+              <h3 className="text-base font-bold text-slate-900">Select Role & Format</h3>
+              <p className="text-xs text-slate-500 leading-relaxed text-pretty">
+                Configure your target level and choose from DSA, System Design, Bug Hunting, or STAR Behavioral.
               </p>
-              <span className="text-[11px] font-mono text-zinc-500 block pt-2">Duration: 5 – 60 min</span>
+              <span className="text-[11px] font-mono text-slate-400 block pt-2">Duration: 5 – 60 min</span>
             </div>
 
-            <div className="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-950 border border-indigo-500/30 flex items-center justify-center font-bold font-mono text-indigo-400">
+            <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-3 shadow-sm">
+              <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center font-bold font-mono text-teal-800">
                 02
               </div>
-              <h3 className="text-base font-bold text-white">Guided Simulation</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
-                Answer realistic technical prompts using voice with live transcripts, text input, code execution, or interactive whiteboards.
+              <h3 className="text-base font-bold text-slate-900">Guided Simulation</h3>
+              <p className="text-xs text-slate-500 leading-relaxed text-pretty">
+                Answer realistic technical prompts using voice with live transcripts, text input, or code execution.
               </p>
-              <span className="text-[11px] font-mono text-zinc-500 block pt-2">Voice or Text-Only</span>
+              <span className="text-[11px] font-mono text-slate-400 block pt-2">Voice or Text-Only</span>
             </div>
 
-            <div className="bg-zinc-900/80 border border-zinc-800 p-6 rounded-2xl space-y-3">
-              <div className="w-9 h-9 rounded-xl bg-indigo-950 border border-indigo-500/30 flex items-center justify-center font-bold font-mono text-indigo-400">
+            <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-3 shadow-sm">
+              <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center font-bold font-mono text-teal-800">
                 03
               </div>
-              <h3 className="text-base font-bold text-white">Rubric-Based Breakdown</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
-                Review structured Bar Raiser feedback on architecture trade-offs, code complexity, edge-case coverage, and vocal composure.
+              <h3 className="text-base font-bold text-slate-900">Rubric-Based Breakdown</h3>
+              <p className="text-xs text-slate-500 leading-relaxed text-pretty">
+                Review structured Bar Raiser feedback on architecture trade-offs, code complexity, and edge cases.
               </p>
-              <span className="text-[11px] font-mono text-zinc-500 block pt-2">Detailed Report</span>
+              <span className="text-[11px] font-mono text-slate-400 block pt-2">Detailed Report</span>
             </div>
           </div>
         </section>
 
         {/* Scoring Disclaimers */}
-        <section className="bg-indigo-950/30 border border-indigo-800/40 p-6 rounded-2xl space-y-3">
-          <h3 className="text-sm font-bold text-indigo-300 uppercase tracking-wider font-mono">
+        <section className="bg-teal-50 border border-teal-200 p-6 rounded-2xl space-y-3">
+          <h3 className="text-sm font-bold text-teal-800 uppercase tracking-wider font-mono">
             ⚠️ Scoring & Accuracy Disclaimer
           </h3>
-          <p className="text-xs text-zinc-300 leading-relaxed text-pretty">
-            Feedback and numerical scores generated by this platform are automated practice signals. They do not constitute an official employment evaluation, psychometric test, or hiring guarantee. Results may vary depending on microphone quality, accents, answer brevity, and selected role parameters.
+          <p className="text-xs text-teal-950 leading-relaxed text-pretty">
+            Feedback and numerical scores generated by this platform are automated practice signals. They do not constitute an official employment evaluation or hiring guarantee.
           </p>
         </section>
 
@@ -77,18 +77,20 @@ export function HowItWorksPage({ onNavigate }) {
         <div className="pt-4 flex gap-4">
           <button
             onClick={() => onNavigate('setup')}
-            className="py-3 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg transition-all active:scale-98 cursor-pointer"
+            className="py-3 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md transition-all active:scale-98 cursor-pointer"
           >
             Start a Mock Interview →
           </button>
           <button
             onClick={() => onNavigate('landing')}
-            className="py-3 px-6 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-xs font-semibold transition-all cursor-pointer"
+            className="py-3 px-6 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition-all cursor-pointer"
           >
             Back to Home
           </button>
         </div>
       </main>
+
+      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }
@@ -106,51 +108,53 @@ export function PrivacyPage({ onNavigate }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-zinc-100 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
       <AppNavbar currentActive="privacy" />
 
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-10 text-left flex-1">
-        <div className="space-y-3 border-b border-zinc-800 pb-8">
-          <span className="text-xs font-bold font-mono uppercase tracking-wider text-emerald-400">
+        <div className="space-y-3 border-b border-slate-200 pb-8">
+          <span className="text-xs font-bold font-mono uppercase tracking-wider text-teal-700">
             Privacy-by-Design Commitment
           </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
             Privacy Policy & Data Controls
           </h1>
-          <p className="text-sm text-zinc-400 leading-relaxed text-pretty">
+          <p className="text-sm text-slate-500 leading-relaxed text-pretty">
             Your audio recordings, transcripts, uploaded resumes, and practice answers belong to you. We process audio solely to generate live transcripts and practice evaluations.
           </p>
         </div>
 
-        <div className="space-y-8 text-xs sm:text-sm text-zinc-300 leading-relaxed">
+        <div className="space-y-8 text-xs sm:text-sm text-slate-700 leading-relaxed">
           <section className="space-y-3">
-            <h2 className="text-lg font-bold text-white">1. Audio & Speech Processing</h2>
+            <h2 className="text-lg font-bold text-slate-900">1. Audio & Speech Processing</h2>
             <p>
               Audio recordings are processed in real time to generate transcripts and speech pace estimates. Audio is never used to train public foundation models or sold to third-party advertisers.
             </p>
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-bold text-white">2. Local Storage & Data Retention</h2>
+            <h2 className="text-lg font-bold text-slate-900">2. Local Storage & Data Retention</h2>
             <p>
-              Your past interview scores, saved code drafts, and whiteboards are stored locally in your browser's encrypted local storage unless signed into a cloud session.
+              Your past interview scores, saved code drafts, and whiteboards are stored locally in your browser's local storage unless signed into a cloud session.
             </p>
           </section>
 
-          <section className="space-y-3 bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-            <h2 className="text-base font-bold text-white">3. One-Click Data Deletion</h2>
-            <p className="text-xs text-zinc-400 pb-2">
+          <section className="space-y-3 bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
+            <h2 className="text-base font-bold text-slate-900">3. One-Click Data Deletion</h2>
+            <p className="text-xs text-slate-500 pb-2">
               Want to purge all local interview history, cached transcripts, and saved settings from this device?
             </p>
             <button
               onClick={handleClearData}
-              className="py-2.5 px-5 rounded-xl bg-red-950/60 hover:bg-red-900 border border-red-800 text-red-300 text-xs font-bold transition-all cursor-pointer"
+              className="py-2.5 px-5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold transition-all cursor-pointer shadow-sm"
             >
               {dataDeleted ? '✓ All Data Cleared!' : 'Purge All My Saved Data Now'}
             </button>
           </section>
         </div>
       </main>
+
+      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }
@@ -160,35 +164,37 @@ export function PrivacyPage({ onNavigate }) {
 // ─────────────────────────────────────────────────────────────
 export function TermsPage({ onNavigate }) {
   return (
-    <div className="min-h-screen bg-[#090A0F] text-zinc-100 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
       <AppNavbar currentActive="terms" />
 
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-8 text-left flex-1">
-        <div className="space-y-3 border-b border-zinc-800 pb-8">
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+        <div className="space-y-3 border-b border-slate-200 pb-8">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
             Terms of Service
           </h1>
-          <p className="text-sm text-zinc-400 leading-relaxed text-pretty">
+          <p className="text-sm text-slate-500 leading-relaxed text-pretty">
             Terms governing your use of the AI Interview Evaluator practice platform.
           </p>
         </div>
 
-        <div className="space-y-6 text-xs sm:text-sm text-zinc-300 leading-relaxed">
+        <div className="space-y-6 text-xs sm:text-sm text-slate-700 leading-relaxed">
           <section className="space-y-2">
-            <h2 className="text-base font-bold text-white">1. Practice & Educational Purpose</h2>
+            <h2 className="text-base font-bold text-slate-900">1. Practice & Educational Purpose</h2>
             <p>
               AI Interview Evaluator is an educational tool designed to help candidate software engineers practice technical interview rounds. It does not warrant employment, job offers, or specific hiring outcomes with any third-party employer.
             </p>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-base font-bold text-white">2. Acceptable Use</h2>
+            <h2 className="text-base font-bold text-slate-900">2. Acceptable Use</h2>
             <p>
               Users agree not to attempt reverse-engineering internal sandbox APIs, executing malicious payloads, or abusing automated problem generation endpoints.
             </p>
           </section>
         </div>
       </main>
+
+      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }
@@ -198,35 +204,37 @@ export function TermsPage({ onNavigate }) {
 // ─────────────────────────────────────────────────────────────
 export function SecurityPage({ onNavigate }) {
   return (
-    <div className="min-h-screen bg-[#090A0F] text-zinc-100 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
       <AppNavbar currentActive="security" />
 
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-8 text-left flex-1">
-        <div className="space-y-3 border-b border-zinc-800 pb-8">
-          <span className="text-xs font-bold font-mono uppercase tracking-wider text-cyan-400">
+        <div className="space-y-3 border-b border-slate-200 pb-8">
+          <span className="text-xs font-bold font-mono uppercase tracking-wider text-teal-700">
             Infrastructure Protection
           </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
             Security Architecture & Code Sandboxing
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-zinc-300">
-          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl space-y-2">
-            <h2 className="text-sm font-bold text-white">Isolated Sandbox Execution</h2>
-            <p className="text-zinc-400 leading-relaxed">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-700">
+          <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-2 shadow-sm">
+            <h2 className="text-sm font-bold text-slate-900">Isolated Sandbox Execution</h2>
+            <p className="text-slate-500 leading-relaxed">
               Code submitted in the DSA and Bug Hunter studios runs inside strict isolated execution environments with CPU timeouts, memory caps, and no internal network access.
             </p>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl space-y-2">
-            <h2 className="text-sm font-bold text-white">Encrypted Transit</h2>
-            <p className="text-zinc-400 leading-relaxed">
+          <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-2 shadow-sm">
+            <h2 className="text-sm font-bold text-slate-900">Encrypted Transit</h2>
+            <p className="text-slate-500 leading-relaxed">
               All communications between your browser and our evaluation servers are encrypted using TLS 1.3 encryption.
             </p>
           </div>
         </div>
       </main>
+
+      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }
@@ -236,34 +244,36 @@ export function SecurityPage({ onNavigate }) {
 // ─────────────────────────────────────────────────────────────
 export function AccessibilityPage({ onNavigate }) {
   return (
-    <div className="min-h-screen bg-[#090A0F] text-zinc-100 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
       <AppNavbar currentActive="accessibility" />
 
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-8 text-left flex-1">
-        <div className="space-y-3 border-b border-zinc-800 pb-8">
-          <span className="text-xs font-bold font-mono uppercase tracking-wider text-indigo-400">
+        <div className="space-y-3 border-b border-slate-200 pb-8">
+          <span className="text-xs font-bold font-mono uppercase tracking-wider text-teal-700">
             WCAG 2.2 AA Commitment
           </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
             Accessibility Statement
           </h1>
-          <p className="text-sm text-zinc-400 leading-relaxed text-pretty">
+          <p className="text-sm text-slate-500 leading-relaxed text-pretty">
             We are dedicated to ensuring that AI Interview Evaluator is accessible to engineers of all abilities, adhering to WCAG 2.2 Level AA guidelines.
           </p>
         </div>
 
-        <div className="space-y-6 text-xs sm:text-sm text-zinc-300 leading-relaxed">
-          <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl space-y-3">
-            <h2 className="text-base font-bold text-white">Key Accessibility Features</h2>
-            <ul className="list-disc list-inside space-y-1.5 text-zinc-400">
-              <li><strong>Keyboard Navigation:</strong> Complete interactive control via <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded font-mono text-xs">Tab</kbd>, <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded font-mono text-xs">Enter</kbd>, and <kbd className="px-1.5 py-0.5 bg-zinc-800 rounded font-mono text-xs">Escape</kbd>.</li>
-              <li><strong>Screen Reader Support:</strong> Explicit <code className="font-mono text-indigo-300">aria-expanded</code>, <code className="font-mono text-indigo-300">aria-controls</code>, and semantic landmarks.</li>
+        <div className="space-y-6 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-3 shadow-sm">
+            <h2 className="text-base font-bold text-slate-900">Key Accessibility Features</h2>
+            <ul className="list-disc list-inside space-y-1.5 text-slate-600">
+              <li><strong>Keyboard Navigation:</strong> Complete interactive control via <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-xs text-slate-700">Tab</kbd>, <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-xs text-slate-700">Enter</kbd>, and <kbd className="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-xs text-slate-700">Escape</kbd>.</li>
+              <li><strong>Screen Reader Support:</strong> Explicit <code className="font-mono text-teal-800 bg-teal-50 px-1 py-0.5 rounded">aria-expanded</code>, <code className="font-mono text-teal-800 bg-teal-50 px-1 py-0.5 rounded">aria-controls</code>, and semantic landmarks.</li>
               <li><strong>Text-Only Fallback:</strong> Full practice suite available without microphone requirements.</li>
-              <li><strong>Reduced Motion:</strong> Respects system <code className="font-mono text-indigo-300">prefers-reduced-motion</code> settings.</li>
+              <li><strong>Reduced Motion:</strong> Respects system <code className="font-mono text-teal-800 bg-teal-50 px-1 py-0.5 rounded">prefers-reduced-motion</code> settings.</li>
             </ul>
           </div>
         </div>
       </main>
+
+      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }
@@ -280,49 +290,49 @@ export function SupportPage({ onNavigate }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-zinc-100 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
       <AppNavbar currentActive="support" />
 
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-8 text-left flex-1">
-        <div className="space-y-3 border-b border-zinc-800 pb-8">
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+        <div className="space-y-3 border-b border-slate-200 pb-8">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
             Support & Candidate Help Desk
           </h1>
-          <p className="text-sm text-zinc-400 leading-relaxed text-pretty">
+          <p className="text-sm text-slate-500 leading-relaxed text-pretty">
             Have questions about evaluation rubrics or need assistance with audio setup?
           </p>
         </div>
 
-        <div className="max-w-lg bg-zinc-900 border border-zinc-800 p-6 rounded-2xl space-y-4">
+        <div className="max-w-lg bg-white border border-slate-200 p-6 rounded-2xl space-y-4 shadow-sm">
           {submitted ? (
-            <div className="p-4 bg-emerald-950/60 border border-emerald-800 text-emerald-300 rounded-xl font-bold text-xs">
+            <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl font-bold text-xs">
               ✅ Thank you! Your support request has been submitted. Our engineering team will respond shortly.
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block text-zinc-300 font-bold mb-1">Your Email</label>
+                <label className="block text-slate-700 font-bold mb-1">Your Email</label>
                 <input
                   type="email"
                   required
                   placeholder="candidate@techcompany.com"
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 focus:outline-none focus:border-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-300 font-bold mb-1">Message or Issue Description</label>
+                <label className="block text-slate-700 font-bold mb-1">Message or Issue Description</label>
                 <textarea
                   required
                   rows={4}
                   placeholder="Describe your issue or question..."
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-900 focus:outline-none focus:border-teal-500"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all active:scale-98 cursor-pointer"
+                className="w-full py-3 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl transition-all active:scale-98 cursor-pointer shadow-sm"
               >
                 Send Support Message →
               </button>
@@ -330,6 +340,8 @@ export function SupportPage({ onNavigate }) {
           )}
         </div>
       </main>
+
+      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }
@@ -339,60 +351,60 @@ export function SupportPage({ onNavigate }) {
 // ─────────────────────────────────────────────────────────────
 export function AnalyticsPage({ onNavigate }) {
   return (
-    <div className="min-h-screen bg-[#090A0F] text-zinc-100 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
       <AppNavbar currentActive="analytics" />
 
       <main className="max-w-5xl mx-auto w-full px-6 py-12 space-y-8 text-left flex-1">
-        <div className="space-y-3 border-b border-zinc-800 pb-8 flex items-center justify-between flex-wrap gap-4">
+        <div className="space-y-3 border-b border-slate-200 pb-8 flex items-center justify-between flex-wrap gap-4">
           <div>
-            <span className="text-xs font-bold font-mono uppercase tracking-wider text-indigo-400">
+            <span className="text-xs font-bold font-mono uppercase tracking-wider text-teal-700">
               Candidate Progress Log
             </span>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
               Score Analytics & Practice History
             </h1>
           </div>
           <button
             onClick={() => onNavigate('setup')}
-            className="py-2.5 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md transition-all active:scale-98 cursor-pointer"
+            className="py-2.5 px-5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-sm transition-all active:scale-98 cursor-pointer"
           >
             Start New Mock Session →
           </button>
         </div>
 
         {/* Disclaimer Notice */}
-        <div className="bg-zinc-900/90 border border-zinc-800 p-4 rounded-xl text-xs text-zinc-400">
+        <div className="bg-white border border-slate-200 p-4 rounded-xl text-xs text-slate-600 shadow-sm">
           ℹ️ <strong>Note on Analytics:</strong> Practice scores represent coaching performance signals on specific prompts. They are designed to track practice progress over time, not to predict hiring outcomes.
         </div>
 
         {/* Practice Module Breakdown */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs">
-          <div className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl space-y-2">
-            <span className="text-zinc-500 font-mono">DSA Practice</span>
-            <p className="text-2xl font-black text-emerald-400">Passed 4 / 4</p>
-            <p className="text-[11px] text-zinc-400">Average time: 14 mins</p>
+          <div className="bg-white border border-slate-200 p-5 rounded-2xl space-y-2 shadow-sm">
+            <span className="text-slate-500 font-mono">DSA Practice</span>
+            <p className="text-2xl font-black text-emerald-600">Passed 4 / 4</p>
+            <p className="text-[11px] text-slate-500">Average time: 14 mins</p>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl space-y-2">
-            <span className="text-zinc-500 font-mono">System Design</span>
-            <p className="text-2xl font-black text-indigo-400">88% Rubric</p>
-            <p className="text-[11px] text-zinc-400 font-mono">Focus: Caching Trade-offs</p>
+          <div className="bg-white border border-slate-200 p-5 rounded-2xl space-y-2 shadow-sm">
+            <span className="text-slate-500 font-mono">System Design</span>
+            <p className="text-2xl font-black text-teal-700">88% Rubric</p>
+            <p className="text-[11px] text-slate-500 font-mono">Focus: Caching Trade-offs</p>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl space-y-2">
-            <span className="text-zinc-500 font-mono">Bug Hunting</span>
-            <p className="text-2xl font-black text-amber-400">3 Audits Done</p>
-            <p className="text-[11px] text-zinc-400 font-mono">Focus: Race Conditions</p>
+          <div className="bg-white border border-slate-200 p-5 rounded-2xl space-y-2 shadow-sm">
+            <span className="text-slate-500 font-mono">Bug Hunting</span>
+            <p className="text-2xl font-black text-amber-600">3 Audits Done</p>
+            <p className="text-[11px] text-slate-500 font-mono">Focus: Race Conditions</p>
           </div>
         </div>
 
         {/* Accessible Table Alternative */}
         <section className="space-y-4 pt-4">
-          <h2 className="text-lg font-bold text-white">Recent Evaluation Records</h2>
+          <h2 className="text-lg font-bold text-slate-900">Recent Evaluation Records</h2>
 
-          <div className="overflow-x-auto border border-zinc-800 rounded-2xl bg-zinc-950">
+          <div className="overflow-x-auto border border-slate-200 rounded-2xl bg-white shadow-sm">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-zinc-900 text-zinc-400 uppercase text-[10px]">
+              <thead className="bg-slate-50 text-slate-600 uppercase text-[10px] border-b border-slate-200">
                 <tr>
                   <th className="p-3.5">Date</th>
                   <th className="p-3.5">Module</th>
@@ -401,23 +413,23 @@ export function AnalyticsPage({ onNavigate }) {
                   <th className="p-3.5">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-850 text-zinc-300">
+              <tbody className="divide-y divide-slate-100 text-slate-700">
                 <tr>
                   <td className="p-3.5">Today</td>
-                  <td className="p-3.5 text-white font-bold">DSA Studio</td>
-                  <td className="p-3.5 text-indigo-400">Senior Engineer</td>
-                  <td className="p-3.5 text-emerald-400">✅ All Tests Passed</td>
+                  <td className="p-3.5 text-slate-900 font-bold">DSA Studio</td>
+                  <td className="p-3.5 text-teal-800">Senior Engineer</td>
+                  <td className="p-3.5 text-emerald-600 font-bold">✅ All Tests Passed</td>
                   <td className="p-3.5">
-                    <button onClick={() => onNavigate('dsa')} className="text-indigo-400 hover:underline">Re-try →</button>
+                    <button onClick={() => onNavigate('dsa')} className="text-teal-700 hover:underline cursor-pointer">Re-try →</button>
                   </td>
                 </tr>
                 <tr>
                   <td className="p-3.5">Yesterday</td>
-                  <td className="p-3.5 text-white font-bold">System Design</td>
-                  <td className="p-3.5 text-indigo-400">Staff Architect</td>
-                  <td className="p-3.5 text-indigo-300">88% Rubric Score</td>
+                  <td className="p-3.5 text-slate-900 font-bold">System Design</td>
+                  <td className="p-3.5 text-teal-800">Staff Architect</td>
+                  <td className="p-3.5 text-teal-700 font-bold">88% Rubric Score</td>
                   <td className="p-3.5">
-                    <button onClick={() => onNavigate('video')} className="text-indigo-400 hover:underline">Review →</button>
+                    <button onClick={() => onNavigate('video')} className="text-teal-700 hover:underline cursor-pointer">Review →</button>
                   </td>
                 </tr>
               </tbody>
@@ -425,6 +437,8 @@ export function AnalyticsPage({ onNavigate }) {
           </div>
         </section>
       </main>
+
+      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }

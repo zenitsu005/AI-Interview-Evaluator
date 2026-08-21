@@ -292,23 +292,23 @@ export default function SalaryNegotiator() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070a12] text-slate-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
       {/* ── Universal Top Bar ── */}
       <AppNavbar currentActive="negotiate" />
 
       {/* ── Main Studio Layout (Split View) ── */}
-      <main className="max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start flex-1">
+      <main className="max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start flex-1 text-left">
         {/* ── Left Column: Live Camera & Compensation Dashboard (5 Cols) ── */}
         <div className="lg:col-span-5 space-y-4">
           {/* Live Webcam Box */}
-          <div className="card-dark p-0 overflow-hidden relative border-slate-800 bg-black aspect-video flex items-center justify-center shadow-2xl">
+          <div className="bg-white border border-slate-200 p-0 overflow-hidden relative rounded-2xl aspect-video flex items-center justify-center shadow-sm">
             {virtualMode ? (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 to-slate-950 relative">
-                <div className="w-20 h-20 rounded-full bg-slate-800 border-2 border-emerald-500/40 flex items-center justify-center text-3xl shadow-inner animate-pulse">
+              <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 relative">
+                <div className="w-20 h-20 rounded-full bg-teal-50 border-2 border-teal-500/40 flex items-center justify-center text-3xl shadow-sm animate-pulse">
                   👤
                 </div>
-                <p className="text-xs font-bold text-slate-300 mt-2">Virtual Candidate Presence</p>
-                <p className="text-[10px] text-emerald-400 font-mono">Negotiation Video Enabled ✓</p>
+                <p className="text-xs font-bold text-slate-800 mt-2">Virtual Candidate Presence</p>
+                <p className="text-[10px] text-teal-700 font-mono">Negotiation Video Enabled ✓</p>
               </div>
             ) : (
               <video
@@ -321,8 +321,8 @@ export default function SalaryNegotiator() {
             )}
 
             {!camReady && !cameraError && !virtualMode && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-950 text-slate-400">
-                <svg className="animate-spin h-6 w-6 text-emerald-400" viewBox="0 0 24 24" fill="none">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-50 text-slate-500">
+                <svg className="animate-spin h-6 w-6 text-teal-600" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                 </svg>
@@ -331,13 +331,13 @@ export default function SalaryNegotiator() {
             )}
 
             {cameraError && !virtualMode && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-slate-950/95 text-slate-300 text-xs space-y-2 z-10">
-                <p className="font-bold text-slate-200">{cameraError}</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-white/95 text-slate-700 text-xs space-y-2 z-10">
+                <p className="font-bold text-slate-900">{cameraError}</p>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={startCamera}
-                    className="btn-primary py-1 px-3 text-[11px] font-semibold"
+                    className="py-1 px-3 text-[11px] font-semibold bg-teal-600 hover:bg-teal-500 text-white rounded-lg shadow-sm cursor-pointer"
                   >
                     🔄 Retry Camera
                   </button>
@@ -348,7 +348,7 @@ export default function SalaryNegotiator() {
                       setCamReady(true);
                       setCameraError(null);
                     }}
-                    className="btn-secondary py-1 px-3 text-[11px] font-semibold text-emerald-300 border-emerald-800"
+                    className="py-1 px-3 text-[11px] font-semibold text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-lg cursor-pointer shadow-sm"
                   >
                     👤 Virtual Avatar
                   </button>
@@ -358,33 +358,33 @@ export default function SalaryNegotiator() {
 
             {/* Live Badges */}
             <div className="absolute top-3 left-3 flex items-center gap-2">
-              <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-black/60 backdrop-blur-md text-red-400 border border-red-500/30">
+              <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-white/80 backdrop-blur-md text-red-600 border border-red-200 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                 NEGOTIATION ON-AIR
               </span>
             </div>
 
             {isSpeaking && (
-              <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-950/80 backdrop-blur-md text-emerald-300 border border-emerald-700/50 animate-pulse">
+              <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-teal-50/90 backdrop-blur-md text-teal-800 border border-teal-300 animate-pulse shadow-sm">
                 <span>🔊 Recruiter Speaking...</span>
               </div>
             )}
           </div>
 
           {/* Live Compensation Package Card (Indian Currency INR) */}
-          <div className="card-dark border-emerald-900/40 bg-gradient-to-r from-emerald-950/20 via-slate-900 to-slate-900 p-5 shadow-xl space-y-3">
-            <div className="flex justify-between items-center pb-2 border-b border-slate-800">
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+            <div className="flex justify-between items-center pb-2 border-b border-slate-100">
               <div>
-                <p className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">Live Compensation Offer</p>
-                <h2 className="text-lg sm:text-xl font-black text-white mt-0.5">
+                <p className="text-[10px] uppercase font-bold text-teal-700 tracking-wider">Live Compensation Offer</p>
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-0.5">
                   {formatLPA(totalValue)}{' '}
-                  <span className="text-[11px] text-slate-400 font-normal font-mono">(Year 1 CTC: ₹{totalValue.toLocaleString('en-IN')})</span>
+                  <span className="text-[11px] text-slate-500 font-normal font-mono">(Year 1 CTC: ₹{totalValue.toLocaleString('en-IN')})</span>
                 </h2>
               </div>
               {lastTacticScore !== null && (
-                <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
-                  <span className="text-[10px] text-slate-400">Leverage:</span>
-                  <span className={`text-xs font-black ${lastTacticScore >= 75 ? 'text-green-400' : 'text-yellow-400'}`}>
+                <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200">
+                  <span className="text-[10px] text-slate-500">Leverage:</span>
+                  <span className={`text-xs font-black ${lastTacticScore >= 75 ? 'text-emerald-600' : 'text-amber-600'}`}>
                     {lastTacticScore}/100
                   </span>
                 </div>
@@ -392,38 +392,38 @@ export default function SalaryNegotiator() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-              <div className="bg-slate-950 p-2 rounded-lg border border-slate-800">
+              <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
                 <p className="text-[9px] text-slate-500 uppercase font-semibold">Fixed Base</p>
-                <p className="font-bold text-white text-xs sm:text-sm">{formatLPA(offer.base)}</p>
+                <p className="font-bold text-slate-900 text-xs sm:text-sm">{formatLPA(offer.base)}</p>
               </div>
-              <div className="bg-slate-950 p-2 rounded-lg border border-slate-800">
+              <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
                 <p className="text-[9px] text-slate-500 uppercase font-semibold">Perf Bonus</p>
-                <p className="font-bold text-cyan-400 text-xs sm:text-sm">{offer.bonus}%</p>
+                <p className="font-bold text-teal-700 text-xs sm:text-sm">{offer.bonus}%</p>
               </div>
-              <div className="bg-slate-950 p-2 rounded-lg border border-slate-800">
+              <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
                 <p className="text-[9px] text-slate-500 uppercase font-semibold">ESOPs (4Y)</p>
-                <p className="font-bold text-purple-400 text-xs sm:text-sm">{formatLPA(offer.equity)}</p>
+                <p className="font-bold text-purple-700 text-xs sm:text-sm">{formatLPA(offer.equity)}</p>
               </div>
-              <div className="bg-slate-950 p-2 rounded-lg border border-slate-800">
+              <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
                 <p className="text-[9px] text-slate-500 uppercase font-semibold">Joining Bonus</p>
-                <p className="font-bold text-amber-400 text-xs sm:text-sm">{formatLPA(offer.signing)}</p>
+                <p className="font-bold text-amber-700 text-xs sm:text-sm">{formatLPA(offer.signing)}</p>
               </div>
             </div>
 
             {tacticFeedback && (
-              <div className="pt-2 border-t border-slate-800 text-[11px] text-slate-300 flex items-start gap-1.5">
+              <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-600 flex items-start gap-1.5">
                 <span>💡</span>
                 <div>
-                  <strong className="text-emerald-400">Negotiation Coach:</strong> {tacticFeedback}
+                  <strong className="text-teal-700">Negotiation Coach:</strong> {tacticFeedback}
                 </div>
               </div>
             )}
           </div>
 
           {/* Real Indian Tech Compensation Bands (LPA / INR) */}
-          <div className="card-dark border-slate-800 p-4 space-y-2.5">
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2.5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700">
                 📊 Indian Tech Market Compensation Bands (INR / LPA)
               </span>
               <span className="text-[9px] text-slate-500 font-mono">1-Click Auto-Target</span>
@@ -434,13 +434,13 @@ export default function SalaryNegotiator() {
                   key={band.level}
                   type="button"
                   onClick={() => setOffer({ base: band.base, bonus: band.bonus, equity: band.equity, signing: band.signing })}
-                  className="p-2.5 rounded-lg bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/50 text-left transition-all flex items-center justify-between group shadow-sm"
+                  className="p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-teal-500/50 text-left transition-all flex items-center justify-between group shadow-sm cursor-pointer"
                 >
                   <div>
-                    <p className="font-bold text-slate-200 group-hover:text-emerald-300 text-[11px]">{band.level}</p>
-                    <p className="text-[10px] text-slate-400 font-mono">₹{(band.base/100000).toFixed(0)}L Base • ₹{(band.equity/100000).toFixed(0)}L ESOP</p>
+                    <p className="font-bold text-slate-800 group-hover:text-teal-700 text-[11px]">{band.level}</p>
+                    <p className="text-[10px] text-slate-500 font-mono">₹{(band.base/100000).toFixed(0)}L Base • ₹{(band.equity/100000).toFixed(0)}L ESOP</p>
                   </div>
-                  <span className="text-[10px] font-bold text-emerald-400 font-mono">{band.ctcLabel}</span>
+                  <span className="text-[10px] font-bold text-teal-700 font-mono">{band.ctcLabel}</span>
                 </button>
               ))}
             </div>
@@ -450,7 +450,7 @@ export default function SalaryNegotiator() {
         {/* ── Right Column: Dialogue Stream & Audio Mic Controls (7 Cols) ── */}
         <div className="lg:col-span-7 space-y-4">
           {/* Dialogue Log Card */}
-          <div className="card-dark border-slate-800 h-96 overflow-y-auto p-4 space-y-3.5 shadow-xl">
+          <div className="bg-white border border-slate-200 rounded-2xl h-96 overflow-y-auto p-4 space-y-3.5 shadow-sm">
             {messages.map((m, idx) => (
               <div
                 key={idx}
@@ -462,8 +462,8 @@ export default function SalaryNegotiator() {
                 <div
                   className={`p-3.5 rounded-2xl max-w-md text-xs sm:text-sm leading-relaxed ${
                     m.sender === 'candidate'
-                      ? 'bg-emerald-600 text-white rounded-br-none shadow-md font-medium'
-                      : 'bg-slate-900 text-slate-200 border border-slate-800 rounded-bl-none shadow-inner'
+                      ? 'bg-teal-600 text-white rounded-br-none shadow-sm font-medium'
+                      : 'bg-slate-100 text-slate-900 border border-slate-200 rounded-bl-none shadow-sm'
                   }`}
                 >
                   {m.text}
@@ -472,8 +472,8 @@ export default function SalaryNegotiator() {
             ))}
 
             {isLoading && (
-              <div className="flex items-center gap-2 text-xs text-slate-400 py-2">
-                <svg className="animate-spin h-3.5 w-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none">
+              <div className="flex items-center gap-2 text-xs text-slate-500 py-2">
+                <svg className="animate-spin h-3.5 w-3.5 text-teal-600" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                 </svg>
@@ -483,19 +483,19 @@ export default function SalaryNegotiator() {
           </div>
 
           {/* Response Box with Audio Transcription */}
-          <form onSubmit={handleSendMessage} className="card-dark border-slate-800 p-4 space-y-3">
-            <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 border-b border-slate-800/80">
-              <span className="font-bold uppercase tracking-wider text-emerald-400">
+          <form onSubmit={handleSendMessage} className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between text-[11px] text-slate-500 pb-1 border-b border-slate-100">
+              <span className="font-bold uppercase tracking-wider text-teal-700">
                 Your Counter-Offer (Speak or Type)
               </span>
               <div className="flex items-center gap-2">
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
-                  detectedFillers > 1 ? 'bg-amber-950 text-amber-300 border-amber-800' : 'bg-slate-950 text-slate-400 border-slate-800'
+                  detectedFillers > 1 ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-slate-100 text-slate-600 border-slate-200'
                 }`}>
                   🎙️ Fillers: {detectedFillers}
                 </span>
                 {estimatedWpm > 0 && (
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 text-slate-300 border border-slate-800">
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                     ⚡ {estimatedWpm} WPM
                   </span>
                 )}
@@ -509,11 +509,11 @@ export default function SalaryNegotiator() {
               placeholder="State your expectations in LPA (e.g. 'I am expecting ₹24 LPA fixed base and ₹10 Lakhs in ESOPs based on market standards...')"
               rows={3}
               disabled={isLoading || isTranscribing}
-              className="input-field-dark text-xs w-full leading-relaxed"
+              className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-xs text-slate-900 focus:outline-none leading-relaxed"
             />
 
             {statusMessage && (
-              <p className="text-[11px] text-cyan-400 animate-pulse">{statusMessage}</p>
+              <p className="text-[11px] text-teal-700 animate-pulse">{statusMessage}</p>
             )}
 
             <div className="flex items-center justify-between gap-3 pt-1">
@@ -523,7 +523,7 @@ export default function SalaryNegotiator() {
                     type="button"
                     onClick={startRecording}
                     disabled={isLoading || isTranscribing}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-semibold shadow-md transition-all"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 active:scale-95 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
                   >
                     <span>🎙️ Speak Offer</span>
                   </button>
@@ -531,7 +531,7 @@ export default function SalaryNegotiator() {
                   <button
                     type="button"
                     onClick={stopRecording}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-semibold shadow-md animate-pulse transition-all"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-semibold shadow-sm animate-pulse transition-all cursor-pointer"
                   >
                     <span>⏹️ Stop Speaking ({formatSeconds(recordingSeconds)})</span>
                   </button>
@@ -541,7 +541,7 @@ export default function SalaryNegotiator() {
               <button
                 type="submit"
                 disabled={isLoading || !inputMsg.trim() || isRecording || isTranscribing}
-                className="btn-primary py-2 px-6 text-xs font-bold shadow-md bg-emerald-600 hover:bg-emerald-500"
+                className="py-2.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-sm cursor-pointer disabled:opacity-50"
               >
                 Send Counter-Offer ➔
               </button>
@@ -550,7 +550,8 @@ export default function SalaryNegotiator() {
         </div>
       </main>
 
-      <footer className="py-4 border-t border-slate-900 bg-slate-950/80 text-center" />
+      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }
+

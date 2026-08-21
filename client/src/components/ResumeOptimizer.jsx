@@ -183,30 +183,30 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
   };
 
   return (
-    <div className="min-h-screen bg-[#070a12] text-slate-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
       {/* ── Universal Top Bar ── */}
       <AppNavbar currentActive="resume-builder" />
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto w-full px-4 py-8 space-y-8 flex-1">
+      <main className="max-w-5xl mx-auto w-full px-4 py-8 space-y-8 flex-1 text-left">
         {/* Header Hero */}
         <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 px-3.5 py-1 rounded-full text-xs font-semibold mb-1">
+          <div className="inline-flex items-center gap-2 bg-teal-50 border border-teal-200 text-teal-800 px-3.5 py-1 rounded-full text-xs font-semibold mb-1 shadow-sm">
             <span>✨</span> Free ATS Audit & High-Impact Resume Rewrite
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
             Optimize Your Resume for 90+ ATS Score
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
-            Press <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300 font-mono text-[10px]">Enter ↵</kbd> in any field to move directly to the next input.
+          <p className="text-xs sm:text-sm text-slate-500">
+            Press <kbd className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-700 font-mono text-[10px]">Enter ↵</kbd> in any field to move directly to the next input.
           </p>
         </div>
 
         {/* Input Form Card */}
-        <div className="card-dark border-indigo-900/40 p-6 sm:p-8 space-y-6">
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
           {/* Target Role Input */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-indigo-400 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-teal-700 mb-2">
               🎯 Target Job Role to Optimize Against
             </label>
             <input
@@ -221,7 +221,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                 )
               }
               placeholder="e.g. Full Stack Developer, Data Analyst, Machine Learning Engineer (Press Enter to move next)..."
-              className="input-field-dark text-sm mb-3"
+              className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-sm text-slate-900 focus:outline-none mb-3 shadow-sm"
               required
             />
             {/* Quick Suggestions */}
@@ -235,10 +235,10 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                     if (inputTab === 'existing') resumeTextRef.current?.focus();
                     else fullNameRef.current?.focus();
                   }}
-                  className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
+                  className={`text-xs px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
                     targetRole === role
-                      ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm'
-                      : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-slate-200'
+                      ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
                   }`}
                 >
                   {role}
@@ -248,14 +248,14 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
           </div>
 
           {/* Mode Switcher Tabs */}
-          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800">
+          <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
             <button
               type="button"
               onClick={() => setInputTab('existing')}
-              className={`flex-1 text-xs py-2 rounded-lg font-semibold transition-all ${
+              className={`flex-1 text-xs py-2 rounded-lg font-semibold transition-all cursor-pointer ${
                 inputTab === 'existing'
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-teal-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               📄 Upload / Paste Existing Resume
@@ -263,10 +263,10 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
             <button
               type="button"
               onClick={() => setInputTab('form')}
-              className={`flex-1 text-xs py-2 rounded-lg font-semibold transition-all ${
+              className={`flex-1 text-xs py-2 rounded-lg font-semibold transition-all cursor-pointer ${
                 inputTab === 'form'
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-teal-600 text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               📝 Enter Candidate Details from Scratch
@@ -287,10 +287,10 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   onClick={() => fileInputRef.current?.click()}
                   className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${
                     dragOver
-                      ? 'border-indigo-500 bg-indigo-500/10'
+                      ? 'border-teal-500 bg-teal-50'
                       : file
-                      ? 'border-green-500/60 bg-green-500/5'
-                      : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'
+                      ? 'border-emerald-500 bg-emerald-50'
+                      : 'border-slate-300 bg-slate-50 hover:bg-slate-100'
                   }`}
                 >
                   <input
@@ -305,23 +305,23 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   {file ? (
                     <div className="flex flex-col items-center gap-1">
                       <span className="text-2xl">✅</span>
-                      <p className="font-semibold text-slate-200 text-xs">{file.name}</p>
-                      <p className="text-[11px] text-slate-400">Click to change file</p>
+                      <p className="font-semibold text-slate-800 text-xs">{file.name}</p>
+                      <p className="text-[11px] text-slate-500">Click to change file</p>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-1">
                       <span className="text-2xl opacity-70">📁</span>
-                      <p className="text-xs font-semibold text-slate-200">
+                      <p className="text-xs font-semibold text-slate-700">
                         Upload your current PDF or DOCX resume (Optional)
                       </p>
-                      <p className="text-[11px] text-slate-500">Or paste text below</p>
+                      <p className="text-[11px] text-slate-400">Or paste text below</p>
                     </div>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1.5">
                   Or Paste Resume Content
                 </label>
                 <textarea
@@ -331,7 +331,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   onKeyDown={(e) => handleFieldKeyDown(e, null, true)}
                   placeholder="Paste your existing resume text, work experience, bullets, and skills here (Press Enter to audit)..."
                   rows={6}
-                  className="input-field-dark text-xs font-mono leading-relaxed"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-xs font-mono text-slate-900 focus:outline-none leading-relaxed shadow-sm"
                 />
               </div>
             </div>
@@ -341,7 +341,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
           {inputTab === 'form' && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                   Full Name
                 </label>
                 <input
@@ -351,12 +351,12 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   onKeyDown={(e) => handleFieldKeyDown(e, emailRef)}
                   placeholder="e.g. Alex Johnson (Press Enter to next)"
-                  className="input-field-dark text-xs"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none shadow-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                   Email & Phone
                 </label>
                 <input
@@ -366,12 +366,12 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   onKeyDown={(e) => handleFieldKeyDown(e, skillsRef)}
                   placeholder="alex@gmail.com | +1 555-0199 (Press Enter to next)"
-                  className="input-field-dark text-xs"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none shadow-sm"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                   Core Skills & Technologies
                 </label>
                 <input
@@ -381,12 +381,12 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
                   onKeyDown={(e) => handleFieldKeyDown(e, experienceRef)}
                   placeholder="e.g. Python, SQL, React, AWS, Docker, Machine Learning (Press Enter to next)"
-                  className="input-field-dark text-xs"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none shadow-sm"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                   Work Experience (Past Roles & Tasks)
                 </label>
                 <textarea
@@ -396,12 +396,12 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   onKeyDown={(e) => handleFieldKeyDown(e, projectsRef)}
                   placeholder="e.g. Junior Data Analyst at TechCorp: Built ETL pipelines in Python, created dashboards (Press Enter to next, Shift+Enter for newline)"
                   rows={4}
-                  className="input-field-dark text-xs font-mono"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-xs font-mono text-slate-900 focus:outline-none shadow-sm"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">
                   Projects & Education
                 </label>
                 <textarea
@@ -411,14 +411,14 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   onKeyDown={(e) => handleFieldKeyDown(e, null, true)}
                   placeholder="e.g. Customer Churn Prediction (Python, Scikit-learn). B.S. in Computer Science (Press Enter to audit & optimize)"
                   rows={3}
-                  className="input-field-dark text-xs font-mono"
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-xs font-mono text-slate-900 focus:outline-none shadow-sm"
                 />
               </div>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-950/50 border border-red-800/80 rounded-xl p-3 text-red-300 text-xs flex items-center gap-2">
+            <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-700 text-xs flex items-center gap-2">
               <span>⚠️</span>
               <span>{error}</span>
             </div>
@@ -429,7 +429,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
             type="button"
             onClick={handleAnalyzeAndOptimize}
             disabled={isLoading || !targetRole.trim()}
-            className="btn-primary w-full py-4 text-xs sm:text-sm font-bold shadow-xl btn-glow"
+            className="w-full py-4 rounded-xl text-xs sm:text-sm font-bold bg-teal-600 hover:bg-teal-500 text-white shadow-md transition-all active:scale-98 cursor-pointer disabled:opacity-50"
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
@@ -449,19 +449,25 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
         {atsResult && (
           <div className="space-y-6 animate-fade-in">
             {/* ATS Score Overview Grid */}
-            <div className="card-dark border-indigo-900/60 p-6 sm:p-8">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-800">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-6 border-b border-slate-100">
                 <div className="flex items-center gap-5">
-                  <div className={`w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center font-black ${getScoreColor(atsResult.atsScore)}`}>
+                  <div className={`w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center font-black ${
+                    atsResult.atsScore >= 80
+                      ? 'text-emerald-700 border-emerald-300 bg-emerald-50'
+                      : atsResult.atsScore >= 50
+                      ? 'text-amber-700 border-amber-300 bg-amber-50'
+                      : 'text-rose-700 border-rose-300 bg-rose-50'
+                  }`}>
                     <span className="text-3xl">{atsResult.atsScore}</span>
                     <span className="text-[10px] font-normal uppercase tracking-wider opacity-70">ATS Score</span>
                   </div>
 
                   <div>
-                    <h2 className="text-xl font-bold text-white">ATS Compatibility Audit</h2>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      Target Role: <strong className="text-slate-200">{targetRole}</strong> • Rating:{' '}
-                      <strong className="text-indigo-300">{atsResult.atsRating || 'Strong'}</strong>
+                    <h2 className="text-xl font-bold text-slate-900">ATS Compatibility Audit</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Target Role: <strong className="text-slate-800">{targetRole}</strong> • Rating:{' '}
+                      <strong className="text-teal-700">{atsResult.atsRating || 'Strong'}</strong>
                     </p>
                   </div>
                 </div>
@@ -469,13 +475,13 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                 <div className="flex items-center gap-3">
                   <button
                     onClick={copyAsMarkdown}
-                    className="btn-secondary py-2.5 px-4 text-xs font-semibold flex items-center gap-1.5"
+                    className="py-2.5 px-4 text-xs font-semibold flex items-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 rounded-xl shadow-sm cursor-pointer"
                   >
                     <span>{copied ? '✅ Copied!' : '📋 Copy Resume'}</span>
                   </button>
                   <button
                     onClick={() => window.print()}
-                    className="btn-secondary py-2.5 px-4 text-xs font-semibold flex items-center gap-1.5"
+                    className="py-2.5 px-4 text-xs font-semibold flex items-center gap-1.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 rounded-xl shadow-sm cursor-pointer"
                   >
                     <span>🖨️ Export PDF</span>
                   </button>
@@ -484,48 +490,48 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
 
               {/* 3 Metric Breakdown Bars */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                   <div className="flex justify-between items-center text-xs mb-1.5">
-                    <span className="text-slate-400 font-bold uppercase text-[10px]">Keyword Match</span>
-                    <span className="font-bold text-white">{atsResult.keywordMatchScore || 85}/100</span>
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Keyword Match</span>
+                    <span className="font-bold text-slate-900">{atsResult.keywordMatchScore || 85}/100</span>
                   </div>
-                  <div className="h-1.5 bg-slate-900 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${atsResult.keywordMatchScore || 85}%` }} />
+                  <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-teal-600 rounded-full" style={{ width: `${atsResult.keywordMatchScore || 85}%` }} />
                   </div>
                 </div>
 
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                   <div className="flex justify-between items-center text-xs mb-1.5">
-                    <span className="text-slate-400 font-bold uppercase text-[10px]">Action Verbs & Metrics</span>
-                    <span className="font-bold text-white">{atsResult.impactScore || 90}/100</span>
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Action Verbs & Metrics</span>
+                    <span className="font-bold text-slate-900">{atsResult.impactScore || 90}/100</span>
                   </div>
-                  <div className="h-1.5 bg-slate-900 rounded-full overflow-hidden">
-                    <div className="h-full bg-cyan-500 rounded-full" style={{ width: `${atsResult.impactScore || 90}%` }} />
+                  <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-cyan-600 rounded-full" style={{ width: `${atsResult.impactScore || 90}%` }} />
                   </div>
                 </div>
 
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                   <div className="flex justify-between items-center text-xs mb-1.5">
-                    <span className="text-slate-400 font-bold uppercase text-[10px]">Formatting & Structure</span>
-                    <span className="font-bold text-white">{atsResult.formattingScore || 95}/100</span>
+                    <span className="text-slate-500 font-bold uppercase text-[10px]">Formatting & Structure</span>
+                    <span className="font-bold text-slate-900">{atsResult.formattingScore || 95}/100</span>
                   </div>
-                  <div className="h-1.5 bg-slate-900 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: `${atsResult.formattingScore || 95}%` }} />
+                  <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-600 rounded-full" style={{ width: `${atsResult.formattingScore || 95}%` }} />
                   </div>
                 </div>
               </div>
 
               {/* Missing Keywords Pills */}
               {atsResult.missingKeywords && atsResult.missingKeywords.length > 0 && (
-                <div className="mt-6 pt-5 border-t border-slate-800">
-                  <p className="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2.5">
+                <div className="mt-6 pt-5 border-t border-slate-100">
+                  <p className="text-xs font-bold uppercase tracking-wider text-amber-800 mb-2.5">
                     ⚠️ High-Priority ATS Keywords Added to Resume:
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {atsResult.missingKeywords.map((kw) => (
                       <span
                         key={kw}
-                        className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-amber-950/60 border border-amber-800/80 text-amber-300"
+                        className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 shadow-sm"
                       >
                         + {kw}
                       </span>
@@ -537,13 +543,13 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
 
             {/* ── ATS Resume Preview (Printable) ── */}
             {atsResult.optimizedResume && (
-              <div className="card-dark border-slate-800 p-8 sm:p-12 space-y-6 bg-slate-900 text-slate-100 font-sans shadow-2xl">
+              <div className="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 space-y-6 text-slate-800 font-sans shadow-sm">
                 {/* Resume Header */}
-                <div className="text-center pb-4 border-b border-slate-700">
-                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide uppercase">
+                <div className="text-center pb-4 border-b border-slate-200">
+                  <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-wide uppercase">
                     {atsResult.optimizedResume.fullName || 'Candidate Name'}
                   </h1>
-                  <p className="text-xs text-slate-400 mt-1.5 space-x-2">
+                  <p className="text-xs text-slate-500 mt-1.5 space-x-2">
                     {atsResult.optimizedResume.contactInfo?.email && <span>{atsResult.optimizedResume.contactInfo.email}</span>}
                     {atsResult.optimizedResume.contactInfo?.phone && (
                       <>
@@ -558,7 +564,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                       </>
                     )}
                   </p>
-                  <p className="text-xs text-indigo-400 mt-1 space-x-3">
+                  <p className="text-xs text-teal-700 mt-1 space-x-3">
                     {atsResult.optimizedResume.contactInfo?.linkedin && <span>{atsResult.optimizedResume.contactInfo.linkedin}</span>}
                     {atsResult.optimizedResume.contactInfo?.github && <span>{atsResult.optimizedResume.contactInfo.github}</span>}
                   </p>
@@ -566,26 +572,26 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
 
                 {/* Professional Summary */}
                 <div className="space-y-1.5">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-400 border-b border-slate-800 pb-1">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-teal-800 border-b border-slate-200 pb-1">
                     Professional Summary
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
                     {atsResult.optimizedResume.professionalSummary}
                   </p>
                 </div>
 
                 {/* Core Competencies */}
                 <div className="space-y-1.5">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-400 border-b border-slate-800 pb-1">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-teal-800 border-b border-slate-200 pb-1">
                     Core Competencies & Technical Skills
                   </h2>
-                  <div className="text-xs text-slate-300 space-y-1">
+                  <div className="text-xs text-slate-700 space-y-1">
                     <p>
-                      <strong className="text-white">Technical Skills:</strong>{' '}
+                      <strong className="text-slate-900">Technical Skills:</strong>{' '}
                       {(atsResult.optimizedResume.skills?.technicalSkills || []).join(', ')}
                     </p>
                     <p>
-                      <strong className="text-white">Tools & Frameworks:</strong>{' '}
+                      <strong className="text-slate-900">Tools & Frameworks:</strong>{' '}
                       {(atsResult.optimizedResume.skills?.frameworksAndTools || []).join(', ')}
                     </p>
                   </div>
@@ -594,16 +600,16 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                 {/* Experience */}
                 {atsResult.optimizedResume.experience && atsResult.optimizedResume.experience.length > 0 && (
                   <div className="space-y-4">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-400 border-b border-slate-800 pb-1">
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-teal-800 border-b border-slate-200 pb-1">
                       Professional Experience
                     </h2>
                     {atsResult.optimizedResume.experience.map((exp, idx) => (
                       <div key={idx} className="space-y-1">
                         <div className="flex flex-col sm:flex-row justify-between text-xs sm:text-sm">
-                          <strong className="text-white font-bold">{exp.role} {exp.company ? `— ${exp.company}` : ''}</strong>
-                          {exp.duration && <span className="text-slate-400 font-mono text-xs">{exp.duration}</span>}
+                          <strong className="text-slate-900 font-bold">{exp.role} {exp.company ? `— ${exp.company}` : ''}</strong>
+                          {exp.duration && <span className="text-slate-500 font-mono text-xs">{exp.duration}</span>}
                         </div>
-                        <ul className="list-disc list-inside text-xs text-slate-300 space-y-1 pt-1">
+                        <ul className="list-disc list-inside text-xs text-slate-700 space-y-1 pt-1">
                           {(exp.bullets || []).map((b, bIdx) => (
                             <li key={bIdx} className="leading-relaxed">{b}</li>
                           ))}
@@ -616,15 +622,15 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                 {/* Projects */}
                 {atsResult.optimizedResume.projects && atsResult.optimizedResume.projects.length > 0 && (
                   <div className="space-y-3">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-400 border-b border-slate-800 pb-1">
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-teal-800 border-b border-slate-200 pb-1">
                       Technical Projects
                     </h2>
                     {atsResult.optimizedResume.projects.map((p, pIdx) => (
-                      <div key={pIdx} className="text-xs text-slate-300 space-y-0.5">
+                      <div key={pIdx} className="text-xs text-slate-700 space-y-0.5">
                         <p>
-                          <strong className="text-white">{p.title}</strong>{' '}
+                          <strong className="text-slate-900">{p.title}</strong>{' '}
                           {p.technologies && p.technologies.length > 0 && (
-                            <span className="text-slate-400">({p.technologies.join(', ')})</span>
+                            <span className="text-slate-500">({p.technologies.join(', ')})</span>
                           )}
                           : {p.description}
                         </p>
@@ -636,27 +642,27 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                 {/* Education */}
                 {atsResult.optimizedResume.education && atsResult.optimizedResume.education.length > 0 && (
                   <div className="space-y-2">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-400 border-b border-slate-800 pb-1">
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-teal-800 border-b border-slate-200 pb-1">
                       Education & Certifications
                     </h2>
                     {atsResult.optimizedResume.education.map((ed, edIdx) => (
-                      <div key={edIdx} className="flex justify-between text-xs text-slate-300">
-                        <span><strong className="text-white">{ed.degree}</strong>{ed.institution ? `, ${ed.institution}` : ''}</span>
-                        {ed.year && <span className="text-slate-400">{ed.year}</span>}
+                      <div key={edIdx} className="flex justify-between text-xs text-slate-700">
+                        <span><strong className="text-slate-900">{ed.degree}</strong>{ed.institution ? `, ${ed.institution}` : ''}</span>
+                        {ed.year && <span className="text-slate-500">{ed.year}</span>}
                       </div>
                     ))}
                     {(atsResult.optimizedResume.certifications || []).map((c, cIdx) => (
-                      <p key={cIdx} className="text-xs text-slate-300">• {c}</p>
+                      <p key={cIdx} className="text-xs text-slate-700">• {c}</p>
                     ))}
                   </div>
                 )}
 
                 {/* CTA to Practice with this Profile */}
-                <div className="pt-6 border-t border-slate-800 flex justify-center">
+                <div className="pt-6 border-t border-slate-200 flex justify-center">
                   <button
                     onClick={handleStartInterviewWithOptimized}
                     disabled={isStartingInterview}
-                    className="btn-primary py-3.5 px-8 text-xs font-bold btn-glow shadow-xl"
+                    className="py-3.5 px-8 text-xs font-bold bg-teal-600 hover:bg-teal-500 text-white rounded-xl shadow-md cursor-pointer disabled:opacity-50"
                   >
                     {isStartingInterview ? (
                       <span className="flex items-center justify-center gap-2">
@@ -677,7 +683,9 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
         )}
       </main>
 
-      <footer className="py-4 border-t border-slate-900 bg-slate-950/80 text-center" />
+      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }
+
+
