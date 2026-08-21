@@ -647,6 +647,8 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
 
         targetRole,
         setTargetRole,
+        role: targetRole,
+        setRole: setTargetRole,
         resumeAnalysis,
         currentRound: ROUNDS[currentRoundIndex],
         currentRoundIndex,

@@ -81,7 +81,7 @@ const FORMATS = [
 
 export default function InterviewSetup({ onNavigate }) {
   const {
-    setRole,
+    setTargetRole,
     setDifficultyLevel,
     setCompanyTrack,
     setInterviewerPersona,
@@ -120,6 +120,7 @@ export default function InterviewSetup({ onNavigate }) {
   const handleLaunchSession = async (fallbackToText = false) => {
     setLaunchError(null);
     const chosenFormat = fallbackToText ? 'text-only' : selectedFormat.id;
+    const effectiveMode = chosenFormat === 'text-only' ? 'text' : 'video';
 
     if (chosenFormat === 'voice-transcript' && !audioConsent) {
       setLaunchError('Please confirm the audio consent checkbox before proceeding to the live audio session.');
@@ -128,25 +129,27 @@ export default function InterviewSetup({ onNavigate }) {
 
     try {
       const finalRoleTitle = customRoleText.trim() || selectedRole.title;
-      setRole(finalRoleTitle);
-      setDifficultyLevel(difficulty);
-      setInterviewMode(chosenFormat);
+      if (typeof setTargetRole === 'function') setTargetRole(finalRoleTitle);
+      if (typeof setDifficultyLevel === 'function') setDifficultyLevel(difficulty);
+      if (typeof setInterviewMode === 'function') setInterviewMode(effectiveMode);
 
       if (selectedPersona) {
-        setInterviewerPersona(selectedPersona.id);
-        setCompanyTrack(selectedPersona.companyTrack || 'General');
+        if (typeof setInterviewerPersona === 'function') setInterviewerPersona(selectedPersona);
+        if (typeof setCompanyTrack === 'function') setCompanyTrack(selectedPersona.company || 'General');
       }
 
-      await startInterview({
-        targetRole: finalRoleTitle,
-        difficultyLevel: difficulty,
-        interviewerPersona: selectedPersona?.id || 'standard',
-        companyTrack: selectedPersona?.companyTrack || 'General',
-        mode: chosenFormat,
-        durationMinutes: parseInt(duration, 10) || 15,
-      });
+      if (typeof startInterview === 'function') {
+        await startInterview({
+          targetRole: finalRoleTitle,
+          difficultyLevel: difficulty,
+          interviewerPersona: selectedPersona || BAR_RAISER_PERSONAS?.[0],
+          companyTrack: selectedPersona?.company || 'General',
+          interviewMode: effectiveMode,
+          duration: duration || '15',
+        });
+      }
     } catch (err) {
-      setLaunchError(err.message || 'Failed to initialize the mock interview session. Please try again.');
+      setLaunchError(err?.message || 'Failed to initialize the mock interview session. Please try again.');
     }
   };
 
