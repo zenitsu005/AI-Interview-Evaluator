@@ -436,10 +436,10 @@ export default function LandingPage() {
 
         </div>
 
-        <div className="max-w-6xl mx-auto border-t border-zinc-900 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-zinc-500">
-          <p>© {new Date().getFullYear()} AI Interview Evaluator. Open-source mock studio platform.</p>
-          <p className="font-mono">Built for engineers by engineers.</p>
+        <div className="max-w-6xl mx-auto border-t border-zinc-900 pt-6 text-center text-[11px] text-zinc-500 font-mono">
+          <p>Built for engineers by engineers.</p>
         </div>
+
       </footer>
     </div>
   );
