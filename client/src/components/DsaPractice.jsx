@@ -1010,7 +1010,7 @@ export default function DsaPractice() {
           <div className="lg:col-span-5 space-y-4">
             
             {/* 5 Problem Tabs in Selected Tier */}
-            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 overflow-x-auto gap-1">
+            <div className="grid grid-cols-5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 gap-1.5 shadow-sm">
               {currentQuestionsInTier.map((prob, idx) => {
                 const isActive = (activeProblem?.id || currentProb?.id) === prob.id;
                 return (
@@ -1018,13 +1018,14 @@ export default function DsaPractice() {
                     key={prob.id || idx}
                     type="button"
                     onClick={() => handleSelectProblem(prob)}
-                    className={`flex-1 min-w-[70px] py-1.5 px-2 rounded-lg text-xs font-mono font-bold transition-all text-center whitespace-nowrap cursor-pointer ${
+                    title={`Problem ${idx + 1}: ${cleanTitle(prob.title)}`}
+                    className={`py-2 px-1 rounded-xl text-xs sm:text-sm font-sans font-bold transition-all text-center cursor-pointer truncate ${
                       isActive
-                        ? 'bg-teal-600 text-white shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+                        ? 'bg-teal-600 text-white shadow-md'
+                        : 'bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 shadow-xs'
                     }`}
                   >
-                    #{idx + 1} {cleanTitle(prob.title)}
+                    Q{idx + 1}
                   </button>
                 );
               })}
