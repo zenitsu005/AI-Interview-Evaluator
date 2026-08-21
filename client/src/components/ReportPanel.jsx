@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import { useAuth } from '../context/AuthContext';
 
-import DopamineCelebrationModal from './DopamineCelebrationModal';
 import AiInterviewCoach from './AiInterviewCoach';
 import SkillPassportModal from './SkillPassportModal';
 import AnalyticsTrendSection from './AnalyticsTrendSection';
+
 
 
 
@@ -74,9 +74,9 @@ export default function ReportPanel() {
   const [completedDays, setCompletedDays] = useState([]);
   const [showCertificate, setShowCertificate] = useState(false);
   const [showCheatSheet, setShowCheatSheet] = useState(false);
-  const [showDopamineModal, setShowDopamineModal] = useState(true);
   const [showPassportModal, setShowPassportModal] = useState(false);
   const [copiedLinkedIn, setCopiedLinkedIn] = useState(false);
+
 
 
   const [selectedDayNumber, setSelectedDayNumber] = useState(1);
@@ -1044,15 +1044,7 @@ export default function ReportPanel() {
 
 
 
-      {/* ── Dopamine Level-Up & Mystery Loot Box Modal ── */}
-      <DopamineCelebrationModal
-        isOpen={showDopamineModal}
-        onClose={() => setShowDopamineModal(false)}
-        overallScore={overallScoreVal}
-        targetRole={targetRole}
-        eloRating={eloRating}
-        eloTier={eloTier}
-      />
+
 
       {/* ── Feature 6: Cryptographic Verified Skill Passport Modal ── */}
       <SkillPassportModal
