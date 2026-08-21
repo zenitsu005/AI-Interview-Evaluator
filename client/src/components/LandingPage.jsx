@@ -48,9 +48,12 @@ export default function LandingPage() {
               </Badge>
             </div>
 
-            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
-              Stop guessing your performance in <span className="text-indigo-400">high-stakes</span> interviews.
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.15]">
+              Stop guessing your performance in{" "}
+              <span className="text-indigo-400 whitespace-nowrap">high-stakes</span>{" "}
+              interviews.
             </h1>
+
 
             <p className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed text-pretty font-normal">
               Deterministic, real-time evaluation across system design, code architecture, and verbal composure—calibrated against top-tier tech benchmarks.
