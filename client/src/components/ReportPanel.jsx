@@ -79,9 +79,17 @@ export default function ReportPanel() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [copiedLinkedIn, setCopiedLinkedIn] = useState(false);
 
-  const [activeTierTabs, setActiveTierTabs] = useState({});
   const [selectedDayNumber, setSelectedDayNumber] = useState(1);
   const [playingVoiceIdx, setPlayingVoiceIdx] = useState(null);
+  const [copiedKey, setCopiedKey] = useState(null);
+
+  const handleCopyText = (text, key) => {
+    if (!text) return;
+    navigator.clipboard?.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
+
 
   // Preload voices on mount to fix Chrome TTS initial empty array
   useEffect(() => {
@@ -876,9 +884,18 @@ export default function ReportPanel() {
 
                     {activeTab === 'model' && (
                       <div>
-                        <span className="text-emerald-400 font-bold uppercase text-[10px] block">
-                          💡 Correct / Model Solution
-                        </span>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-emerald-400 font-bold uppercase text-[10px] block">
+                            💡 Correct / Model Solution
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyText(q.expectedAnswer || 'Optimal architectural and reasoning response.', `model-${idx}`)}
+                            className="text-[10px] text-teal-400 hover:text-white font-mono flex items-center gap-1 bg-slate-900 px-2 py-0.5 rounded border border-slate-800 cursor-pointer"
+                          >
+                            <span>{copiedKey === `model-${idx}` ? '✓ Copied' : '📋 Copy'}</span>
+                          </button>
+                        </div>
                         <p className="text-slate-200 font-mono text-xs mt-0.5 whitespace-pre-wrap">
                           {q.expectedAnswer || 'Optimal architectural and reasoning response.'}
                         </p>
@@ -891,19 +908,28 @@ export default function ReportPanel() {
                           <span className="text-amber-400 font-bold uppercase text-[10px]">
                             🥇 Staff Engineer / Top 1% Benchmark Answer
                           </span>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              playVoiceSpeech(
-                                q.tierComparison?.staffTop1 || q.expectedAnswer || 'Demonstrates clear architectural trade-offs, quantitative SLA metrics, and failure recovery handling.',
-                                idx,
-                                true
-                              )
-                            }
-                            className="text-[10px] text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1"
-                          >
-                            <span>{playingVoiceIdx === `${idx}-top` ? '⏹️ Stop Voice' : '🔊 Listen to Staff 1% Voice'}</span>
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleCopyText(q.tierComparison?.staffTop1 || q.expectedAnswer, `top1-${idx}`)}
+                              className="text-[10px] text-amber-300 hover:text-white font-mono flex items-center gap-1 bg-slate-900 px-2 py-0.5 rounded border border-slate-800 cursor-pointer"
+                            >
+                              <span>{copiedKey === `top1-${idx}` ? '✓ Copied' : '📋 Copy'}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                playVoiceSpeech(
+                                  q.tierComparison?.staffTop1 || q.expectedAnswer || 'Demonstrates clear architectural trade-offs, quantitative SLA metrics, and failure recovery handling.',
+                                  idx,
+                                  true
+                                )
+                              }
+                              className="text-[10px] text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1"
+                            >
+                              <span>{playingVoiceIdx === `${idx}-top` ? '⏹️ Stop Voice' : '🔊 Listen to Staff 1% Voice'}</span>
+                            </button>
+                          </div>
                         </div>
                         <p className="text-slate-200 font-mono text-xs mt-0.5 whitespace-pre-wrap">
                           {q.tierComparison?.staffTop1 ||
@@ -912,6 +938,7 @@ export default function ReportPanel() {
                         </p>
                       </div>
                     )}
+
 
                     {q.feedback && (
                       <div className="pt-2 border-t border-slate-800/60">

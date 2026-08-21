@@ -640,6 +640,15 @@ export default function DsaPractice() {
   const [activeTab, setActiveTab] = useState('spec');
   const [showDopamineModal, setShowDopamineModal] = useState(false);
   const [refreshNotification, setRefreshNotification] = useState(null);
+  const [copiedSolution, setCopiedSolution] = useState(false);
+
+  const handleCopyCode = (textToCopy) => {
+    if (!textToCopy) return;
+    navigator.clipboard?.writeText(textToCopy);
+    setCopiedSolution(true);
+    setTimeout(() => setCopiedSolution(false), 2000);
+  };
+
 
   const currentQuestionsInTier = activeTierQuestions[selectedDifficulty] || [];
 
@@ -999,13 +1008,34 @@ export default function DsaPractice() {
               ) : (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
-                    <span>Optimal {currentProb.timeComplexity} Time · {currentProb.spaceComplexity} Space</span>
+                    <span className="text-teal-400 font-bold uppercase tracking-wider">Optimal Solution</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-zinc-500">Python 3</span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyCode(currentProb.modelSolution)}
+                        className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-teal-400 border border-teal-500/30 text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-sm"
+                        title="Copy solution code to clipboard"
+                      >
+                        <span>{copiedSolution ? '✓ Copied!' : '📋 Copy Solution'}</span>
+                      </button>
+                    </div>
                   </div>
-                  <pre className="bg-[#0B0B0E] p-4 rounded-xl border border-zinc-800 text-emerald-400 font-mono text-xs overflow-x-auto leading-relaxed">
-                    <code>{currentProb.modelSolution || '# Model solution available after attempt'}</code>
-                  </pre>
+                  <div className="relative group">
+                    <pre className="bg-[#0B0B0E] p-4 rounded-xl border border-zinc-800 text-emerald-400 font-mono text-xs overflow-x-auto leading-relaxed">
+                      <code>{currentProb.modelSolution || '# Model solution available after attempt'}</code>
+                    </pre>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyCode(currentProb.modelSolution)}
+                      className="absolute top-2.5 right-2.5 opacity-80 group-hover:opacity-100 px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-700 text-[10px] font-mono transition-all flex items-center gap-1 shadow-md cursor-pointer"
+                    >
+                      <span>{copiedSolution ? '✓ Copied' : '📋 Copy'}</span>
+                    </button>
+                  </div>
                 </div>
               )}
+
             </div>
           </div>
 
