@@ -1,113 +1,250 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-// Web Audio API Victory Fanfare synthesizer (zero external mp3 dependency)
-const playVictoryChime = () => {
+// Web Audio API Arcade Victory Fanfare
+const playArcadeVictoryChime = () => {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [261.63, 329.63, 392.0, 523.25, 659.25, 783.99]; // C4, E4, G4, C5, E5, G5
+    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51]; // C5, E5, G5, C6, E6
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.1);
-      gain.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.1);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.35);
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.08);
+      gain.gain.setValueAtTime(0.25, ctx.currentTime + i * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.35);
       osc.connect(gain);
       gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + i * 0.1);
-      osc.stop(ctx.currentTime + i * 0.1 + 0.4);
+      osc.start(ctx.currentTime + i * 0.08);
+      osc.stop(ctx.currentTime + i * 0.08 + 0.4);
     });
-  } catch (e) {
-    // Audio context may be restricted before user gesture
-  }
+  } catch (e) {}
+};
+
+const playStarChime = (pitchIndex = 0) => {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const freqs = [659.25, 783.99, 1046.50];
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freqs[pitchIndex] || 800, ctx.currentTime);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.35);
+  } catch (e) {}
 };
 
 const SURPRISE_PERKS = [
-  { icon: '🚀', title: '2x XP Multiplier Activated!', desc: 'Next interview earns double preparation credits.' },
-  { icon: '📄', title: '1-Page Secret Cheat Sheet Unlocked!', desc: 'Full STAR formula & company track cheat sheet ready to print.' },
-  { icon: '💼', title: 'FAANG ₹45 LPA Compensation Unlocked!', desc: 'Market benchmark salary matrix accessible in Negotiator.' },
-  { icon: '🛡️', title: 'Gold Tier Shield Activated!', desc: 'Protects streak from breaking on your next practice drill.' },
+  { icon: '🚀', title: '2x XP Multiplier Unlocked!', desc: 'Double preparation credits awarded for next session.' },
+  { icon: '📄', title: 'STAR Framework Cheat Sheet!', desc: 'Full behavioral response rubric unlocked.' },
+  { icon: '💼', title: 'Staff Architect Salary Matrix!', desc: 'FAANG level benchmark data accessible.' },
+  { icon: '🛡️', title: 'Streak Shield Active!', desc: 'Protects momentum from missed days.' },
 ];
 
-export default function DopamineCelebrationModal({ isOpen, onClose, overallScore = 0, targetRole = 'Software Engineer', eloRating = 0, eloTier = {} }) {
+export default function DopamineCelebrationModal({
+  isOpen,
+  onClose,
+  overallScore = 88,
+  targetRole = 'Software Engineer',
+  eloRating = 1450,
+  eloTier = { label: 'Gold / L6' },
+}) {
+  const canvasRef = useRef(null);
+  const [starsVisible, setStarsVisible] = useState([false, false, false]);
   const [isLootOpened, setIsLootOpened] = useState(false);
   const [lootReward, setLootReward] = useState(SURPRISE_PERKS[0]);
 
+  // Animated Ticking Counters
+  const [displayedXp, setDisplayedXp] = useState(0);
+  const [displayedScore, setDisplayedScore] = useState(0);
+  const [displayedStreak, setDisplayedStreak] = useState(0);
+
+  const targetXp = 100 + Math.round((overallScore || 80) * 1.8);
+  const targetScore = Math.round(overallScore || 88);
+  const targetStreak = Math.max(15, Math.round((overallScore || 80) * 0.4));
+
+  // Canvas Confetti Burst Logic
   useEffect(() => {
-    if (isOpen) {
-      playVictoryChime();
-      const randomPerk = SURPRISE_PERKS[Math.floor(Math.random() * SURPRISE_PERKS.length)];
-      setLootReward(randomPerk);
-      setIsLootOpened(false);
+    if (!isOpen) return;
+
+    playArcadeVictoryChime();
+    const randomPerk = SURPRISE_PERKS[Math.floor(Math.random() * SURPRISE_PERKS.length)];
+    setLootReward(randomPerk);
+    setIsLootOpened(false);
+
+    // Sequential Star Pop Timers
+    setStarsVisible([false, false, false]);
+    const starTimers = [
+      setTimeout(() => { setStarsVisible([true, false, false]); playStarChime(0); }, 300),
+      setTimeout(() => { setStarsVisible([true, true, false]); playStarChime(1); }, 600),
+      setTimeout(() => { setStarsVisible([true, true, true]); playStarChime(2); }, 900),
+    ];
+
+    // Counter Ticking Interval
+    const duration = 1000;
+    const steps = 30;
+    const intervalTime = duration / steps;
+    let step = 0;
+
+    const countInterval = setInterval(() => {
+      step++;
+      const progress = step / steps;
+      setDisplayedXp(Math.round(targetXp * progress));
+      setDisplayedScore(Math.round(targetScore * progress));
+      setDisplayedStreak(Math.round(targetStreak * progress));
+
+      if (step >= steps) {
+        clearInterval(countInterval);
+      }
+    }, intervalTime);
+
+    // Canvas Confetti Particle System
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ['#f59e0b', '#10b981', '#6366f1', '#ec4899', '#3b82f6', '#fbbf24'];
+    let particles = [];
+
+    // Left and Right Cannons
+    for (let i = 0; i < 70; i++) {
+      particles.push({
+        x: canvas.width * 0.1,
+        y: canvas.height * 0.9,
+        vx: Math.random() * 12 + 4,
+        vy: -Math.random() * 16 - 8,
+        size: Math.random() * 8 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        vr: Math.random() * 10 - 5,
+        opacity: 1,
+      });
+      particles.push({
+        x: canvas.width * 0.9,
+        y: canvas.height * 0.9,
+        vx: -Math.random() * 12 - 4,
+        vy: -Math.random() * 16 - 8,
+        size: Math.random() * 8 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        vr: Math.random() * 10 - 5,
+        opacity: 1,
+      });
     }
-  }, [isOpen]);
+
+    let animationFrame;
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.4; // gravity
+        p.rotation += p.vr;
+        p.opacity -= 0.008;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        ctx.restore();
+      });
+
+      particles = particles.filter((p) => p.opacity > 0);
+      if (particles.length > 0) {
+        animationFrame = requestAnimationFrame(render);
+      }
+    };
+
+    render();
+
+    return () => {
+      starTimers.forEach(clearTimeout);
+      clearInterval(countInterval);
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+    };
+  }, [isOpen, targetXp, targetScore, targetStreak]);
 
   if (!isOpen) return null;
 
-  const earnedXp = 100 + Math.round((overallScore || 0) * 1.8);
-  const streakBonus = Math.max(15, Math.round((overallScore || 0) * 0.5));
-  const levelNum = Math.max(1, Math.floor(earnedXp / 50));
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
-      {/* Background Animated Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-amber-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl animate-pulse" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#05070e]/90 backdrop-blur-xl overflow-hidden animate-fade-in select-none">
+      
+      {/* ── Rotating Starburst Background ── */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden opacity-25">
+        <div className="w-[1200px] h-[1200px] rounded-full bg-[conic-gradient(from_0deg,#f59e0b_0deg,transparent_20deg,#6366f1_40deg,transparent_60deg,#10b981_80deg,transparent_100deg,#ec4899_120deg,transparent_140deg)] animate-[spin_25s_linear_infinite]" />
       </div>
 
-      <div className="card-dark border-amber-500/80 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 max-w-lg w-full p-6 sm:p-8 shadow-2xl relative space-y-6 text-center border-2 ring-4 ring-amber-500/20 max-h-[92vh] overflow-y-auto">
-        {/* Top Trophy / Badge Burst */}
-        <div className="relative inline-block">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-orange-500 flex items-center justify-center text-4xl sm:text-5xl mx-auto shadow-2xl shadow-amber-500/40 animate-bounce">
-            🎉
-          </div>
-          <span className="absolute -bottom-2 -right-2 bg-indigo-600 border-2 border-slate-950 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-lg">
-            LVL {levelNum}
-          </span>
-        </div>
+      {/* Confetti Canvas */}
+      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-10" />
 
-        {/* Headline */}
-        <div className="space-y-1">
-          <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-950/60 border border-amber-500/40 px-3 py-1 rounded-full inline-block">
-            ⚡ INTERVIEW COMPLETED • LEVEL UP!
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Sensational Effort!
-          </h1>
-          <p className="text-xs text-slate-400">
-            You completed a full AI evaluation for <strong className="text-slate-200">{targetRole}</strong>.
+      {/* ── Main Arcade Celebration Card ── */}
+      <div className="relative z-20 max-w-lg w-full bg-gradient-to-b from-zinc-900 via-zinc-900 to-zinc-950 border-2 border-amber-500/80 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-[0_0_80px_rgba(245,158,11,0.3)] ring-4 ring-amber-500/20 max-h-[92vh] overflow-y-auto">
+        
+        {/* 3D Level Completed Banner */}
+        <div className="space-y-2">
+          <div className="inline-block transform -rotate-1 hover:rotate-0 transition-transform">
+            <span className="text-3xl sm:text-5xl font-extrabold tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-amber-600 drop-shadow-[0_4px_12px_rgba(245,158,11,0.6)] font-mono">
+              LEVEL CLEAR!
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-zinc-400 font-medium">
+            Evaluation complete for <strong className="text-white font-bold">{targetRole}</strong>
           </p>
         </div>
 
-        {/* ── Dopamine XP & Points Grid ── */}
-        <div className="grid grid-cols-3 gap-2.5">
-          <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-0.5 shadow-inner">
-            <span className="text-[10px] uppercase font-bold text-slate-500">XP Earned</span>
-            <p className="text-xl font-black text-amber-400">+{earnedXp}</p>
-            <span className="text-[9px] text-slate-400 font-mono">Credits</span>
+        {/* ── 3 Sequential Pop Stars ── */}
+        <div className="flex items-center justify-center gap-4 py-2">
+          {starsVisible.map((visible, idx) => (
+            <div
+              key={idx}
+              className={`transform transition-all duration-300 ${
+                visible
+                  ? 'scale-100 rotate-0 opacity-100'
+                  : 'scale-0 -rotate-45 opacity-0'
+              }`}
+            >
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-300 flex items-center justify-center text-3xl sm:text-4xl shadow-lg shadow-amber-500/40 border border-amber-300/60">
+                ⭐
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Dynamic Ticking Stats Breakdown ── */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-zinc-950/90 p-3.5 rounded-2xl border border-amber-500/30 space-y-1 shadow-inner">
+            <span className="text-[10px] uppercase font-bold text-zinc-400">Score</span>
+            <p className="text-2xl font-extrabold text-emerald-400 font-mono">{displayedScore}%</p>
+            <span className="text-[9px] text-zinc-500 font-mono">Accuracy</span>
           </div>
 
-          <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-0.5 shadow-inner">
-            <span className="text-[10px] uppercase font-bold text-slate-500">Streak Bonus</span>
-            <p className="text-xl font-black text-orange-400">+{streakBonus} 🔥</p>
-            <span className="text-[9px] text-slate-400 font-mono">Momentum</span>
+          <div className="bg-zinc-950/90 p-3.5 rounded-2xl border border-amber-500/30 space-y-1 shadow-inner">
+            <span className="text-[10px] uppercase font-bold text-zinc-400 font-mono">XP Earned</span>
+            <p className="text-2xl font-extrabold text-amber-400 font-mono">+{displayedXp}</p>
+            <span className="text-[9px] text-zinc-500 font-mono">Credits</span>
           </div>
 
-          <div className="bg-slate-950 p-3 rounded-2xl border border-slate-800 space-y-0.5 shadow-inner">
-            <span className="text-[10px] uppercase font-bold text-slate-500">Elo Rating</span>
-            <p className="text-xl font-black text-cyan-400">{eloRating}</p>
-            <span className="text-[9px] text-slate-400 font-mono">{eloTier.label?.split('/')[0] || 'Pts'}</span>
+          <div className="bg-zinc-950/90 p-3.5 rounded-2xl border border-amber-500/30 space-y-1 shadow-inner">
+            <span className="text-[10px] uppercase font-bold text-zinc-400 font-mono">Streak</span>
+            <p className="text-2xl font-extrabold text-orange-400 font-mono">+{displayedStreak} 🔥</p>
+            <span className="text-[9px] text-zinc-500 font-mono">Days</span>
           </div>
         </div>
 
-        {/* ── Interactive Mystery Loot Box ── */}
-        <div className="bg-gradient-to-r from-indigo-950/60 via-purple-950/40 to-slate-950 p-4 rounded-2xl border border-indigo-500/40 text-left space-y-3 shadow-lg">
+        {/* Mystery Loot Reward Box */}
+        <div className="bg-zinc-950 p-4 rounded-2xl border border-amber-500/40 text-left space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-black uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
-              <span>🎁</span> Mystery Performance Loot Box
+            <span className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🎁</span> Performance Loot Box
             </span>
-            <span className="text-[10px] font-mono text-amber-300 font-bold bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800">
+            <span className="text-[10px] font-mono text-amber-400 font-bold bg-amber-950 px-2 py-0.5 rounded border border-amber-800">
               {isLootOpened ? 'REVEALED' : 'UNCLAIMED'}
             </span>
           </div>
@@ -117,46 +254,36 @@ export default function DopamineCelebrationModal({ isOpen, onClose, overallScore
               type="button"
               onClick={() => {
                 setIsLootOpened(true);
-                playVictoryChime();
+                playArcadeVictoryChime();
               }}
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer animate-pulse"
+              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-zinc-950 font-extrabold text-xs uppercase tracking-wider shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer animate-pulse"
             >
-              <span>✨</span>
-              <span>Tap to Open Secret Reward Box!</span>
-              <span>✨</span>
+              <span>✨ Tap to Claim Mystery Perk! ✨</span>
             </button>
           ) : (
-            <div className="p-3 bg-slate-950 rounded-xl border border-amber-500/50 flex items-center gap-3 animate-fade-in">
+            <div className="p-3 bg-zinc-900 rounded-xl border border-amber-500/50 flex items-center gap-3 animate-fade-in">
               <span className="text-2xl">{lootReward.icon}</span>
               <div>
                 <p className="text-xs font-bold text-amber-300">{lootReward.title}</p>
-                <p className="text-[11px] text-slate-300">{lootReward.desc}</p>
+                <p className="text-[11px] text-zinc-300">{lootReward.desc}</p>
               </div>
             </div>
           )}
         </div>
 
-        {/* Next Tier Progress Bar */}
-        <div className="space-y-1.5 text-left bg-slate-950 p-3 rounded-xl border border-slate-800/80">
-          <div className="flex justify-between text-[11px]">
-            <span className="text-slate-400 font-medium">Rank Progression</span>
-            <span className="text-amber-400 font-bold font-mono">{(earnedXp % 200)} / 200 XP to Next Rank</span>
-          </div>
-          <div className="h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
-            <div
-              className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-1000 shadow-md"
-              style={{ width: `${Math.min(100, Math.max(15, (earnedXp % 200) / 2))}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Claim Rewards Button */}
+        {/* Action Button: Glowing Shimmer Claim Button */}
         <button
+          type="button"
           onClick={onClose}
-          className="btn-primary w-full py-3.5 px-6 text-xs sm:text-sm font-black uppercase tracking-wider shadow-xl btn-glow bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-600 hover:from-indigo-500 hover:to-blue-500 text-white rounded-2xl flex items-center justify-center gap-2"
+          className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-zinc-950 font-extrabold text-sm uppercase tracking-wider shadow-xl shadow-amber-500/30 transition-all active:scale-95 cursor-pointer relative overflow-hidden group"
         >
-          <span>🔥 Claim All Rewards & View Full Report →</span>
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            <span>CLAIM REWARDS & CONTINUE</span>
+            <span>→</span>
+          </span>
+          <span className="absolute inset-0 bg-white/30 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
         </button>
+
       </div>
     </div>
   );
