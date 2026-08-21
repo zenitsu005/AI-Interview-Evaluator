@@ -147,8 +147,16 @@ export default function CodeSandbox({ code, onChange, onRun }) {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => onChange('')}
+            className="text-[10px] text-slate-400 hover:text-red-400 px-2 py-1 rounded bg-slate-800 hover:bg-red-950/30 transition-colors font-sans flex items-center gap-1 cursor-pointer"
+            title="Clear all code in sandbox"
+          >
+            <span>🗑️ Clear</span>
+          </button>
+          <button
+            type="button"
             onClick={() => onChange(STARTER_CODES[lang])}
-            className="text-[10px] text-slate-400 hover:text-slate-200 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 transition-colors font-sans"
+            className="text-[10px] text-slate-400 hover:text-slate-200 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 transition-colors font-sans cursor-pointer"
           >
             Reset Template
           </button>
@@ -156,7 +164,7 @@ export default function CodeSandbox({ code, onChange, onRun }) {
             type="button"
             onClick={handleRunTests}
             disabled={isRunning}
-            className="text-[11px] font-semibold text-cyan-300 bg-cyan-950/60 border border-cyan-800/80 hover:border-cyan-500 px-2.5 py-1 rounded transition-all font-sans"
+            className="text-[11px] font-semibold text-cyan-300 bg-cyan-950/60 border border-cyan-800/80 hover:border-cyan-500 px-2.5 py-1 rounded transition-all font-sans cursor-pointer"
           >
             Run Tests
           </button>
@@ -164,12 +172,12 @@ export default function CodeSandbox({ code, onChange, onRun }) {
             type="button"
             onClick={handleRun}
             disabled={isRunning}
-            className="btn-primary py-1 px-3 text-[11px] font-bold font-sans shadow-md flex items-center gap-1"
+            className="btn-primary py-1 px-3 text-[11px] font-bold font-sans shadow-md flex items-center gap-1 cursor-pointer"
           >
             <span>{isRunning ? 'Running...' : 'Submit'}</span>
           </button>
-
         </div>
+
       </div>
 
       {/* Code Textarea */}

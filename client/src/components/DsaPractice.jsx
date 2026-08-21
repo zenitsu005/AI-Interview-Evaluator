@@ -1045,7 +1045,7 @@ export default function DsaPractice() {
               {/* Editor Header */}
               <div className="bg-zinc-900/90 border-b border-zinc-800 px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-zinc-400 font-bold">Language:</span>
+                  <span className="text-xs font-mono text-zinc-400 font-bold">Function Implementation</span>
                   <select
                     value={lang}
                     onChange={(e) => handleLangChange(e.target.value)}
@@ -1059,22 +1059,33 @@ export default function DsaPractice() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
+                    onClick={() => setCode('')}
+                    className="text-xs text-zinc-400 hover:text-red-400 px-2.5 py-1 rounded-lg border border-zinc-800 hover:border-red-500/40 hover:bg-red-950/20 transition-all font-mono flex items-center gap-1 cursor-pointer"
+                    title="Clear editor and remove all text"
+                  >
+                    <span>🗑️ Clear</span>
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={() => setCode(currentProb.starterCodes?.[lang] || '')}
                     className="text-xs text-zinc-400 hover:text-white px-2.5 py-1 rounded-lg border border-zinc-800 hover:bg-zinc-800 transition-colors font-mono cursor-pointer"
+                    title="Reset to initial boilerplate template"
                   >
-                    Reset Starter
+                    Reset Code
                   </button>
 
                   <button
                     type="button"
                     onClick={handleRunCode}
                     disabled={isRunning}
-                    className="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-1.5 rounded-xl shadow-lg shadow-emerald-950/40 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer disabled:opacity-50"
+                    className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-1.5 rounded-xl shadow-lg shadow-indigo-950/40 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer disabled:opacity-50"
                   >
-                    <span>{isRunning ? 'Executing Tests...' : '▶ Run & Submit'}</span>
+                    <span>{isRunning ? 'Executing Tests...' : 'Submit'}</span>
                   </button>
                 </div>
               </div>
+
 
               {/* Code Textarea */}
               <textarea
