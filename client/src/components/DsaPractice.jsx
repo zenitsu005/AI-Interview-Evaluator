@@ -518,8 +518,7 @@ export default function DsaPractice() {
                 onClick={handleShuffleNext}
                 className="text-xs bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 hover:border-indigo-500/50 px-3 py-1.5 rounded-xl transition-all font-semibold flex items-center gap-1.5 cursor-pointer"
               >
-                <span>🔀</span>
-                <span>Next / Shuffle</span>
+                <span>Next Question →</span>
               </button>
 
               <button
@@ -528,8 +527,9 @@ export default function DsaPractice() {
                 disabled={isGeneratingAi}
                 className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-1.5 rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
               >
-                <span>{isGeneratingAi ? '⏳ Generating...' : '🔄 Refresh Question'}</span>
+                <span>{isGeneratingAi ? 'Generating...' : 'Refresh Question'}</span>
               </button>
+
             </div>
           </div>
 
