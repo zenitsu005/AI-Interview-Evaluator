@@ -6,7 +6,7 @@ import DopamineCelebrationModal from './DopamineCelebrationModal';
 import AiInterviewCoach from './AiInterviewCoach';
 import SkillPassportModal from './SkillPassportModal';
 import AnalyticsTrendSection from './AnalyticsTrendSection';
-import ShareReportCardModal from './ShareReportCardModal';
+
 
 
 const READINESS = {
@@ -76,8 +76,8 @@ export default function ReportPanel() {
   const [showCheatSheet, setShowCheatSheet] = useState(false);
   const [showDopamineModal, setShowDopamineModal] = useState(true);
   const [showPassportModal, setShowPassportModal] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
   const [copiedLinkedIn, setCopiedLinkedIn] = useState(false);
+
 
   const [selectedDayNumber, setSelectedDayNumber] = useState(1);
   const [playingVoiceIdx, setPlayingVoiceIdx] = useState(null);
@@ -332,14 +332,6 @@ export default function ReportPanel() {
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <button
-            onClick={() => setShowShareModal(true)}
-            className="btn-secondary py-2 px-3.5 text-xs font-bold text-teal-300 border-teal-500/80 bg-teal-950/40 hover:bg-teal-900/60 flex items-center gap-1.5 shadow-md cursor-pointer"
-            title="Download or Share Verified Social Scorecard (PNG)"
-          >
-            <span>🛡️</span>
-            <span>Share Scorecard</span>
-          </button>
-          <button
             onClick={() => setShowPassportModal(true)}
             className="btn-secondary py-2 px-3.5 text-xs font-bold text-cyan-300 border-cyan-500/80 bg-cyan-950/40 hover:bg-cyan-900/60 flex items-center gap-1.5 shadow-md"
             title="View Verifiable Anti-Bias Skill Passport"
@@ -347,6 +339,7 @@ export default function ReportPanel() {
             <span>🌐</span>
             <span>Skill Passport</span>
           </button>
+
 
           <button
             onClick={() => setShowCheatSheet(true)}
@@ -1072,19 +1065,9 @@ export default function ReportPanel() {
         difficultyLevel={difficultyLevel}
       />
 
-      {/* ── 1-Click Share Report Card Modal ── */}
-      <ShareReportCardModal
-        isOpen={showShareModal}
-        onClose={() => setShowShareModal(false)}
-        report={report}
-        targetRole={targetRole}
-        companyTrack={companyTrack}
-        difficultyLevel={difficultyLevel}
-        user={user}
-      />
-
       <footer className="py-4 border-t border-slate-900 bg-slate-950/80 text-center" />
     </div>
   );
 }
+
 
