@@ -3,12 +3,14 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #09090b;
-  --color-surface: #121215;
-  --color-surface-hover: #18181c;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-border-hover: rgba(255, 255, 255, 0.16);
-  --color-accent: #6366f1;
+  --color-bg: #0B0B0E;
+  --color-bg-gradient: linear-gradient(180deg, #0B0B0E 0%, #121216 100%);
+  --color-surface: #131318;
+  --color-surface-hover: #191920;
+  --color-border: rgba(255, 255, 255, 0.05);
+  --color-border-hover: rgba(255, 255, 255, 0.12);
+  --color-accent: #14B8A6; /* Sophisticated Teal Accent */
+  --color-gold: #D97706; /* Warm Desaturated Amber Highlight */
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
@@ -24,7 +26,9 @@
   }
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    @apply antialiased selection:bg-indigo-600 selection:text-white bg-[#09090b] text-zinc-100;
+    @apply antialiased selection:bg-teal-500 selection:text-white text-zinc-100;
+    background: var(--color-bg-gradient);
+    min-height: 100vh;
   }
   h1, h2, h3, h4, h5, h6 {
     text-wrap: balance;
@@ -43,6 +47,7 @@
     outline-offset: 2px;
   }
 }
+
 
 .text-balance {
   text-wrap: balance;
@@ -68,11 +73,12 @@
 
 @layer components {
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:via-indigo-400 hover:to-cyan-400 text-white font-bold py-2.5 px-5 rounded-xl transition-all duration-200 shadow-md shadow-indigo-600/30 hover:shadow-indigo-500/50 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none disabled:hover:scale-100;
+    @apply relative inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 px-5 rounded-xl transition-all duration-200 shadow-md shadow-teal-950/40 hover:shadow-teal-600/30 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 bg-slate-900/80 hover:bg-slate-800/90 text-slate-200 font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 border border-slate-800 hover:border-slate-700 shadow-sm backdrop-blur-md active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 border border-zinc-800/80 hover:border-zinc-700 shadow-sm backdrop-blur-md active:scale-[0.98];
   }
+
   .btn-glow {
     @apply relative overflow-hidden transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/20 before:to-white/0 before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700;
   }

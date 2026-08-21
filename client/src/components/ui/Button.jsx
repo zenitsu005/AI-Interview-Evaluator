@@ -21,11 +21,12 @@ export default function Button({
   };
 
   const variantStyles = {
-    primary: 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-950/50 border border-indigo-500/30',
+    primary: 'bg-teal-600 hover:bg-teal-500 text-white shadow-lg shadow-teal-950/50 border border-teal-500/30',
     secondary: 'bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-800 hover:border-zinc-700 shadow-sm',
     ghost: 'bg-transparent hover:bg-zinc-800/60 text-zinc-400 hover:text-white',
     danger: 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-950/40 border border-red-500/30',
   };
+
 
   return (
     <button
