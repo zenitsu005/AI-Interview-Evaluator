@@ -103,21 +103,13 @@ export const BAR_RAISER_PERSONAS = [
   },
 ];
 
-// Interview rounds definition (5 questions per round, progressively escalating difficulty)
-const ROUNDS = [
-  { id: 'aptitude', label: 'Aptitude & Logic', total: 5, color: 'blue' },
-  { id: 'technical', label: 'Technical', total: 5, color: 'purple' },
-  { id: 'hr', label: 'HR & Behavioral', total: 5, color: 'green' },
-];
-
-const TOTAL_QUESTIONS = ROUNDS.reduce((sum, r) => sum + r.total, 0); // Exactly 15 questions
-
 export const InterviewProvider = ({ children }) => {
   const [phase, setPhase] = useState('landing');
   const [interviewMode, setInterviewMode] = useState('video'); // 'video' | 'text'
   const [difficultyLevel, setDifficultyLevel] = useState('Intermediate'); // 'Beginner' | 'Intermediate' | 'Experienced'
   const [companyTrack, setCompanyTrack] = useState('Amazon'); // Track
   const [interviewerPersona, setInterviewerPersona] = useState(BAR_RAISER_PERSONAS[0]); // Bar Raiser Persona
+  const [duration, setDuration] = useState('30'); // '15' | '30' | '45'
   const [resumeText, setResumeText] = useState('');
   const [targetRole, setTargetRole] = useState('');
   const [resumeAnalysis, setResumeAnalysis] = useState(null);
@@ -130,6 +122,18 @@ export const InterviewProvider = ({ children }) => {
   const [activeFollowUp, setActiveFollowUp] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Dynamic question count per round: 3 in 15m (9 total), 5 in 30m (15 total), 7 in 45m (21 total)
+  const questionsPerRound = duration === '15' ? 3 : duration === '45' ? 7 : 5;
+
+  const ROUNDS = [
+    { id: 'aptitude', label: 'Aptitude & Logic', total: questionsPerRound, color: 'blue' },
+    { id: 'technical', label: 'Technical', total: questionsPerRound, color: 'purple' },
+    { id: 'hr', label: 'HR & Behavioral', total: questionsPerRound, color: 'green' },
+  ];
+
+  const TOTAL_QUESTIONS = ROUNDS.reduce((sum, r) => sum + r.total, 0);
+
 
   const isSubmittingRef = useRef(false);
 
@@ -440,7 +444,10 @@ export const InterviewProvider = ({ children }) => {
         setDifficultyLevel,
         companyTrack,
         setCompanyTrack,
+        duration,
+        setDuration,
         resumeText,
+
         targetRole,
         setTargetRole,
         resumeAnalysis,

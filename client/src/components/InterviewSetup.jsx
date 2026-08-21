@@ -377,25 +377,27 @@ export default function InterviewSetup({ onNavigate }) {
               <label className="text-xs font-bold text-zinc-300">Target Duration</label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { id: '15', label: '15 Min', desc: 'Rapid Loop' },
-                  { id: '30', label: '30 Min', desc: 'Standard Loop' },
-                  { id: '45', label: '45 Min', desc: 'Full Deep Dive' },
+                  { id: '15', label: '15 Min', desc: '3 Qs / Round', count: '9 Questions Total' },
+                  { id: '30', label: '30 Min', desc: '5 Qs / Round', count: '15 Questions Total' },
+                  { id: '45', label: '45 Min', desc: '7 Qs / Round', count: '21 Questions Total' },
                 ].map((d) => (
                   <button
                     key={d.id}
                     type="button"
                     onClick={() => setDuration(d.id)}
-                    className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
+                    className={`p-3.5 rounded-xl border text-center transition-all cursor-pointer ${
                       duration === d.id
-                        ? 'bg-teal-950 border-teal-500 text-white font-bold'
+                        ? 'bg-teal-950 border-teal-500 text-white font-bold ring-1 ring-teal-500/50'
                         : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white'
                     }`}
                   >
-                    <p className="text-xs font-bold">{d.label}</p>
-                    <p className="text-[10px] opacity-75">{d.desc}</p>
+                    <p className="text-xs font-bold text-white">{d.label}</p>
+                    <p className="text-[11px] font-mono text-teal-400 font-semibold mt-0.5">{d.count}</p>
+                    <p className="text-[10px] text-zinc-400 opacity-80 mt-0.5">{d.desc}</p>
                   </button>
                 ))}
               </div>
+
             </div>
 
             <div className="flex justify-between pt-4">
@@ -449,10 +451,13 @@ export default function InterviewSetup({ onNavigate }) {
                 <span className="text-emerald-400 font-bold">{selectedFormat.title}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-400">Target Duration:</span>
-                <span className="text-zinc-300 font-bold">{duration} Minutes</span>
+                <span className="text-zinc-400">Session Length:</span>
+                <span className="text-zinc-200 font-bold">
+                  {duration === '15' ? '15 Min (3 Qs / Round • 9 Total)' : duration === '45' ? '45 Min (7 Qs / Round • 21 Total)' : '30 Min (5 Qs / Round • 15 Total)'}
+                </span>
               </div>
             </div>
+
 
             {/* Microphone Permission Status Banner */}
             {selectedFormat.id !== 'text-only' && (
