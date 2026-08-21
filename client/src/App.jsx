@@ -29,15 +29,19 @@ import {
 
 const AppContent = () => {
   const { phase, setPhase, interviewMode } = useInterview();
-  const isInterviewing = phase === 'interview' || phase === 'evaluating';
+  const isInterviewing =
+    phase === 'interview' ||
+    phase === 'evaluating' ||
+    phase === 'video' ||
+    phase === 'text';
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-zinc-100 relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#0B0B0E] text-zinc-100 relative overflow-x-hidden">
       {/* Ambient background glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-amber-600/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10">
@@ -58,10 +62,10 @@ const AppContent = () => {
         {phase === 'accessibility' && <AccessibilityPage onNavigate={setPhase} />}
         {phase === 'support' && <SupportPage onNavigate={setPhase} />}
         {phase === 'analytics' && <AnalyticsPage onNavigate={setPhase} />}
-        {isInterviewing && interviewMode === 'video' && <VideoInterview />}
-        {isInterviewing && interviewMode === 'text' && <InterviewChat />}
+        {isInterviewing && (interviewMode === 'text' ? <InterviewChat /> : <VideoInterview />)}
         {phase === 'report' && <ReportPanel />}
       </div>
+
 
       {/* Global Modals */}
       <AuthModal />

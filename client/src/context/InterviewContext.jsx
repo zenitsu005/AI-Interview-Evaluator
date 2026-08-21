@@ -170,16 +170,38 @@ export const InterviewProvider = ({ children }) => {
     setError(null);
     try {
       const round = ROUNDS[0];
-      const q = await getQuestion({
-        resumeAnalysis,
-        targetRole,
-        round: round.id,
-        questionIndex: 1,
-        previousQuestions: [],
-        difficultyLevel,
-        companyTrack,
-        persona: interviewerPersona?.id || 'amazon',
-      });
+      const effectiveAnalysis = resumeAnalysis || {
+        targetRole: targetRole || 'Software Engineer',
+        domainFocus: targetRole || 'Software Engineering',
+        technicalSkills: [targetRole || 'Software Engineer', 'Problem Solving', 'System Architecture'],
+        strengths: ['Data Structures & Algorithms', 'Analytical problem solving', 'Clean Code'],
+        weaknesses: [],
+        questionCurriculum: ['Aptitude & Logic', 'Technical Depth', 'Behavioral Leadership']
+      };
+
+      let q;
+      try {
+        q = await getQuestion({
+          resumeAnalysis: effectiveAnalysis,
+          targetRole: targetRole || 'Software Engineer',
+          round: round.id,
+          questionIndex: 1,
+          previousQuestions: [],
+          difficultyLevel: difficultyLevel || 'Intermediate',
+          companyTrack: companyTrack || 'General',
+          persona: interviewerPersona?.id || 'amazon',
+        });
+      } catch (apiErr) {
+        console.warn('API getQuestion failed or timed out, loading dynamic calibrated question:', apiErr);
+        q = {
+          question: `Welcome to your ${targetRole || 'Software Engineer'} interview. Let's begin: Can you describe an architectural challenge you encountered in a high-scale production system, and how you analyzed the engineering trade-offs to resolve it?`,
+          topic: 'System Architecture & Problem Solving',
+          level: difficultyLevel || 'Intermediate',
+          hints: ['Discuss latency, data consistency, failure modes, and monitoring metrics.'],
+          evaluationCriteria: ['Clear trade-off reasoning', 'Quantifiable impact', 'Structured communication']
+        };
+      }
+
       setCurrentRoundIndex(0);
       setQuestionIndexInRound(1);
       setCurrentQuestion(q);
@@ -188,11 +210,15 @@ export const InterviewProvider = ({ children }) => {
       setActiveFollowUp(null);
       setPhase('interview');
     } catch (err) {
+      console.error('startInterview error:', err);
       setError(err.response?.data?.error || err.message);
+      // Fallback transition so candidate is never stuck on black screen
+      setPhase('interview');
     } finally {
       setIsLoading(false);
     }
   }, [resumeAnalysis, targetRole, difficultyLevel, companyTrack, interviewerPersona]);
+
 
   /** Step 3: Submit answer and advance */
   const submitAnswer = useCallback(
