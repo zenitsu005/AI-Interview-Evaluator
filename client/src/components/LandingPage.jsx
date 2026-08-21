@@ -1,44 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useInterview } from '../context/InterviewContext';
-import { useAuth } from '../context/AuthContext';
 import AppNavbar from './AppNavbar';
-import { checkServerHealth } from '../services/api';
 import Button from './ui/Button';
 import Card from './ui/Card';
 import Badge from './ui/Badge';
-import Skeleton from './ui/Skeleton';
 
 export default function LandingPage() {
   const { setPhase } = useInterview();
-  const { isAuthenticated, openAuth } = useAuth();
-  const [serverState, setServerState] = useState('checking');
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    const ping = async () => {
-      const res = await checkServerHealth();
-      if (isMounted) {
-        if (res) {
-          setServerState('ready');
-        } else {
-          setServerState('warming');
-          setTimeout(async () => {
-            const res2 = await checkServerHealth();
-            if (isMounted && res2) setServerState('ready');
-          }, 3000);
-        }
-      }
-    };
-    ping();
-    return () => { isMounted = false; };
-  }, []);
-
-  const handleWakeUp = async () => {
-    setServerState('warming');
-    const res = await checkServerHealth();
-    if (res) setServerState('ready');
-  };
 
   const toggleFaq = (index) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
@@ -64,45 +33,51 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#09090b] text-zinc-100 font-sans">
+    <div className="min-h-screen flex flex-col justify-between bg-[#090A0F] text-zinc-100 font-sans antialiased selection:bg-indigo-500 selection:text-white">
       <AppNavbar currentActive="landing" />
 
-      <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-24 flex-1 space-y-24">
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-12 sm:pt-20 pb-24 flex-1 space-y-28">
         
         {/* Hero Section */}
-        <section className="relative mx-auto max-w-7xl px-0 pt-4 pb-12 lg:grid lg:grid-cols-12 lg:gap-12 lg:items-center">
+        <section className="relative mx-auto max-w-7xl px-0 lg:grid lg:grid-cols-12 lg:gap-12 lg:items-center">
+          
           <div className="lg:col-span-7 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3.5 py-1 text-xs font-medium text-indigo-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse" />
-              L7 & Bar-Raiser Simulation Engine
+            <div className="flex items-center gap-2.5">
+              <Badge variant="indigo" hasPulse>
+                ✦ Calibrated for Staff & Principal Tech Rounds
+              </Badge>
             </div>
 
             <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
               Stop guessing your performance in <span className="text-indigo-400">high-stakes</span> interviews.
             </h1>
 
-            <p className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed text-pretty">
+            <p className="text-base sm:text-lg text-zinc-400 max-w-xl leading-relaxed text-pretty font-normal">
               Deterministic, real-time evaluation across system design, code architecture, and verbal composure—calibrated against top-tier tech benchmarks.
             </p>
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              <button
+              <Button
+                variant="primary"
+                size="lg"
                 onClick={() => setPhase('setup')}
-                className="rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 active:scale-95 shadow-lg shadow-indigo-600/20"
               >
                 Start Mock Interview →
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
                 onClick={() => setPhase('setup')}
-                className="rounded-lg border border-zinc-800 bg-zinc-900/60 px-6 py-3 text-sm font-semibold text-zinc-300 transition hover:bg-zinc-800 hover:text-white active:scale-95"
               >
                 Explore Practice Modules
-              </button>
+              </Button>
             </div>
           </div>
 
-          {/* Realistic Terminal / Assessment Window */}
-          <div className="mt-12 lg:mt-0 lg:col-span-5">
+          {/* Hero Mock Card Polish */}
+          <div className="mt-12 lg:mt-0 lg:col-span-5 relative">
+            <div className="absolute -inset-4 bg-indigo-600/12 rounded-3xl blur-[120px] pointer-events-none" />
+
             <div className="relative rounded-xl border border-zinc-800 bg-zinc-900/90 p-5 shadow-2xl backdrop-blur-xl text-left">
               <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
                 <div className="flex items-center gap-2">
@@ -116,7 +91,7 @@ export default function LandingPage() {
               <div className="mt-4 space-y-4 font-mono text-xs">
                 <div className="rounded-lg bg-black/40 p-3.5 border border-zinc-800/80 space-y-1.5">
                   <p className="text-indigo-300 font-medium">Interviewer: Marcus Vance (Principal Architect)</p>
-                  <p className="text-zinc-300 leading-relaxed">
+                  <p className="text-zinc-300 leading-relaxed text-pretty">
                     "How would you ensure zero message loss during a 100x traffic surge on your Kafka ingestion stream?"
                   </p>
                 </div>
@@ -140,9 +115,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-
-
-        {/* Metrics Bar */}
+        {/* Real-Time Metrics & Trust Bar */}
         <section className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-zinc-800/60 border border-zinc-800 rounded-2xl overflow-hidden shadow-layered">
           <div className="bg-zinc-950 p-6 text-center space-y-1">
             <p className="text-2xl sm:text-3xl font-extrabold text-white font-mono">100,000+</p>
@@ -158,7 +131,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Asymmetric Bento Grid (8 Practice Studios) */}
+        {/* Bento Grid Features */}
         <section className="space-y-8 text-left">
           <div className="space-y-1">
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight text-balance">
@@ -170,7 +143,6 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-            {/* Primary Hero Bento (Spans 8 Columns) */}
             <div className="md:col-span-8">
               <Card
                 variant="interactive"
@@ -199,7 +171,6 @@ export default function LandingPage() {
               </Card>
             </div>
 
-            {/* Bento Tile 2: DSA Sandbox */}
             <div className="md:col-span-4">
               <Card variant="interactive" onClick={() => setPhase('dsa')} className="h-full flex flex-col justify-between">
                 <div className="space-y-3">
@@ -218,7 +189,6 @@ export default function LandingPage() {
               </Card>
             </div>
 
-            {/* Bento Tile 3: System Design */}
             <div className="md:col-span-4">
               <Card variant="interactive" onClick={() => setPhase('video')} className="h-full flex flex-col justify-between">
                 <div className="space-y-3">
@@ -237,7 +207,6 @@ export default function LandingPage() {
               </Card>
             </div>
 
-            {/* Bento Tile 4: Bug Hunter */}
             <div className="md:col-span-4">
               <Card variant="interactive" onClick={() => setPhase('bug-hunter')} className="h-full flex flex-col justify-between">
                 <div className="space-y-3">
@@ -256,7 +225,6 @@ export default function LandingPage() {
               </Card>
             </div>
 
-            {/* Bento Tile 5: 60s Blitz */}
             <div className="md:col-span-4">
               <Card variant="interactive" onClick={() => setPhase('blitz')} className="h-full flex flex-col justify-between">
                 <div className="space-y-3">
@@ -274,73 +242,16 @@ export default function LandingPage() {
                 <span className="text-[11px] text-zinc-500 font-mono pt-4">Recall Speed</span>
               </Card>
             </div>
-
-            {/* Bento Tile 6: ATS Resume */}
-            <div className="md:col-span-4">
-              <Card variant="interactive" onClick={() => setPhase('resume-builder')} className="h-full flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl">📄</span>
-                    <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors text-balance">
-                    ATS Resume Optimizer
-                  </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
-                    Analyze your resume against target job descriptions and fix keyword gaps.
-                  </p>
-                </div>
-                <span className="text-[11px] text-zinc-500 font-mono pt-4">Resume Parsing</span>
-              </Card>
-            </div>
-
-            {/* Bento Tile 7: Anxiety Hype Lab */}
-            <div className="md:col-span-4">
-              <Card variant="interactive" onClick={() => setPhase('hype-lab')} className="h-full flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl">🧘</span>
-                    <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors text-balance">
-                    3-Min Anxiety Hype Lab
-                  </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
-                    Guided box breathing and vocal priming to settle nerves.
-                  </p>
-                </div>
-                <span className="text-[11px] text-zinc-500 font-mono pt-4">Vocal & Mental Readiness</span>
-              </Card>
-            </div>
-
-            {/* Bento Tile 8: Salary Sparring */}
-            <div className="md:col-span-4">
-              <Card variant="interactive" onClick={() => setPhase('negotiate')} className="h-full flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl">💼</span>
-                    <span className="text-xs text-zinc-500 font-mono group-hover:text-white transition-colors">Open →</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-indigo-300 transition-colors text-balance">
-                    Salary Sparring Studio
-                  </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed text-pretty">
-                    Roleplay compensation negotiations with tough HR leads.
-                  </p>
-                </div>
-                <span className="text-[11px] text-zinc-500 font-mono pt-4">Offer Negotiation</span>
-              </Card>
-            </div>
           </div>
         </section>
 
-        {/* Interactive Accordion FAQ */}
+        {/* FAQ Accordion */}
         <section className="max-w-3xl mx-auto space-y-6 text-left">
           <div className="space-y-1">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight text-balance">
               Frequently Asked Questions
             </h2>
-            <p className="text-xs text-zinc-400 text-pretty">Everything you need to know about the interview studio.</p>
+            <p className="text-xs text-zinc-400 text-pretty">Everything you need to know about the evaluation engine.</p>
           </div>
 
           <div className="space-y-3">
@@ -374,10 +285,9 @@ export default function LandingPage() {
 
       </main>
 
-      {/* Sitemap Footer */}
+      {/* Footer */}
       <footer className="border-t border-zinc-800/80 bg-zinc-950 py-12 px-4 sm:px-6 text-xs text-zinc-400">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-4 gap-8 mb-8 text-left">
-          
           <div className="space-y-2 sm:col-span-1">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 rounded-lg bg-indigo-600 flex items-center justify-center text-xs text-white">
@@ -400,7 +310,7 @@ export default function LandingPage() {
           </div>
 
           <div>
-            <p className="font-bold text-zinc-200 mb-2">Practice Tools</p>
+            <p className="font-bold text-zinc-200 mb-2">Prep Tools</p>
             <ul className="space-y-1.5 text-zinc-400">
               <li><button onClick={() => setPhase('blitz')} className="hover:text-white transition-colors">60s Blitz</button></li>
               <li><button onClick={() => setPhase('bug-hunter')} className="hover:text-white transition-colors">Bug Hunter</button></li>
@@ -416,13 +326,11 @@ export default function LandingPage() {
               <li><button onClick={() => setPhase('profile')} className="hover:text-white transition-colors">Score Analytics</button></li>
             </ul>
           </div>
-
         </div>
 
         <div className="max-w-6xl mx-auto border-t border-zinc-900 pt-6 text-center text-[11px] text-zinc-500 font-mono">
           <p>Built for engineers by engineers.</p>
         </div>
-
       </footer>
     </div>
   );
