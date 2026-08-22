@@ -235,7 +235,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   inputTab === 'existing' ? resumeTextRef : fullNameRef
                 )
               }
-              placeholder="e.g. Full Stack Developer, Data Analyst, Machine Learning Engineer (Press Enter to move next)..."
+              placeholder="e.g. Full Stack Developer, Data Analyst, Machine Learning Engineer..."
               className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-2xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none mb-3 shadow-inner"
               required
             />
@@ -346,7 +346,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   value={resumeText}
                   onChange={(e) => setResumeText(e.target.value)}
                   onKeyDown={(e) => handleFieldKeyDown(e, null, true)}
-                  placeholder="Paste your existing resume text, work experience, bullets, and skills here (Press Enter to audit)..."
+                  placeholder="Paste your existing resume text, work experience, bullets, and skills here..."
                   rows={6}
                   className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-2xl p-4 text-xs font-mono text-slate-200 placeholder-slate-500 focus:outline-none leading-relaxed shadow-inner"
                 />
@@ -397,7 +397,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   value={formData.skills}
                   onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
                   onKeyDown={(e) => handleFieldKeyDown(e, experienceRef)}
-                  placeholder="e.g. Python, SQL, React, AWS, Docker, Machine Learning (Press Enter to next)"
+                  placeholder="e.g. Python, SQL, React, AWS, Docker, Machine Learning"
                   className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none shadow-inner"
                 />
               </div>
@@ -411,7 +411,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   value={formData.experience}
                   onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                   onKeyDown={(e) => handleFieldKeyDown(e, projectsRef)}
-                  placeholder="e.g. Junior Data Analyst at TechCorp: Built ETL pipelines in Python, created dashboards (Press Enter to next, Shift+Enter for newline)"
+                  placeholder="e.g. Junior Data Analyst at TechCorp: Built ETL pipelines in Python, created dashboards"
                   rows={4}
                   className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-500 focus:outline-none shadow-inner"
                 />
@@ -426,7 +426,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   value={formData.projects}
                   onChange={(e) => setFormData({ ...formData, projects: e.target.value })}
                   onKeyDown={(e) => handleFieldKeyDown(e, null, true)}
-                  placeholder="e.g. Customer Churn Prediction (Python, Scikit-learn). B.S. in Computer Science (Press Enter to audit & optimize)"
+                  placeholder="e.g. Customer Churn Prediction (Python, Scikit-learn). B.S. in Computer Science"
                   rows={3}
                   className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-500 focus:outline-none shadow-inner"
                 />

@@ -196,7 +196,7 @@ export default function ResumeSetup() {
               value={targetRole}
               onChange={(e) => setTargetRole(e.target.value)}
               onKeyDown={handleTargetRoleKeyDown}
-              placeholder="e.g. Junior Data Scientist, Full Stack Developer, AI Engineer (Press Enter to continue)..."
+              placeholder="e.g. Junior Data Scientist, Full Stack Developer, AI Engineer..."
               className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-sm text-slate-900 focus:outline-none shadow-sm"
               required
             />

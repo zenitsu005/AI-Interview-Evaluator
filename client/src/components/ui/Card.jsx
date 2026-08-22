@@ -7,13 +7,13 @@ export default function Card({
   onClick,
   ...props
 }) {
-  const baseStyles = 'rounded-3xl transition-all duration-200 border text-left relative overflow-hidden';
+  const baseStyles = 'rounded-2xl transition-all duration-300 border text-left relative overflow-hidden';
   
   const variantStyles = {
-    default: 'bg-[#131823] border-white/10 shadow-2xl p-6 text-slate-100',
-    bento: 'bg-[#131823] border-white/10 p-6 hover:border-white/20 shadow-2xl text-slate-100',
-    glass: 'bg-[#131823]/80 border-white/10 backdrop-blur-xl p-6 shadow-2xl text-slate-100',
-    interactive: 'bg-[#131823] border-white/10 p-6 hover:border-teal-400/40 hover:shadow-teal-500/10 cursor-pointer shadow-2xl group text-slate-100',
+    default: 'bg-slate-900/60 border-slate-800/80 backdrop-blur-md shadow-2xl p-6 text-slate-100',
+    bento: 'bg-slate-900/60 border-slate-800/80 backdrop-blur-md p-6 hover:border-teal-500/40 shadow-2xl text-slate-100',
+    glass: 'bg-slate-900/60 border-slate-800/80 backdrop-blur-xl p-6 shadow-2xl text-slate-100',
+    interactive: 'bg-slate-900/60 border-slate-800/80 backdrop-blur-md p-6 hover:border-teal-500/40 hover:-translate-y-1 hover:shadow-teal-500/10 cursor-pointer shadow-xl group text-slate-100',
   };
 
   return (

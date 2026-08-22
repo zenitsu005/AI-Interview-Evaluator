@@ -225,6 +225,7 @@ export default function VideoInterview() {
       setHint(null);
       framesRef.current = [];
       speakText(currentQuestion.question);
+      setTimeout(() => textareaRef.current?.focus(), 150);
     }
   }, [currentQuestion]);
 
