@@ -26,7 +26,7 @@ import {
 
 export default function ProfilePage() {
   const { user, history: authHistory, logout, updateUserProfile } = useAuth();
-  const { setPhase, setReport, setRole, setDifficultyLevel } = useInterview();
+  const { viewPastReport, setPhase } = useInterview();
   const history = Array.isArray(authHistory) ? authHistory : [];
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedShareReport, setSelectedShareReport] = useState(null);
@@ -48,13 +48,6 @@ export default function ProfilePage() {
       setSaveSuccess(false);
       setIsEditingProfile(false);
     }, 800);
-  };
-
-  const viewPastReport = (record) => {
-    setReport(record.report || record);
-    setRole(record.targetRole || 'Software Engineer');
-    setDifficultyLevel(record.difficultyLevel || 'Intermediate');
-    setPhase('report');
   };
 
   const totalInterviews = history.length;

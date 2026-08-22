@@ -15,17 +15,29 @@ export default function ShareReportCardModal({
 
   if (!isOpen) return null;
 
-  const score = Number(report?.overallScore) || 85;
+  const rawScore = report?.overallScore !== undefined ? report?.overallScore : (report?.score !== undefined ? report?.score : 0);
+  const score = typeof rawScore === 'number' && !isNaN(rawScore) ? rawScore : (Number(rawScore) || 0);
   const elo = Math.round(400 + (score / 100) * 1400);
-  const topPct = Math.max(1, 100 - Math.round(score * 0.95));
+  const topPct = score > 0 ? Math.max(1, 100 - Math.round(score * 0.95)) : 100;
   const candidateName = user?.name || 'Verified Candidate';
   const roleName = targetRole || 'Software Engineer';
   const trackName = companyTrack || 'General';
 
-  const aptScore = report?.aptitudeScore || report?.roundScores?.[0]?.score || Math.round(score * 0.98);
-  const techScore = report?.technicalScore || report?.roundScores?.[1]?.score || Math.round(score * 0.95);
-  const hrScore = report?.hrScore || report?.roundScores?.[2]?.score || Math.round(score * 0.96);
-  const presenceScore = report?.presenceScore || report?.speechMetrics?.clarityScore || 92;
+  const aptScore = report?.aptitudeScore !== undefined && !isNaN(Number(report.aptitudeScore))
+    ? Number(report.aptitudeScore)
+    : (report?.roundScores?.[0]?.score !== undefined ? Number(report.roundScores[0].score) : score);
+
+  const techScore = report?.technicalScore !== undefined && !isNaN(Number(report.technicalScore))
+    ? Number(report.technicalScore)
+    : (report?.roundScores?.[1]?.score !== undefined ? Number(report.roundScores[1].score) : score);
+
+  const hrScore = report?.hrScore !== undefined && !isNaN(Number(report.hrScore))
+    ? Number(report.hrScore)
+    : (report?.roundScores?.[2]?.score !== undefined ? Number(report.roundScores[2].score) : score);
+
+  const presenceScore = report?.presenceScore !== undefined && !isNaN(Number(report.presenceScore))
+    ? Number(report.presenceScore)
+    : (report?.speechMetrics?.clarityScore !== undefined ? Number(report.speechMetrics.clarityScore) : score);
 
   const handleDownloadCard = () => {
     const canvas = document.createElement('canvas');
@@ -165,8 +177,14 @@ export default function ShareReportCardModal({
               </div>
             </div>
 
-            <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-teal-950 text-teal-300 border border-teal-500/40 shadow-xs">
-              VERIFIED PASS ✓
+            <span className={`text-xs font-mono font-bold px-2.5 py-1 rounded-full border shadow-xs ${
+              score >= 70
+                ? 'bg-teal-950 text-teal-300 border-teal-500/40'
+                : score >= 40
+                ? 'bg-amber-950 text-amber-300 border-amber-500/40'
+                : 'bg-rose-950 text-rose-300 border-rose-500/40'
+            }`}>
+              {score >= 85 ? 'DISTINCTION PASS ✓' : score >= 70 ? 'VERIFIED PASS ✓' : score >= 40 ? 'CANDIDATE RECORD' : 'EVALUATION ATTEMPT'}
             </span>
           </div>
 

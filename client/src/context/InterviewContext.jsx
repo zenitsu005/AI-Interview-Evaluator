@@ -656,6 +656,7 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
         questionIndexInRound,
         allResponses,
         report,
+        setReport,
         activeFollowUp,
         setActiveFollowUp,
         isLoading,
