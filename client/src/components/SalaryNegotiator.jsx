@@ -519,6 +519,12 @@ export default function SalaryNegotiator() {
               ref={textInputRef}
               value={inputMsg}
               onChange={(e) => setInputMsg(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage(e);
+                }
+              }}
               placeholder="State your expectations in LPA (e.g. 'I am expecting ₹24 LPA fixed base and ₹10 Lakhs in ESOPs based on market standards...')"
               rows={3}
               disabled={isLoading || isTranscribing}

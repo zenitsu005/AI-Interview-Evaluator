@@ -27,15 +27,15 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const featureItems = [
-    { id: 'dsa', label: 'DSA Live Studio', badge: 'Code', icon: Code2 },
-    { id: 'bug-hunter', label: 'Bug Hunting Labs', badge: 'Debug', icon: Bug },
-    { id: 'negotiate', label: 'Salary Negotiation', badge: 'HR', icon: DollarSign },
+    { id: 'dsa', label: 'DSA Live Studio', icon: Code2 },
+    { id: 'bug-hunter', label: 'Bug Hunting Labs', icon: Bug },
+    { id: 'negotiate', label: 'Salary Negotiation', icon: DollarSign },
   ];
 
   const prepToolItems = [
-    { id: 'resume-builder', label: 'ATS Resume Scorer', badge: 'ATS', icon: FileText },
-    { id: 'blitz', label: '60-Second Rapid Blitz', badge: 'Speed', icon: Zap },
-    { id: 'anxiety-prep', label: 'Confidence & Pacing Lab', badge: 'Pacing', icon: HeartPulse },
+    { id: 'resume-builder', label: 'ATS Resume Scorer', icon: FileText },
+    { id: 'blitz', label: '60-Second Rapid Blitz', icon: Zap },
+    { id: 'anxiety-prep', label: 'Confidence & Pacing Lab', icon: HeartPulse },
   ];
 
   const handleSelectModule = (id) => {

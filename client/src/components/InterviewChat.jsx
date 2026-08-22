@@ -229,10 +229,10 @@ export default function InterviewChat() {
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type your structured answer here (Press Enter to submit & continue, Shift+Enter for newline)..."
+                placeholder="Type your structured answer here..."
                 rows={3}
                 disabled={isLoading}
-                className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-xs text-slate-900 focus:outline-none leading-relaxed shadow-sm"
+                className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white focus:outline-none leading-relaxed shadow-sm"
               />
               <button
                 type="submit"

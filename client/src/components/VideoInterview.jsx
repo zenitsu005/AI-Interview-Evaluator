@@ -685,6 +685,7 @@ export default function VideoInterview() {
                 type="text"
                 value={probeAnswer}
                 onChange={(e) => setProbeAnswer(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="Type your response to this cross-examination challenge..."
                 className="w-full bg-[#0D111A] border border-white/10 focus:border-amber-400 rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none"
               />
