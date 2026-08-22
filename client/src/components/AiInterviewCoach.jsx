@@ -2,65 +2,26 @@ import React, { useState, useEffect, useRef } from 'react';
 import { sendCoachMessage } from '../services/api';
 import voiceAssistant from '../services/voiceAssistant';
 import {
-  MessageSquare,
   Sparkles,
   Send,
   Volume2,
   VolumeX,
-  User,
   Bot,
-  Zap,
-  Star,
-  Flame,
-  Award,
-  ChevronRight,
 } from 'lucide-react';
-
-const COACH_PERSONAS = [
-  {
-    id: 'maya',
-    name: 'Coach Maya',
-    title: 'Principal FAANG Interview Mentor',
-    badge: 'Empathetic & Energizing',
-    avatar: '👩‍🏫',
-    style: 'border-amber-500/30 bg-amber-950/60 text-amber-300',
-    welcome: "Hey there! I looked at your interview breakdown. Remember: every single top engineer has had rough interview simulations. What matters isn't where you start—it's how fast you calibrate. I'm here 24/7 to turn your gaps into your biggest strengths. How are you feeling about the session?",
-  },
-  {
-    id: 'alex',
-    name: 'Coach Alex',
-    title: 'Staff Systems Architect & Tech Lead',
-    badge: 'Tactical STAR Reframing',
-    avatar: '👨‍💻',
-    style: 'border-teal-500/30 bg-teal-950/60 text-teal-300',
-    welcome: "Great job completing the simulation! Let's get tactical. I specialize in turning average answers into quantitative, metric-backed STAR stories and bulletproof system designs. Ask me how to reframe any question you struggled with!",
-  },
-  {
-    id: 'vikram',
-    name: 'Coach Vikram',
-    title: 'VP of Engineering & Hiring Director',
-    badge: 'Hiring Committee Insider',
-    avatar: '👔',
-    style: 'border-emerald-500/30 bg-emerald-950/60 text-emerald-300',
-    welcome: "Namaste! Having hired hundreds of engineers, I can tell you that hiring managers look for tenacity, clarity, and growth mindset. Let's sharpen your pitch so you walk away with the offer!",
-  },
-];
 
 const QUICK_PROMPTS = [
   'Turn my weakest answer into a Top 1% response',
-  'Give me a 30-second pep talk for my upcoming interview',
-  'How do I bounce back from a low score?',
-  'What would a Google/Amazon interviewer think of this performance?',
+  'How do I structure a STAR response for behavioral rounds?',
+  'How do I bounce back from a lower score?',
+  'What areas should I prioritize practicing next?',
 ];
 
 export default function AiInterviewCoach({ report, targetRole = 'Software Engineer', difficultyLevel = 'Intermediate' }) {
-  const [selectedPersona, setSelectedPersona] = useState(COACH_PERSONAS[0]);
   const [messages, setMessages] = useState([
     {
-      sender: 'coach',
-      text: COACH_PERSONAS[0].welcome,
-      quote: 'Action cures fear. Each simulated drill brings you 10x closer to the offer.',
-      drill: 'Solve 1 Medium Two-Pointer in DSA Studio',
+      sender: 'mentor',
+      text: "Hey there! I reviewed your interview breakdown. What questions or answers would you like to debrief, refine with the STAR method, or improve together?",
+      quote: 'Action cures fear. Each simulated drill brings you closer to your target offer.',
       time: 'Just now',
     },
   ]);
@@ -78,8 +39,8 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
   const speakText = (text) => {
     if (!isVoiceEnabled) return;
     voiceAssistant.speak(text, {
-      persona: selectedPersona.id,
-      gender: selectedPersona.id === 'maya' ? 'female' : 'male',
+      persona: 'ai_mentor',
+      rate: 1.0,
       onStart: () => setIsSpeaking(true),
       onEnd: () => setIsSpeaking(false),
       onError: () => setIsSpeaking(false),
@@ -97,11 +58,11 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
 
     try {
       const res = await sendCoachMessage({
-        message: query,
-        coachId: selectedPersona.id,
-        targetRole,
-        difficultyLevel,
-        reportSummary: {
+        coachPersona: 'ai_mentor',
+        candidateMessage: query,
+        interviewContext: {
+          targetRole,
+          difficultyLevel,
           overallScore: report?.overallScore,
           readiness: report?.readinessLevel,
           weaknesses: report?.weaknesses,
@@ -110,23 +71,23 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
       });
 
       const replyText = res?.reply || "Keep pushing forward! Let's conquer the next problem together.";
-      const coachMessage = {
-        sender: 'coach',
+      const mentorMessage = {
+        sender: 'mentor',
         text: replyText,
         quote: res?.motivationalQuote,
         drill: res?.suggestedDrill,
         time: 'Just now',
       };
 
-      setMessages((prev) => [...prev, coachMessage]);
+      setMessages((prev) => [...prev, mentorMessage]);
       speakText(replyText);
     } catch (e) {
-      console.warn('Coach communication error:', e);
+      console.warn('AI Mentor communication error:', e);
       setMessages((prev) => [
         ...prev,
         {
-          sender: 'coach',
-          text: "I'm right here with you! Every mock drill builds real interview resilience.",
+          sender: 'mentor',
+          text: "I'm right here with you! Every mock drill builds real interview resilience and clarity.",
           time: 'Just now',
         },
       ]);
@@ -137,6 +98,7 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
 
   return (
     <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl text-left">
+      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-2 pb-4 border-b border-white/10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400">
@@ -144,13 +106,13 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
           </div>
           <div>
             <h3 className="font-bold text-white text-base flex items-center gap-2">
-              <span>24/7 AI Interview Coach & Mentor</span>
+              <span>AI Mentor</span>
               <span className="text-xs px-2.5 py-0.5 rounded-full bg-teal-950/80 text-teal-300 border border-teal-500/30 font-mono">
                 Neural Voice AI
               </span>
             </h3>
             <p className="text-xs text-slate-400">
-              Interactive debriefing, STAR re-structuring, and psychological mindset calibration.
+              Interactive debriefing, STAR re-framing, and actionable interview guidance.
             </p>
           </div>
         </div>
@@ -175,46 +137,8 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
         </div>
       </div>
 
-      {/* Coach Persona Selector */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {COACH_PERSONAS.map((p) => {
-          const isSelected = selectedPersona.id === p.id;
-          return (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => {
-                setSelectedPersona(p);
-                setMessages([
-                  {
-                    sender: 'coach',
-                    text: p.welcome,
-                    time: 'Just now',
-                  },
-                ]);
-                speakText(p.welcome);
-              }}
-              className={`p-3.5 rounded-2xl border text-left flex items-center gap-3 transition-all cursor-pointer ${
-                isSelected
-                  ? 'border-teal-400 bg-teal-950/60 ring-2 ring-teal-500/30 shadow-lg'
-                  : 'border-white/10 bg-[#0D111A] hover:bg-[#171E2D]'
-              }`}
-            >
-              <span className="text-2xl">{p.avatar}</span>
-              <div className="min-w-0">
-                <p className="font-bold text-xs sm:text-sm text-white truncate">{p.name}</p>
-                <p className="text-[10px] text-slate-400 truncate">{p.title}</p>
-                <span className={`inline-block text-[9px] font-mono font-semibold mt-1 px-1.5 py-0.2 rounded border ${p.style}`}>
-                  {p.badge}
-                </span>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
       {/* Chat Stream */}
-      <div className="p-4 rounded-2xl bg-[#0D111A] border border-white/5 space-y-3.5 max-h-[300px] overflow-y-auto shadow-inner text-xs">
+      <div className="p-4 rounded-2xl bg-[#0D111A] border border-white/5 space-y-3.5 max-h-[320px] overflow-y-auto shadow-inner text-xs">
         {messages.map((m, i) => (
           <div
             key={i}
@@ -268,7 +192,7 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-          placeholder={`Ask ${selectedPersona.name} for actionable advice, STAR reframing, or mindset prep...`}
+          placeholder="Ask AI Mentor for advice, STAR reframing, or answer improvements..."
           className="flex-1 bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none"
         />
         <button
@@ -278,7 +202,7 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
           className="py-3 px-5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-bold text-xs shadow-md transition-all active:scale-95 disabled:opacity-40 cursor-pointer flex items-center gap-1.5"
         >
           <Send className="w-4 h-4" />
-          <span className="hidden sm:inline">Ask Coach</span>
+          <span className="hidden sm:inline">Ask Mentor</span>
         </button>
       </div>
     </div>

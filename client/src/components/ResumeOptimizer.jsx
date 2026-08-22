@@ -367,7 +367,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   onKeyDown={(e) => handleFieldKeyDown(e, emailRef)}
-                  placeholder="e.g. Alex Johnson (Press Enter to next)"
+                  placeholder="e.g. Candidate Name"
                   className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none shadow-inner"
                 />
               </div>
@@ -382,7 +382,7 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   onKeyDown={(e) => handleFieldKeyDown(e, skillsRef)}
-                  placeholder="alex@gmail.com | +1 555-0199 (Press Enter to next)"
+                  placeholder="candidate@domain.com | +1 555-0199"
                   className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none shadow-inner"
                 />
               </div>

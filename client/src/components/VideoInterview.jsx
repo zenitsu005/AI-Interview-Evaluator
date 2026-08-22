@@ -469,7 +469,7 @@ export default function VideoInterview() {
           </div>
           <div className="space-y-1.5 max-w-md">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-              AI Bar Raiser Evaluating Assessment
+              AI Interview Evaluator
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
               Evaluating all responses across Aptitude, Technical Depth, STAR Fit, and Speech Delivery...

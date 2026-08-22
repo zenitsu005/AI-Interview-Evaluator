@@ -93,7 +93,7 @@ const LEVELS = [
   },
   {
     id: 'Experienced',
-    label: 'Staff Bar Raiser (L6+)',
+    label: 'Staff Level (L6+)',
     color: 'border-amber-500/40 text-amber-400 bg-amber-950/40',
     desc: 'Distributed trade-offs, catastrophic failure recovery, and deep architectural probing.',
   },
@@ -188,7 +188,7 @@ export default function InterviewSetup({ onNavigate }) {
           <div className="flex items-center gap-2 text-slate-400">
             <span className={step >= 1 ? 'text-teal-400 font-bold' : ''}>1. Target Role</span>
             <span>➔</span>
-            <span className={step >= 2 ? 'text-teal-400 font-bold' : ''}>2. Level & Bar Raiser</span>
+            <span className={step >= 2 ? 'text-teal-400 font-bold' : ''}>2. Level & Persona</span>
             <span>➔</span>
             <span className={step >= 3 ? 'text-teal-400 font-bold' : ''}>3. Input Format</span>
             <span>➔</span>

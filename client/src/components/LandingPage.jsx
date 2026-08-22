@@ -52,7 +52,7 @@ export default function LandingPage({ onNavigate }) {
           </h1>
 
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed text-pretty font-normal">
-            Run realistic mock interviews with human-like AI voice debriefs across coding, debugging, and behavioral rounds. Get calibrated Bar Raiser feedback before your actual interview.
+            Run realistic mock interviews with human-like AI voice debriefs across coding, debugging, and behavioral rounds. Get calibrated, objective feedback before your actual interview.
           </p>
 
           {/* CTAs */}

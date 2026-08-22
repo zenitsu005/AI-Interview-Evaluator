@@ -52,13 +52,7 @@ export default function AiInterviewerAvatar({
   const trackKey = (companyTrack || 'Amazon').toLowerCase();
   const personaId = persona?.id || (trackKey.includes('google') ? 'google' : trackKey.includes('amazon') ? 'amazon' : trackKey.includes('meta') ? 'meta' : 'general');
   
-  const personaName = persona?.name || (
-    personaId === 'google' ? 'Dr. Sanjay Rao' :
-    personaId === 'amazon' ? 'Marcus Vance' :
-    personaId === 'meta' ? 'Elena Rostova' :
-    personaId === 'yc' ? 'Alex Rivera' :
-    'Senior Bar Raiser'
-  );
+  const personaName = persona?.name || `${companyTrack || 'AI'} Evaluator`;
 
   const isFemalePersona = ['meta', 'yc_female', 'microsoft'].includes(personaId);
   const skinTone = personaId === 'google' ? '#D4A373' : personaId === 'amazon' ? '#A06D4E' : '#E0B596';

@@ -243,17 +243,25 @@ export default function ReportPanel() {
   }
 
   const activeBarRaiser = interviewerPersona || {
-    name: companyTrack === 'Google' ? 'Dr. Sanjay Rao' : companyTrack === 'Amazon' ? 'Marcus Vance' : 'Senior Bar Raiser',
+    name: `${companyTrack || 'AI'} Evaluator`,
     company: companyTrack || 'Target Company',
-    avatar: '👔',
-    badge: `${companyTrack || 'Company'} Hiring Committee`,
+    avatar: '🤖',
+    badge: `${companyTrack || 'Company'} Evaluation Rubric`,
   };
 
-  const barVerdict = report?.barRaiserVerdict || {
-    hiringDecision: overallScoreVal >= 85 ? 'Strong Hire' : overallScoreVal >= 70 ? 'Lean Hire' : overallScoreVal >= 40 ? 'Lean No Hire' : 'Strong No Hire',
-    personaFeedback: `Evaluated against ${activeBarRaiser.name}'s hiring bar at ${activeBarRaiser.company}. Demonstrated foundational domain familiarity with clear growth vectors in quantitative STAR metrics and scalability trade-offs.`,
-    coreCriteriaScore: Math.round(overallScoreVal * 0.95),
-    criteriaName: `${activeBarRaiser.company} Bar Raiser Index`,
+  const rawPersonaFeedback = report?.barRaiserVerdict?.personaFeedback ||
+    `Evaluated against ${activeBarRaiser.company} engineering competencies. Demonstrated foundational domain familiarity with clear growth vectors in quantitative STAR metrics, edge-case resilience, and scalability trade-offs.`;
+
+  const cleanPersonaFeedback = rawPersonaFeedback
+    .replace(/As an? [A-Za-z0-9 ]*Bar Raiser,?/gi, 'As an AI Evaluator,')
+    .replace(/Marcus Vance|Dr\. Sanjay Rao|Elena Rostova|Arthur Sterling|Sarah Chen|Kavita Patel/gi, 'AI Evaluator')
+    .replace(/Bar Raiser/gi, 'AI Evaluator');
+
+  const barVerdict = {
+    hiringDecision: report?.barRaiserVerdict?.hiringDecision || (overallScoreVal >= 85 ? 'Strong Hire' : overallScoreVal >= 70 ? 'Lean Hire' : overallScoreVal >= 40 ? 'Lean No Hire' : 'Strong No Hire'),
+    personaFeedback: cleanPersonaFeedback,
+    coreCriteriaScore: report?.barRaiserVerdict?.coreCriteriaScore ?? Math.round(overallScoreVal * 0.95),
+    criteriaName: (report?.barRaiserVerdict?.criteriaName || `${activeBarRaiser.company} Competency Index`).replace(/Bar Raiser/gi, 'Competency'),
   };
 
   const decisionBadgeColor =
@@ -418,24 +426,24 @@ export default function ReportPanel() {
           </div>
         </div>
 
-        {/* ── Bar Raiser Verdict Card ── */}
-        <div className="bg-[#131823] border-2 border-amber-500/40 rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl">
+        {/* ── AI Evaluator Verdict Card ── */}
+        <div className="bg-[#131823] border border-teal-500/40 rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl">
           <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-white/10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-950/80 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold">
-                <Users className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400 font-bold">
+                <Bot className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-bold text-white text-sm sm:text-base">
                     {activeBarRaiser.name} ({activeBarRaiser.company})
                   </h3>
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full border border-amber-500/30 bg-amber-950/80 text-amber-300 font-mono">
-                    {activeBarRaiser.badge || `${companyTrack} Bar Raiser`}
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full border border-teal-500/30 bg-teal-950/80 text-teal-300 font-mono">
+                    {activeBarRaiser.badge || `${companyTrack} Evaluation Rubric`}
                   </span>
                 </div>
                 <p className="text-xs text-slate-400">
-                  Official Hiring Committee Assessment & Cultural Alignment Rubric
+                  Hiring Committee Assessment & Competency Alignment Rubric
                 </p>
               </div>
             </div>
@@ -449,8 +457,8 @@ export default function ReportPanel() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
             <div className="md:col-span-2 bg-[#0D111A] p-4 rounded-2xl border border-white/5 space-y-1.5">
-              <span className="text-xs uppercase font-bold text-amber-400 flex items-center gap-1.5 font-mono">
-                <Sparkles className="w-3.5 h-3.5" /> Bar Raiser Direct Assessment
+              <span className="text-xs uppercase font-bold text-teal-400 flex items-center gap-1.5 font-mono">
+                <Sparkles className="w-3.5 h-3.5" /> Evaluator Direct Assessment
               </span>
               <p className="text-slate-300 leading-relaxed text-xs sm:text-sm">
                 {barVerdict.personaFeedback}
