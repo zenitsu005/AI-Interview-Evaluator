@@ -1,7 +1,22 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import { sendSalaryNegotiation, transcribeAudio } from '../services/api';
+import voiceAssistant from '../services/voiceAssistant';
 import AppNavbar from './AppNavbar';
+import {
+  DollarSign,
+  Mic,
+  Square,
+  Send,
+  Sparkles,
+  RotateCcw,
+  User,
+  TrendingUp,
+  Coins,
+  Briefcase,
+  Volume2,
+  AlertTriangle,
+} from 'lucide-react';
 
 const INDIAN_COMP_BANDS = [
   { level: 'SDE-1 / Junior (0-2 yrs)', base: 1400000, bonus: 10, equity: 500000, signing: 100000, ctcLabel: '₹17.4 LPA CTC' },
@@ -54,6 +69,22 @@ export default function SalaryNegotiator() {
   const detectedFillers = (inputMsg.match(fillerWordsRegex) || []).length;
   const wordCount = inputMsg.trim() ? inputMsg.trim().split(/\s+/).length : 0;
   const estimatedWpm = recordingSeconds > 3 ? Math.round(wordCount / (recordingSeconds / 60)) : 0;
+
+  useEffect(() => {
+    return () => {
+      voiceAssistant.stop();
+    };
+  }, []);
+
+  const speakText = (text) => {
+    voiceAssistant.speak(text, {
+      persona: 'recruiter',
+      gender: 'female',
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
+    });
+  };
 
   // ── Start Webcam Stream ───────────────────────────────────────────────────
   const startCamera = useCallback(async () => {
@@ -113,24 +144,6 @@ export default function SalaryNegotiator() {
       speakText(messages[0].text);
     }
   }, []);
-
-  const speakText = (text) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.95;
-    utterance.pitch = 1;
-    const voices = window.speechSynthesis.getVoices();
-    const preferred =
-      voices.find((v) => /hindi|indian|neerja|en-IN/i.test(v.lang) || /female/i.test(v.name)) ||
-      voices.find((v) => v.lang === 'en-US') ||
-      voices[0];
-    if (preferred) utterance.voice = preferred;
-
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    window.speechSynthesis.speak(utterance);
-  };
 
   // ── Timer for recording ──────────────────────────────────────────────────
   useEffect(() => {
@@ -292,23 +305,23 @@ export default function SalaryNegotiator() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
-      {/* ── Universal Top Bar ── */}
+    <div className="min-h-screen bg-[#0B0D13] text-slate-100 flex flex-col justify-between select-none font-sans">
+      {/* Universal Top Bar */}
       <AppNavbar currentActive="negotiate" />
 
-      {/* ── Main Studio Layout (Split View) ── */}
+      {/* Main Studio Layout */}
       <main className="max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start flex-1 text-left">
-        {/* ── Left Column: Live Camera & Compensation Dashboard (5 Cols) ── */}
+        {/* Left Column: Live Camera & Compensation Dashboard (5 Cols) */}
         <div className="lg:col-span-5 space-y-4">
           {/* Live Webcam Box */}
-          <div className="bg-white border border-slate-200 p-0 overflow-hidden relative rounded-2xl aspect-video flex items-center justify-center shadow-sm">
+          <div className="bg-[#131823] border border-white/10 p-0 overflow-hidden relative rounded-3xl aspect-video flex items-center justify-center shadow-2xl">
             {virtualMode ? (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-slate-50 relative">
-                <div className="w-20 h-20 rounded-full bg-teal-50 border-2 border-teal-500/40 flex items-center justify-center text-3xl shadow-sm animate-pulse">
-                  👤
+              <div className="w-full h-full flex flex-col items-center justify-center bg-[#0D111A] relative">
+                <div className="w-16 h-16 rounded-2xl bg-teal-950/80 border-2 border-teal-500/40 flex items-center justify-center text-teal-400 shadow-md">
+                  <User className="w-8 h-8" />
                 </div>
-                <p className="text-xs font-bold text-slate-800 mt-2">Virtual Candidate Presence</p>
-                <p className="text-[10px] text-teal-700 font-mono">Negotiation Video Enabled ✓</p>
+                <p className="text-xs font-bold text-white mt-2">Virtual Candidate Presence</p>
+                <p className="text-[10px] text-teal-400 font-mono">Negotiation Video Enabled ✓</p>
               </div>
             ) : (
               <video
@@ -317,12 +330,13 @@ export default function SalaryNegotiator() {
                 playsInline
                 muted
                 className="w-full h-full object-cover mirror-mode"
+                style={{ transform: 'scaleX(-1)', WebkitTransform: 'scaleX(-1)' }}
               />
             )}
 
             {!camReady && !cameraError && !virtualMode && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-50 text-slate-500">
-                <svg className="animate-spin h-6 w-6 text-teal-600" viewBox="0 0 24 24" fill="none">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#131823] text-slate-400">
+                <svg className="animate-spin h-6 w-6 text-teal-400" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                 </svg>
@@ -331,15 +345,15 @@ export default function SalaryNegotiator() {
             )}
 
             {cameraError && !virtualMode && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-white/95 text-slate-700 text-xs space-y-2 z-10">
-                <p className="font-bold text-slate-900">{cameraError}</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-[#131823]/95 text-slate-300 text-xs space-y-2 z-10">
+                <p className="font-bold text-white">{cameraError}</p>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={startCamera}
-                    className="py-1 px-3 text-[11px] font-semibold bg-teal-600 hover:bg-teal-500 text-white rounded-lg shadow-sm cursor-pointer"
+                    className="py-1 px-3 text-[11px] font-semibold bg-teal-600 hover:bg-teal-500 text-white rounded-lg cursor-pointer"
                   >
-                    🔄 Retry Camera
+                    Retry Camera
                   </button>
                   <button
                     type="button"
@@ -348,9 +362,9 @@ export default function SalaryNegotiator() {
                       setCamReady(true);
                       setCameraError(null);
                     }}
-                    className="py-1 px-3 text-[11px] font-semibold text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-lg cursor-pointer shadow-sm"
+                    className="py-1 px-3 text-[11px] font-semibold text-teal-300 bg-teal-950 border border-teal-500/40 rounded-lg cursor-pointer"
                   >
-                    👤 Virtual Avatar
+                    Virtual Avatar
                   </button>
                 </div>
               </div>
@@ -358,75 +372,77 @@ export default function SalaryNegotiator() {
 
             {/* Live Badges */}
             <div className="absolute top-3 left-3 flex items-center gap-2">
-              <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-white/80 backdrop-blur-md text-red-600 border border-red-200 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-black/80 backdrop-blur-md text-rose-400 border border-rose-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
                 NEGOTIATION ON-AIR
               </span>
             </div>
 
             {isSpeaking && (
-              <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-teal-50/90 backdrop-blur-md text-teal-800 border border-teal-300 animate-pulse shadow-sm">
-                <span>🔊 Recruiter Speaking...</span>
+              <div className="absolute bottom-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold bg-black/80 backdrop-blur-md text-teal-300 border border-teal-500/30 animate-pulse font-mono">
+                <Volume2 className="w-3.5 h-3.5 text-teal-400" />
+                <span>Recruiter Speaking...</span>
               </div>
             )}
           </div>
 
-          {/* Live Compensation Package Card (Indian Currency INR) */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
-            <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+          {/* Live Compensation Package Card */}
+          <div className="bg-[#131823] border border-white/10 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-3.5">
+            <div className="flex justify-between items-center pb-2.5 border-b border-white/10">
               <div>
-                <p className="text-[10px] uppercase font-bold text-teal-700 tracking-wider">Live Compensation Offer</p>
-                <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-0.5">
+                <p className="text-[10px] uppercase font-bold text-teal-400 tracking-wider font-mono">Live Compensation Offer</p>
+                <h2 className="text-lg sm:text-xl font-black text-white mt-0.5">
                   {formatLPA(totalValue)}{' '}
-                  <span className="text-[11px] text-slate-500 font-normal font-mono">(Year 1 CTC: ₹{totalValue.toLocaleString('en-IN')})</span>
+                  <span className="text-[11px] text-slate-400 font-normal font-mono">(Year 1 CTC: ₹{totalValue.toLocaleString('en-IN')})</span>
                 </h2>
               </div>
               {lastTacticScore !== null && (
-                <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200">
-                  <span className="text-[10px] text-slate-500">Leverage:</span>
-                  <span className={`text-xs font-black ${lastTacticScore >= 75 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                <div className="flex items-center gap-1.5 bg-[#0D111A] px-3 py-1 rounded-xl border border-white/5 font-mono">
+                  <span className="text-[10px] text-slate-400">Leverage:</span>
+                  <span className={`text-xs font-black ${lastTacticScore >= 75 ? 'text-emerald-400' : 'text-amber-400'}`}>
                     {lastTacticScore}/100
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-              <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
-                <p className="text-[9px] text-slate-500 uppercase font-semibold">Fixed Base</p>
-                <p className="font-bold text-slate-900 text-xs sm:text-sm">{formatLPA(offer.base)}</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center font-mono">
+              <div className="bg-[#0D111A] p-2.5 rounded-xl border border-white/5">
+                <p className="text-[9px] text-slate-400 uppercase font-semibold">Fixed Base</p>
+                <p className="font-bold text-white text-xs sm:text-sm mt-0.5">{formatLPA(offer.base)}</p>
               </div>
-              <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
-                <p className="text-[9px] text-slate-500 uppercase font-semibold">Perf Bonus</p>
-                <p className="font-bold text-teal-700 text-xs sm:text-sm">{offer.bonus}%</p>
+              <div className="bg-[#0D111A] p-2.5 rounded-xl border border-white/5">
+                <p className="text-[9px] text-slate-400 uppercase font-semibold">Perf Bonus</p>
+                <p className="font-bold text-teal-400 text-xs sm:text-sm mt-0.5">{offer.bonus}%</p>
               </div>
-              <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
-                <p className="text-[9px] text-slate-500 uppercase font-semibold">ESOPs (4Y)</p>
-                <p className="font-bold text-purple-700 text-xs sm:text-sm">{formatLPA(offer.equity)}</p>
+              <div className="bg-[#0D111A] p-2.5 rounded-xl border border-white/5">
+                <p className="text-[9px] text-slate-400 uppercase font-semibold">ESOPs (4Y)</p>
+                <p className="font-bold text-cyan-400 text-xs sm:text-sm mt-0.5">{formatLPA(offer.equity)}</p>
               </div>
-              <div className="bg-slate-50 p-2 rounded-lg border border-slate-200">
-                <p className="text-[9px] text-slate-500 uppercase font-semibold">Joining Bonus</p>
-                <p className="font-bold text-amber-700 text-xs sm:text-sm">{formatLPA(offer.signing)}</p>
+              <div className="bg-[#0D111A] p-2.5 rounded-xl border border-white/5">
+                <p className="text-[9px] text-slate-400 uppercase font-semibold">Joining Bonus</p>
+                <p className="font-bold text-amber-400 text-xs sm:text-sm mt-0.5">{formatLPA(offer.signing)}</p>
               </div>
             </div>
 
             {tacticFeedback && (
-              <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-600 flex items-start gap-1.5">
-                <span>💡</span>
+              <div className="pt-2 border-t border-white/10 text-[11px] text-slate-300 flex items-start gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-teal-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <strong className="text-teal-700">Negotiation Coach:</strong> {tacticFeedback}
+                  <strong className="text-teal-400 font-mono">Negotiation Coach: </strong>
+                  <span>{tacticFeedback}</span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Real Indian Tech Compensation Bands (LPA / INR) */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2.5 shadow-sm">
+          {/* Real Indian Tech Compensation Bands */}
+          <div className="bg-[#131823] border border-white/10 rounded-3xl p-5 space-y-3 shadow-2xl">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700">
-                📊 Indian Tech Market Compensation Bands (INR / LPA)
+              <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400 font-mono">
+                Market Compensation Bands (INR / LPA)
               </span>
-              <span className="text-[9px] text-slate-500 font-mono">1-Click Auto-Target</span>
+              <span className="text-[9px] text-slate-400 font-mono">Auto-Target</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
               {INDIAN_COMP_BANDS.map((band) => (
@@ -434,36 +450,36 @@ export default function SalaryNegotiator() {
                   key={band.level}
                   type="button"
                   onClick={() => setOffer({ base: band.base, bonus: band.bonus, equity: band.equity, signing: band.signing })}
-                  className="p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-teal-500/50 text-left transition-all flex items-center justify-between group shadow-sm cursor-pointer"
+                  className="p-3 rounded-xl bg-[#0D111A] hover:bg-[#171E2D] border border-white/5 hover:border-teal-500/40 text-left transition-all flex items-center justify-between group cursor-pointer"
                 >
                   <div>
-                    <p className="font-bold text-slate-800 group-hover:text-teal-700 text-[11px]">{band.level}</p>
-                    <p className="text-[10px] text-slate-500 font-mono">₹{(band.base/100000).toFixed(0)}L Base • ₹{(band.equity/100000).toFixed(0)}L ESOP</p>
+                    <p className="font-bold text-slate-200 group-hover:text-teal-300 text-[11px]">{band.level}</p>
+                    <p className="text-[10px] text-slate-400 font-mono">₹{(band.base/100000).toFixed(0)}L Base • ₹{(band.equity/100000).toFixed(0)}L ESOP</p>
                   </div>
-                  <span className="text-[10px] font-bold text-teal-700 font-mono">{band.ctcLabel}</span>
+                  <span className="text-[10px] font-bold text-teal-400 font-mono">{band.ctcLabel}</span>
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* ── Right Column: Dialogue Stream & Audio Mic Controls (7 Cols) ── */}
+        {/* Right Column: Dialogue Stream & Audio Controls (7 Cols) */}
         <div className="lg:col-span-7 space-y-4">
           {/* Dialogue Log Card */}
-          <div className="bg-white border border-slate-200 rounded-2xl h-96 overflow-y-auto p-4 space-y-3.5 shadow-sm">
+          <div className="bg-[#131823] border border-white/10 rounded-3xl h-96 overflow-y-auto p-5 space-y-3.5 shadow-2xl">
             {messages.map((m, idx) => (
               <div
                 key={idx}
                 className={`flex flex-col ${m.sender === 'candidate' ? 'items-end' : 'items-start'}`}
               >
-                <span className="text-[10px] text-slate-500 mb-1 px-1">
+                <span className="text-[10px] text-slate-400 mb-1 px-1 font-mono">
                   {m.sender === 'candidate' ? 'Candidate (You)' : 'Senior Recruiter / HR'}
                 </span>
                 <div
-                  className={`p-3.5 rounded-2xl max-w-md text-xs sm:text-sm leading-relaxed ${
+                  className={`p-4 rounded-2xl max-w-md text-xs sm:text-sm leading-relaxed ${
                     m.sender === 'candidate'
-                      ? 'bg-teal-600 text-white rounded-br-none shadow-sm font-medium'
-                      : 'bg-slate-100 text-slate-900 border border-slate-200 rounded-bl-none shadow-sm'
+                      ? 'bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-bold rounded-br-none shadow-md'
+                      : 'bg-[#0D111A] text-slate-200 border border-white/10 rounded-bl-none shadow-sm'
                   }`}
                 >
                   {m.text}
@@ -472,31 +488,28 @@ export default function SalaryNegotiator() {
             ))}
 
             {isLoading && (
-              <div className="flex items-center gap-2 text-xs text-slate-500 py-2">
-                <svg className="animate-spin h-3.5 w-3.5 text-teal-600" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                </svg>
-                <span>Recruiter is evaluating budget and compensation bands...</span>
+              <div className="flex items-center gap-2 text-xs text-teal-400 py-2 font-mono">
+                <Sparkles className="w-4 h-4 animate-spin" />
+                <span>Recruiter evaluating compensation bands...</span>
               </div>
             )}
           </div>
 
           {/* Response Box with Audio Transcription */}
-          <form onSubmit={handleSendMessage} className="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm">
-            <div className="flex items-center justify-between text-[11px] text-slate-500 pb-1 border-b border-slate-100">
-              <span className="font-bold uppercase tracking-wider text-teal-700">
+          <form onSubmit={handleSendMessage} className="bg-[#131823] border border-white/10 rounded-3xl p-5 space-y-3.5 shadow-2xl">
+            <div className="flex items-center justify-between text-[11px] text-slate-400 pb-1 border-b border-white/10">
+              <span className="font-bold uppercase tracking-wider text-teal-400 font-mono">
                 Your Counter-Offer (Speak or Type)
               </span>
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${
-                  detectedFillers > 1 ? 'bg-amber-50 text-amber-800 border-amber-200' : 'bg-slate-100 text-slate-600 border-slate-200'
+                <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border ${
+                  detectedFillers > 1 ? 'bg-amber-950/80 text-amber-300 border-amber-500/40' : 'bg-[#0D111A] text-slate-400 border-white/5'
                 }`}>
-                  🎙️ Fillers: {detectedFillers}
+                  Fillers: {detectedFillers}
                 </span>
                 {estimatedWpm > 0 && (
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                    ⚡ {estimatedWpm} WPM
+                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#0D111A] text-teal-300 border border-white/5">
+                    {estimatedWpm} WPM
                   </span>
                 )}
               </div>
@@ -509,11 +522,11 @@ export default function SalaryNegotiator() {
               placeholder="State your expectations in LPA (e.g. 'I am expecting ₹24 LPA fixed base and ₹10 Lakhs in ESOPs based on market standards...')"
               rows={3}
               disabled={isLoading || isTranscribing}
-              className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-xs text-slate-900 focus:outline-none leading-relaxed"
+              className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-2xl p-4 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none leading-relaxed"
             />
 
             {statusMessage && (
-              <p className="text-[11px] text-teal-700 animate-pulse">{statusMessage}</p>
+              <p className="text-[11px] text-teal-400 animate-pulse font-mono">{statusMessage}</p>
             )}
 
             <div className="flex items-center justify-between gap-3 pt-1">
@@ -523,17 +536,19 @@ export default function SalaryNegotiator() {
                     type="button"
                     onClick={startRecording}
                     disabled={isLoading || isTranscribing}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 active:scale-95 text-white text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-teal-300 text-xs font-bold shadow-sm transition-all cursor-pointer"
                   >
-                    <span>🎙️ Speak Offer</span>
+                    <Mic className="w-3.5 h-3.5 text-teal-400" />
+                    <span>Speak Offer</span>
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={stopRecording}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-semibold shadow-sm animate-pulse transition-all cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white text-xs font-bold shadow-md animate-pulse transition-all cursor-pointer"
                   >
-                    <span>⏹️ Stop Speaking ({formatSeconds(recordingSeconds)})</span>
+                    <Square className="w-3.5 h-3.5" />
+                    <span>Stop Speaking ({formatSeconds(recordingSeconds)})</span>
                   </button>
                 )}
               </div>
@@ -541,16 +556,17 @@ export default function SalaryNegotiator() {
               <button
                 type="submit"
                 disabled={isLoading || !inputMsg.trim() || isRecording || isTranscribing}
-                className="py-2.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-sm cursor-pointer disabled:opacity-50"
+                className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-teal-500/20 cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
               >
-                Send Counter-Offer ➔
+                <span>Send Counter-Offer</span>
+                <Send className="w-3.5 h-3.5" />
               </button>
             </div>
           </form>
         </div>
       </main>
 
-      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
+      <footer className="py-4 border-t border-white/10 bg-[#0E121B] text-center" />
     </div>
   );
 }

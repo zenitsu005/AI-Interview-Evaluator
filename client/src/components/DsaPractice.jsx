@@ -3,25 +3,39 @@ import { useInterview } from '../context/InterviewContext';
 import { generateDsaProblem } from '../services/api';
 import AppNavbar from './AppNavbar';
 import DopamineCelebrationModal from './DopamineCelebrationModal';
+import {
+  Code2,
+  Play,
+  Sparkles,
+  RotateCcw,
+  Trash2,
+  Copy,
+  Check,
+  CheckCircle2,
+  AlertTriangle,
+  Lightbulb,
+  ArrowRight,
+  Zap,
+} from 'lucide-react';
 
 const DIFFICULTY_CONFIG = [
   {
     id: 'Easy',
-    label: '🟢 Easy Difficulty',
+    label: 'Easy Foundations',
     sub: 'Arrays, Hash Maps, Two Pointers & Basic Stacks (15-20 min target)',
-    color: 'border-emerald-500/60 bg-emerald-950/20 text-emerald-300',
+    color: 'border-emerald-500/60 bg-emerald-950/40 text-emerald-300',
   },
   {
     id: 'Medium',
-    label: '🟡 Medium Difficulty',
+    label: 'Medium Scalability',
     sub: 'Sliding Window, Binary Search, Trees, Graphs & Dynamic Programming',
-    color: 'border-amber-500/60 bg-amber-950/20 text-amber-300',
+    color: 'border-amber-500/60 bg-amber-950/40 text-amber-300',
   },
   {
     id: 'Hard',
-    label: '🔴 Hard Difficulty',
+    label: 'Hard Complex Invariants',
     sub: 'Advanced Graph Algorithms, Monotonic Queue & Complex DP Constraints',
-    color: 'border-red-500/60 bg-red-950/20 text-red-300',
+    color: 'border-rose-500/60 bg-rose-950/40 text-rose-300',
   },
 ];
 
@@ -911,28 +925,28 @@ export default function DsaPractice() {
   const currentProb = activeProblem || currentQuestionsInTier[0] || DSA_PROBLEM_POOLS.Easy[0][0];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
+    <div className="min-h-screen bg-[#0B0D13] text-slate-100 flex flex-col justify-between select-none font-sans">
       <AppNavbar currentActive="dsa" />
 
       {/* Floating Refresh Notification Toast */}
       {refreshNotification && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-teal-600 text-white font-bold text-xs px-5 py-2.5 rounded-full shadow-2xl flex items-center gap-2 animate-bounce border border-teal-400/40">
-          <span>🔄</span>
+          <Sparkles className="w-4 h-4" />
           <span>{refreshNotification}</span>
         </div>
       )}
 
       {/* Header Banner */}
-      <header className="border-b border-slate-200 bg-white/90 backdrop-blur-md px-6 py-4 sticky top-0 z-30 flex items-center justify-between flex-wrap gap-3">
+      <header className="border-b border-white/10 bg-[#0E121B]/90 backdrop-blur-md px-6 py-4 sticky top-0 z-30 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 font-bold text-lg shadow-sm">
-            ⚡
+          <div className="w-9 h-9 rounded-xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400 font-bold text-lg shadow-sm">
+            <Code2 className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-sm font-black text-slate-900 tracking-wide uppercase font-mono">
+            <h1 className="text-sm font-black text-white tracking-wide uppercase font-mono">
               DSA Coding Studio
             </h1>
-            <p className="text-[11px] text-slate-500 font-sans">
+            <p className="text-[11px] text-slate-400 font-sans">
               Curated Problem Sets • Multi-Language Sandbox • Instant Test Runner
             </p>
           </div>
@@ -942,7 +956,7 @@ export default function DsaPractice() {
           <button
             type="button"
             onClick={() => setPhase('landing')}
-            className="text-xs text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+            className="text-xs text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
             ← Exit Studio
           </button>
@@ -952,21 +966,21 @@ export default function DsaPractice() {
       {/* Main Studio Area */}
       <main className="max-w-7xl mx-auto w-full p-4 sm:p-6 space-y-5 flex-1 text-left">
         {/* Difficulty Level Selector */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3">
+        <div className="bg-[#131823] border border-white/10 rounded-3xl shadow-2xl p-5 space-y-3.5">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-teal-700 font-mono">
-              ⚡ Select DSA Difficulty Level
+            <span className="text-xs font-bold uppercase tracking-wider text-teal-400 font-mono flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5" /> Select DSA Difficulty Level
             </span>
             <div className="flex items-center gap-2">
-              {/* ── Refresh All Questions of Selected Level ── */}
               <button
                 type="button"
                 onClick={handleRefreshAllQuestionsForTier}
                 disabled={isRefreshingTier}
-                className="text-xs bg-teal-600 hover:bg-teal-500 text-white font-bold px-3.5 py-1.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer disabled:opacity-50"
+                className="text-xs bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-teal-300 font-bold px-3.5 py-1.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer disabled:opacity-50"
                 title="Generates and rotates a completely fresh set of 5 questions for this level"
               >
-                <span>{isRefreshingTier ? 'Refreshing Set...' : '🔄 Refresh All Questions'}</span>
+                <RotateCcw className={`w-3.5 h-3.5 ${isRefreshingTier ? 'animate-spin' : ''}`} />
+                <span>{isRefreshingTier ? 'Refreshing Set...' : 'Refresh All Questions'}</span>
               </button>
             </div>
           </div>
@@ -974,22 +988,23 @@ export default function DsaPractice() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {DIFFICULTY_CONFIG.map((diff) => {
               const countInDiff = (activeTierQuestions[diff.id] || []).length;
+              const isSelected = selectedDifficulty === diff.id;
               return (
                 <button
                   key={diff.id}
                   type="button"
                   onClick={() => handleChooseDifficulty(diff.id)}
-                  className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
-                    selectedDifficulty === diff.id
-                      ? 'border-teal-600 bg-teal-50 text-teal-950 ring-2 ring-teal-500/20 shadow-sm'
-                      : 'border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800'
+                  className={`p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                    isSelected
+                      ? 'border-teal-400 bg-teal-950/60 ring-2 ring-teal-500/30 text-white shadow-lg'
+                      : 'border-white/10 bg-[#0D111A] hover:bg-[#171E2D] text-slate-300'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <p className="font-bold text-slate-900 text-xs">{diff.label}</p>
-                    <span className="text-[10px] text-slate-500 font-mono">{countInDiff} Problems</span>
+                    <p className="font-bold text-white text-xs">{diff.label}</p>
+                    <span className="text-[10px] text-teal-400 font-mono font-bold bg-white/5 px-2 py-0.5 rounded-full border border-white/5">{countInDiff} Problems</span>
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-1 leading-snug">{diff.sub}</p>
+                  <p className="text-[11px] text-slate-400 mt-1.5 leading-snug">{diff.sub}</p>
                 </button>
               );
             })}
@@ -1002,7 +1017,7 @@ export default function DsaPractice() {
           <div className="lg:col-span-5 space-y-4">
             
             {/* 5 Problem Tabs in Selected Tier */}
-            <div className="grid grid-cols-5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 gap-1.5 shadow-sm">
+            <div className="grid grid-cols-5 bg-[#0D111A] p-1.5 rounded-2xl border border-white/10 gap-1.5 shadow-inner">
               {currentQuestionsInTier.map((prob, idx) => {
                 const isActive = (activeProblem?.id || currentProb?.id) === prob.id;
                 return (
@@ -1013,8 +1028,8 @@ export default function DsaPractice() {
                     title={`Problem ${idx + 1}: ${cleanTitle(prob.title)}`}
                     className={`py-2 px-1 rounded-xl text-xs sm:text-sm font-sans font-bold transition-all text-center cursor-pointer truncate ${
                       isActive
-                        ? 'bg-teal-600 text-white shadow-md'
-                        : 'bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 shadow-xs'
+                        ? 'bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 shadow-md font-extrabold'
+                        : 'bg-[#131823] hover:bg-[#171E2D] text-slate-300 border border-white/5'
                     }`}
                   >
                     Q{idx + 1}
@@ -1024,36 +1039,36 @@ export default function DsaPractice() {
             </div>
 
             {/* Problem Spec Card */}
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 space-y-4">
-              <div className="flex items-center justify-between flex-wrap gap-2 border-b border-slate-100 pb-3">
+            <div className="bg-[#131823] border border-white/10 rounded-3xl shadow-2xl p-5 sm:p-6 space-y-4">
+              <div className="flex items-center justify-between flex-wrap gap-2 border-b border-white/10 pb-3">
                 <div>
-                  <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <h2 className="text-base font-bold text-white flex items-center gap-2">
                     <span>{cleanTitle(currentProb.title)}</span>
                   </h2>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-teal-50 text-teal-800 border border-teal-200">
+                    <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-teal-950/80 text-teal-300 border border-teal-500/30">
                       {currentProb.category || 'Algorithms'}
                     </span>
-                    <span className="text-[10px] font-mono text-slate-500">
+                    <span className="text-[10px] font-mono text-slate-400">
                       Target: {currentProb.timeComplexity || 'O(N)'}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full font-bold bg-white/5 text-slate-300 border border-white/10">
                     {selectedDifficulty}
                   </span>
                 </div>
               </div>
 
               {/* Tabs: Description vs Solution */}
-              <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+              <div className="flex bg-[#0D111A] p-1 rounded-xl border border-white/10 text-xs">
                 <button
                   type="button"
                   onClick={() => setActiveTab('spec')}
-                  className={`flex-1 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
-                    activeTab === 'spec' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  className={`flex-1 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                    activeTab === 'spec' ? 'bg-teal-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   Description
@@ -1061,8 +1076,8 @@ export default function DsaPractice() {
                 <button
                   type="button"
                   onClick={() => setActiveTab('solution')}
-                  className={`flex-1 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
-                    activeTab === 'solution' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                  className={`flex-1 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                    activeTab === 'solution' ? 'bg-teal-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
                   }`}
                 >
                   Model Solution
@@ -1070,24 +1085,24 @@ export default function DsaPractice() {
               </div>
 
               {activeTab === 'spec' ? (
-                <div className="space-y-4 text-xs text-slate-700 leading-relaxed font-sans">
-                  <p className="whitespace-pre-line text-slate-800">{currentProb.description}</p>
+                <div className="space-y-4 text-xs text-slate-300 leading-relaxed font-sans">
+                  <p className="whitespace-pre-line text-slate-200">{currentProb.description}</p>
 
                   <div className="space-y-2">
-                    <h3 className="font-bold text-slate-900 text-[11px] uppercase tracking-wider font-mono">Examples</h3>
+                    <h3 className="font-bold text-white text-[11px] uppercase tracking-wider font-mono">Examples</h3>
                     {currentProb.examples?.map((ex, i) => (
-                      <div key={i} className="bg-slate-50 p-3 rounded-xl border border-slate-200 font-mono text-[11px] space-y-1">
-                        <p><span className="text-teal-700 font-bold">Input:</span> {ex.input}</p>
-                        <p><span className="text-emerald-700 font-bold">Output:</span> {ex.output}</p>
-                        {ex.explanation && <p className="text-slate-500 text-[10px]">{ex.explanation}</p>}
+                      <div key={i} className="bg-[#0D111A] p-3.5 rounded-xl border border-white/5 font-mono text-[11px] space-y-1">
+                        <p><span className="text-teal-400 font-bold">Input:</span> {ex.input}</p>
+                        <p><span className="text-emerald-400 font-bold">Output:</span> {ex.output}</p>
+                        {ex.explanation && <p className="text-slate-400 text-[10px]">{ex.explanation}</p>}
                       </div>
                     ))}
                   </div>
 
                   {currentProb.hints && currentProb.hints.length > 0 && (
-                    <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl text-amber-900 text-xs space-y-1">
-                      <p className="font-bold text-amber-800 flex items-center gap-1.5 font-mono">
-                        <span>💡</span> Socratic Hint
+                    <div className="bg-amber-950/40 border border-amber-500/30 p-3.5 rounded-2xl text-amber-200 text-xs space-y-1">
+                      <p className="font-bold text-amber-400 flex items-center gap-1.5 font-mono">
+                        <Lightbulb className="w-3.5 h-3.5" /> Socratic Hint
                       </p>
                       <ul className="list-disc list-inside space-y-0.5 text-[11px]">
                         {currentProb.hints.map((h, i) => (
@@ -1099,31 +1114,25 @@ export default function DsaPractice() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between text-[11px] text-slate-600 font-mono">
-                    <span className="text-teal-700 font-bold uppercase tracking-wider">Optimal Solution</span>
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                    <span className="text-teal-400 font-bold uppercase tracking-wider">Optimal Solution</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-slate-500">Python 3</span>
+                      <span className="text-slate-400">Python 3</span>
                       <button
                         type="button"
                         onClick={() => handleCopyCode(currentProb.modelSolution)}
-                        className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-teal-800 border border-slate-200 text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer active:scale-95 shadow-sm"
+                        className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-teal-300 border border-white/10 text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer"
                         title="Copy solution code to clipboard"
                       >
-                        <span>{copiedSolution ? '✓ Copied!' : '📋 Copy Solution'}</span>
+                        {copiedSolution ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                        <span>{copiedSolution ? 'Copied!' : 'Copy'}</span>
                       </button>
                     </div>
                   </div>
                   <div className="relative group">
-                    <pre className="bg-slate-900 p-4 rounded-xl border border-slate-800 text-emerald-400 font-mono text-xs overflow-x-auto leading-relaxed">
+                    <pre className="bg-[#0D111A] p-4 rounded-xl border border-white/5 text-emerald-400 font-mono text-xs overflow-x-auto leading-relaxed">
                       <code>{currentProb.modelSolution || '# Model solution available after attempt'}</code>
                     </pre>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyCode(currentProb.modelSolution)}
-                      className="absolute top-2.5 right-2.5 opacity-80 group-hover:opacity-100 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-[10px] font-mono transition-all flex items-center gap-1 shadow-md cursor-pointer"
-                    >
-                      <span>{copiedSolution ? '✓ Copied' : '📋 Copy'}</span>
-                    </button>
                   </div>
                 </div>
               )}
@@ -1133,15 +1142,15 @@ export default function DsaPractice() {
 
           {/* Right Column: Code Editor & Test Sandbox */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="bg-white border border-slate-200 p-0 overflow-hidden shadow-sm rounded-2xl">
+            <div className="bg-[#131823] border border-white/10 p-0 overflow-hidden shadow-2xl rounded-3xl">
               {/* Editor Header */}
-              <div className="bg-slate-50 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
+              <div className="bg-[#0E121B] border-b border-white/10 px-4 py-3 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-slate-700 font-bold">Language:</span>
+                  <span className="text-xs font-mono text-slate-400 font-bold">Language:</span>
                   <select
                     value={lang}
                     onChange={(e) => handleLangChange(e.target.value)}
-                    className="bg-white border border-slate-300 text-slate-900 font-mono text-xs rounded-lg px-2.5 py-1 focus:outline-none cursor-pointer shadow-sm font-semibold"
+                    className="bg-[#171E2D] border border-white/10 text-white font-mono text-xs rounded-xl px-3 py-1.5 focus:outline-none cursor-pointer font-semibold"
                   >
                     <option value="cpp">C++</option>
                     <option value="python">Python 3</option>
@@ -1154,19 +1163,21 @@ export default function DsaPractice() {
                   <button
                     type="button"
                     onClick={() => setCode('')}
-                    className="text-xs text-slate-600 hover:text-red-600 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-red-50 transition-all font-mono flex items-center gap-1 cursor-pointer bg-white"
-                    title="Clear editor and remove all text"
+                    className="text-xs text-slate-400 hover:text-rose-400 px-3 py-1.5 rounded-xl border border-white/10 hover:bg-rose-950/20 transition-all font-mono flex items-center gap-1 cursor-pointer bg-[#171E2D]"
+                    title="Clear editor"
                   >
-                    <span>🗑️ Clear</span>
+                    <Trash2 className="w-3 h-3" />
+                    <span>Clear</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setCode(getStarterTemplate(activeProblem || currentProb, lang))}
-                    className="text-xs text-slate-700 hover:text-slate-900 px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors font-mono cursor-pointer bg-white font-medium"
-                    title="Reset to clean boilerplate template"
+                    className="text-xs text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-white/10 hover:bg-white/5 transition-colors font-mono cursor-pointer bg-[#171E2D] font-medium flex items-center gap-1"
+                    title="Reset template"
                   >
-                    Reset Code
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Reset</span>
                   </button>
                 </div>
               </div>
@@ -1179,30 +1190,32 @@ export default function DsaPractice() {
                 rows={16}
                 spellCheck={false}
                 placeholder="Write your algorithmic solution here..."
-                className="w-full bg-slate-900 p-4 text-xs sm:text-sm font-mono text-emerald-400 focus:outline-none resize-y leading-relaxed block"
+                className="w-full bg-[#0D111A] p-4 text-xs sm:text-sm font-mono text-emerald-400 focus:outline-none resize-y leading-relaxed block"
               />
 
-              {/* Bottom Action Toolbar Below Code Writing Area */}
-              <div className="bg-slate-50 border-t border-slate-200 px-4 py-3 flex items-center justify-between flex-wrap gap-2">
-                <span className="text-xs text-slate-500 font-mono hidden sm:inline">
-                  ⚡ Press Submit to execute test cases
+              {/* Bottom Action Toolbar */}
+              <div className="bg-[#0E121B] border-t border-white/10 px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+                <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+                  Press Submit to execute test suite
                 </span>
 
                 <div className="flex items-center gap-2.5 ml-auto">
                   <button
                     type="button"
                     onClick={handleShuffleNext}
-                    className="text-xs sm:text-sm bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 hover:border-slate-400 px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+                    className="text-xs sm:text-sm bg-[#171E2D] hover:bg-[#1E273A] text-slate-200 border border-white/10 px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
                   >
-                    <span>Next Question →</span>
+                    <span>Next Question</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
 
                   <button
                     type="button"
                     onClick={handleRunCode}
                     disabled={isRunning}
-                    className="text-xs sm:text-sm bg-teal-600 hover:bg-teal-500 text-white font-bold px-5 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer disabled:opacity-50"
+                    className="text-xs sm:text-sm bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-black px-6 py-2 rounded-xl shadow-lg shadow-teal-500/20 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer disabled:opacity-50"
                   >
+                    <Play className="w-3.5 h-3.5 fill-slate-950" />
                     <span>{isRunning ? 'Executing Tests...' : 'Submit Code'}</span>
                   </button>
                 </div>
@@ -1211,17 +1224,18 @@ export default function DsaPractice() {
 
             {/* Test Results Output Panel */}
             {testResults && (
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <div className="bg-[#131823] border border-white/10 rounded-3xl shadow-2xl p-5 space-y-3.5">
+                <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold font-mono">
-                      {testResults.allPassed ? '✅ All Test Cases Passed' : '❌ Some Test Cases Failed'}
+                    <span className="text-xs font-bold font-mono text-white flex items-center gap-1.5">
+                      {testResults.allPassed ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <AlertTriangle className="w-4 h-4 text-rose-400" />}
+                      <span>{testResults.allPassed ? 'All Test Cases Passed' : 'Some Test Cases Failed'}</span>
                     </span>
-                    <span className="text-[11px] text-slate-500 font-mono">
+                    <span className="text-[11px] text-slate-400 font-mono">
                       ({testResults.passedCount}/{testResults.totalCount})
                     </span>
                   </div>
-                  <div className="text-[11px] font-mono text-slate-500 flex items-center gap-3">
+                  <div className="text-[11px] font-mono text-slate-400 flex items-center gap-3">
                     <span>⏱️ {testResults.runtime}</span>
                     <span>💾 {testResults.memory}</span>
                   </div>
@@ -1231,20 +1245,20 @@ export default function DsaPractice() {
                   {testResults.cases.map((tc) => (
                     <div
                       key={tc.id}
-                      className={`p-3.5 rounded-xl border font-mono text-xs space-y-1.5 ${
+                      className={`p-3.5 rounded-2xl border font-mono text-xs space-y-1.5 ${
                         tc.status === 'passed'
-                          ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
-                          : 'bg-rose-50 border-rose-300 text-rose-950'
+                          ? 'bg-emerald-950/40 border-emerald-500/30 text-emerald-300'
+                          : 'bg-rose-950/40 border-rose-500/30 text-rose-300'
                       }`}
                     >
                       <div className="flex items-center justify-between text-xs font-bold">
                         <span>Case #{tc.id}</span>
-                        <span className="text-slate-600 font-normal">{tc.time}</span>
+                        <span className="text-slate-400 font-normal">{tc.time}</span>
                       </div>
-                      <p><span className="text-slate-700 font-semibold">Input:</span> {tc.input}</p>
-                      <p><span className="text-slate-700 font-semibold">Expected:</span> {tc.expected}</p>
-                      <p><span className="text-slate-700 font-semibold">Actual:</span> {tc.actual}</p>
-                      {tc.error && <p className="text-rose-700 text-xs font-bold">Error: {tc.error}</p>}
+                      <p><span className="text-slate-400">Input:</span> {tc.input}</p>
+                      <p><span className="text-slate-400">Expected:</span> {tc.expected}</p>
+                      <p><span className="text-slate-400">Actual:</span> {tc.actual}</p>
+                      {tc.error && <p className="text-rose-400 text-xs font-bold">Error: {tc.error}</p>}
                     </div>
                   ))}
                 </div>
@@ -1254,7 +1268,7 @@ export default function DsaPractice() {
         </div>
       </main>
 
-      {/* Dopamine Celebration Modal on passing problem */}
+      {/* Dopamine Celebration Modal */}
       {showDopamineModal && (
         <DopamineCelebrationModal
           isOpen={showDopamineModal}

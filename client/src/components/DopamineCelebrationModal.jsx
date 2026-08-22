@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Trophy, Star, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react';
 
-// Web Audio API Victory Chimes
 const playArcadeVictoryChime = () => {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+    const notes = [523.25, 659.25, 783.99, 1046.50];
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -69,7 +69,7 @@ export default function DopamineCelebrationModal({
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const colors = ['#0d9488', '#d97706', '#059669', '#0284c7', '#f59e0b'];
+    const colors = ['#2dd4bf', '#fbbf24', '#34d399', '#38bdf8', '#f59e0b'];
     let particles = [];
 
     for (let i = 0; i < 50; i++) {
@@ -131,51 +131,46 @@ export default function DopamineCelebrationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-hidden animate-fade-in select-none">
-      {/* Confetti Canvas */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-hidden animate-fade-in select-none">
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-10" />
 
-      {/* Main Celebration Modal */}
-      <div className="relative z-20 max-w-md w-full bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl overflow-hidden text-slate-900">
-        {/* Trophy Emblem */}
+      <div className="relative z-20 max-w-md w-full bg-[#131823] border border-white/10 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl overflow-hidden text-white">
         <div className="relative inline-block">
-          <div className="w-16 h-16 rounded-2xl bg-teal-50 border-2 border-teal-500/40 flex items-center justify-center text-3xl mx-auto shadow-md animate-bounce">
-            🏆
+          <div className="w-16 h-16 rounded-2xl bg-teal-950/80 border-2 border-teal-400 flex items-center justify-center text-teal-300 mx-auto shadow-xl shadow-teal-500/20 animate-bounce">
+            <Trophy className="w-8 h-8" />
           </div>
         </div>
 
-        {/* Title & Role Info */}
         <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-mono font-semibold uppercase tracking-wider mb-1">
-            <span className="w-2 h-2 rounded-full bg-teal-600 animate-ping" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/80 border border-teal-500/30 text-teal-300 text-xs font-mono font-semibold uppercase tracking-wider mb-1">
+            <span className="w-2 h-2 rounded-full bg-teal-400 animate-ping" />
             {badgeText || 'CHALLENGE COMPLETE'}
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-sans">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
             {titleText || 'Solution Verified'}
           </h2>
-          <p className="text-xs text-slate-600 font-medium">
-            Test cases validated successfully for <span className="text-teal-700 font-bold">{displayRole}</span>
+          <p className="text-xs text-slate-400 font-medium">
+            Test cases validated successfully for <span className="text-teal-300 font-bold">{displayRole}</span>
           </p>
         </div>
 
-        {/* Metric Pillars */}
         <div className="grid grid-cols-3 gap-2 py-1">
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
-            <p className="text-[10px] font-mono text-slate-500 uppercase font-bold">Correctness</p>
-            <p className="text-xs font-bold text-slate-900 mt-0.5">100% Passed ✓</p>
+          <div className="p-3 rounded-xl bg-[#0D111A] border border-white/5 text-center">
+            <p className="text-[10px] font-mono text-slate-400 uppercase font-bold">Correctness</p>
+            <p className="text-xs font-bold text-white mt-1">100% Passed ✓</p>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
-            <p className="text-[10px] font-mono text-slate-500 uppercase font-bold">Runtime</p>
-            <p className="text-xs font-bold text-teal-700 mt-0.5">Optimal ✓</p>
+          <div className="p-3 rounded-xl bg-[#0D111A] border border-white/5 text-center">
+            <p className="text-[10px] font-mono text-slate-400 uppercase font-bold">Runtime</p>
+            <p className="text-xs font-bold text-teal-400 mt-1 font-mono">Optimal ✓</p>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
-            <p className="text-[10px] font-mono text-slate-500 uppercase font-bold">Memory</p>
-            <p className="text-xs font-bold text-amber-700 mt-0.5">Efficient ✓</p>
+          <div className="p-3 rounded-xl bg-[#0D111A] border border-white/5 text-center">
+            <p className="text-[10px] font-mono text-slate-400 uppercase font-bold">Memory</p>
+            <p className="text-xs font-bold text-amber-400 mt-1 font-mono">Efficient ✓</p>
           </div>
         </div>
 
         {/* Gold Star Badges */}
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center gap-4 shadow-inner">
+        <div className="p-4 rounded-2xl bg-[#0D111A] border border-white/5 flex items-center justify-center gap-4 shadow-inner">
           {starsVisible.map((visible, idx) => (
             <div
               key={idx}
@@ -185,20 +180,20 @@ export default function DopamineCelebrationModal({
                   : 'scale-50 -rotate-12 opacity-0'
               }`}
             >
-              <div className="w-12 h-12 rounded-xl bg-amber-50 border border-amber-300 flex items-center justify-center text-2xl shadow-sm">
-                ⭐
+              <div className="w-12 h-12 rounded-xl bg-amber-950/60 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-md">
+                <Star className="w-6 h-6 fill-amber-400" />
               </div>
             </div>
           ))}
         </div>
 
-        {/* Primary Next Button Action */}
         <button
           type="button"
           onClick={handleAction}
-          className="w-full py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs sm:text-sm shadow-md transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+          className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm shadow-xl shadow-teal-500/20 transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
         >
           <span>{buttonText || 'Next Question →'}</span>
+          <ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </div>

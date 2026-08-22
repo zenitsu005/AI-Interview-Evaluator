@@ -3,18 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #F8FAFC;
-  --color-bg-gradient: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
-  --color-surface: #FFFFFF;
-  --color-surface-hover: #F1F5F9;
-  --color-border: #E2E8F0;
-  --color-border-hover: #CBD5E1;
-  --color-accent: #0D9488; /* Clean Teal Accent */
-  --color-gold: #D97706; /* Warm Amber Highlight */
+  --color-bg: #0B0D13;
+  --color-surface: #131823;
+  --color-surface-hover: #1A202E;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(45, 212, 191, 0.3);
+  --color-accent: #0D9488;
+  --color-gold: #F59E0B;
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
+  --radius-xl: 1.5rem;
   --ease-human: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -22,11 +21,16 @@
   html {
     scroll-behavior: smooth;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    color-scheme: dark;
   }
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    @apply antialiased selection:bg-teal-500 selection:text-white text-slate-900 bg-[#F8FAFC];
-    background: var(--color-bg-gradient);
+    @apply antialiased selection:bg-teal-400 selection:text-black text-slate-100 bg-[#0B0D13];
+    background-color: #0B0D13;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(13, 148, 136, 0.12) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(245, 158, 11, 0.06) 0px, transparent 50%);
     min-height: 100vh;
   }
   h1, h2, h3, h4, h5, h6 {
@@ -47,20 +51,8 @@
   }
 }
 
-.text-balance {
-  text-wrap: balance;
-}
-
-.text-pretty {
-  text-wrap: pretty;
-}
-
-.shadow-layered {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-}
-
 .font-editorial {
-  font-family: 'Instrument Serif', 'Newsreader', Georgia, serif;
+  font-family: 'Instrument Serif', Georgia, serif;
 }
 
 .mirror-mode {
@@ -68,28 +60,67 @@
   -webkit-transform: scaleX(-1);
 }
 
+/* Subtle architectural background grid illustration */
+.bg-grid-pattern {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.bg-dot-pattern {
+  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+}
+
+/* Professional multi-stop gradient utility */
+.gradient-text-emerald {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400;
+}
+
+.gradient-text-amber {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-300 to-yellow-400;
+}
+
+.gradient-border-card {
+  position: relative;
+  background: #131823;
+  border-radius: 1.25rem;
+}
+.gradient-border-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.4), rgba(255, 255, 255, 0.05), rgba(245, 158, 11, 0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
 @layer components {
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 px-5 rounded-xl transition-all duration-200 shadow-md shadow-teal-700/20 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
+    @apply relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 hover:from-teal-400 hover:via-emerald-400 hover:to-cyan-400 text-slate-950 font-black py-2.5 px-5 rounded-xl transition-all duration-200 shadow-lg shadow-teal-500/25 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-slate-800 font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 border border-slate-200 hover:border-slate-300 shadow-sm active:scale-[0.98];
+    @apply inline-flex items-center justify-center gap-2 bg-[#171E2D] hover:bg-[#1E273A] text-slate-200 hover:text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 border border-white/10 hover:border-white/20 shadow-sm active:scale-[0.98];
   }
-
   .btn-glow {
     @apply relative overflow-hidden transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/20 before:to-white/0 before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700;
   }
   .card-dark {
-    @apply bg-white border border-slate-200 hover:border-slate-300 rounded-2xl p-6 shadow-sm transition-all duration-200 text-slate-900;
+    @apply bg-[#131823]/90 backdrop-blur-xl border border-white/10 hover:border-teal-500/30 rounded-2xl p-6 shadow-xl transition-all duration-200 text-slate-100;
   }
   .card-glass {
-    @apply bg-white/90 border border-slate-200 hover:border-teal-500/40 rounded-2xl p-6 shadow-md backdrop-blur-md transition-all duration-200 text-slate-900;
+    @apply bg-[#171E2D]/80 border border-white/10 hover:border-teal-400/40 rounded-2xl p-6 shadow-2xl backdrop-blur-2xl transition-all duration-200 text-slate-100;
   }
   .input-field-dark {
-    @apply w-full bg-white border border-slate-300 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 rounded-xl px-4 py-3 text-slate-900 placeholder-slate-500 focus:outline-none transition-all duration-200 resize-none shadow-sm;
+    @apply w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 focus:ring-2 focus:ring-teal-500/20 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none transition-all duration-200 resize-none shadow-inner;
   }
   .input-error {
-    @apply border-red-500/80 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 bg-red-50 animate-shake;
+    @apply border-red-500/80 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 bg-red-950/20 animate-shake;
   }
   .pill-badge {
     @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide border;
@@ -124,21 +155,21 @@
   animation: shake 0.4s ease-in-out;
 }
 
-/* Custom Light Scrollbars */
+/* Luxury Dark Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: #0B0D13;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #1F293D;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #0D9488;
 }

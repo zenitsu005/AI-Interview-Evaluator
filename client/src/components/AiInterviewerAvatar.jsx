@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Volume2, RotateCcw, MessageSquare, Radio, Sparkles } from 'lucide-react';
 
 export default function AiInterviewerAvatar({
   isSpeaking = false,
@@ -11,7 +12,7 @@ export default function AiInterviewerAvatar({
 }) {
   const [mouthOpen, setMouthOpen] = useState(0);
   const [eyeBlink, setEyeBlink] = useState(false);
-  const [avatarEmotion, setAvatarEmotion] = useState('attentive'); // 'neutral' | 'probing' | 'attentive' | 'nodding'
+  const [avatarEmotion, setAvatarEmotion] = useState('attentive');
   const [audioWaveBarHeights, setAudioWaveBarHeights] = useState([4, 8, 14, 6, 12, 18, 8, 10]);
   const [showCaptions, setShowCaptions] = useState(true);
 
@@ -49,44 +50,42 @@ export default function AiInterviewerAvatar({
     return () => clearInterval(blinkInterval);
   }, []);
 
-  // Dynamic Avatar Profile Parameters
   const personaId = persona?.id || (companyTrack?.toLowerCase() === 'google' ? 'google' : companyTrack?.toLowerCase() === 'amazon' ? 'amazon' : 'general');
   const personaName = persona?.name || (personaId === 'google' ? 'Dr. Sanjay Rao' : personaId === 'amazon' ? 'Marcus Vance' : 'Senior Bar Raiser');
-  const personaAvatar = persona?.avatar || '👔';
 
-  // Theme styling based on persona
   const isFemalePersona = ['yc', 'microsoft', 'meta'].includes(personaId);
-  const ringColor = isSpeaking ? '#0D9488' : '#cbd5e1';
-  const suitColor = personaId === 'yc' ? '#334155' : personaId === 'wallstreet' ? '#1e293b' : personaId === 'google' ? '#1e293b' : '#334155';
-  const tieColor = personaId === 'amazon' ? '#d97706' : personaId === 'wallstreet' ? '#ef4444' : personaId === 'google' ? '#0ea5e9' : '#0d9488';
+  const ringColor = isSpeaking ? '#2DD4BF' : '#334155';
+  const suitColor = personaId === 'yc' ? '#1E293B' : personaId === 'wallstreet' ? '#0F172A' : personaId === 'google' ? '#1E293B' : '#0F172A';
+  const tieColor = personaId === 'amazon' ? '#F59E0B' : personaId === 'wallstreet' ? '#EF4444' : personaId === 'google' ? '#0EA5E9' : '#14B8A6';
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-between bg-slate-50 border border-slate-200 overflow-hidden select-none p-3 sm:p-4 rounded-2xl">
-      {/* Studio Ambient Glow */}
+    <div className="relative w-full h-full flex flex-col items-center justify-between bg-[#131823] border border-white/10 overflow-hidden select-none p-3 sm:p-4 rounded-2xl shadow-xl">
+      {/* Studio Ambient Backlight Glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className={`w-64 h-64 rounded-full blur-3xl transition-opacity duration-700 ${isSpeaking ? 'bg-teal-500/10 opacity-100' : 'bg-slate-200/40 opacity-50'}`} />
+        <div className={`w-64 h-64 rounded-full blur-3xl transition-opacity duration-700 ${
+          isSpeaking ? 'bg-teal-500/20 opacity-100' : 'bg-teal-500/5 opacity-50'
+        }`} />
       </div>
 
       {/* Top Header Controls within Avatar Tile */}
       <div className="w-full flex items-center justify-between z-20 gap-2">
         {/* Interviewer ID Badge */}
-        <div className="flex items-center gap-2 min-w-0">
-          <div className={`relative flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-lg shadow-sm border ${
-            isSpeaking ? 'border-teal-400 bg-teal-50 shadow-teal-500/10' : 'border-slate-200 bg-white'
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className={`relative flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-xs shadow-md border ${
+            isSpeaking ? 'border-teal-400 bg-teal-950/80 shadow-teal-500/20 text-teal-300' : 'border-white/10 bg-[#171E2D] text-slate-300'
           } transition-all`}>
-            {personaAvatar}
-            {/* Live speaking indicator */}
+            <Sparkles className="w-4 h-4" />
             {isSpeaking && (
-              <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-white animate-pulse" />
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-teal-400 border-2 border-[#131823] animate-pulse" />
             )}
           </div>
           <div className="min-w-0 text-left">
-            <p className="text-xs font-bold text-slate-900 leading-tight truncate">{personaName}</p>
+            <p className="text-xs font-bold text-white leading-tight truncate">{personaName}</p>
             <div className="flex items-center gap-1.5 mt-0.5">
-              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-teal-50 text-teal-800 border border-teal-200 uppercase tracking-wide whitespace-nowrap">
+              <span className="text-[9px] font-bold px-2 py-0.2 rounded-full bg-teal-950/80 text-teal-300 border border-teal-500/30 uppercase tracking-wide whitespace-nowrap font-mono">
                 {companyTrack}
               </span>
-              <span className="text-[9px] text-slate-500 truncate">Bar Raiser</span>
+              <span className="text-[9px] text-slate-400 truncate">Bar Raiser</span>
             </div>
           </div>
         </div>
@@ -97,10 +96,10 @@ export default function AiInterviewerAvatar({
             <button
               type="button"
               onClick={onReplaySpeech}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-all text-xs font-semibold shadow-xs cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[#171E2D] border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 transition-all text-xs font-semibold shadow-xs cursor-pointer"
               title="Re-listen to question"
             >
-              <span>🔊</span>
+              <RotateCcw className="w-3 h-3 text-teal-400" />
               <span className="hidden sm:inline">Replay</span>
             </button>
           )}
@@ -109,8 +108,8 @@ export default function AiInterviewerAvatar({
           <button
             type="button"
             onClick={() => setShowCaptions(!showCaptions)}
-            className={`px-2 py-1 rounded-xl border font-mono font-bold text-xs transition-all cursor-pointer ${
-              showCaptions ? 'bg-teal-50 border-teal-200 text-teal-800' : 'bg-white border-slate-200 text-slate-500'
+            className={`px-2.5 py-1 rounded-xl border font-mono font-bold text-xs transition-all cursor-pointer ${
+              showCaptions ? 'bg-teal-950/80 border-teal-500/40 text-teal-300' : 'bg-[#171E2D] border-white/10 text-slate-400'
             }`}
             title="Toggle Live Subtitles"
           >
@@ -121,7 +120,7 @@ export default function AiInterviewerAvatar({
 
       {/* Center: Reactive SVG Animated Avatar */}
       <div className="relative z-10 w-36 h-36 sm:w-44 sm:h-44 my-auto transition-transform duration-300 transform">
-        <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-md">
+        <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl">
           {/* Animated Frequency Halo Ring */}
           <circle
             cx="100"
@@ -139,13 +138,13 @@ export default function AiInterviewerAvatar({
           <path
             d="M 32 195 C 38 142, 162 142, 168 195 Z"
             fill={suitColor}
-            stroke="#475569"
+            stroke="#334155"
             strokeWidth="2"
           />
 
-          {/* Collars & Tie / Tech Hoodie */}
+          {/* Collars & Tie */}
           {personaId === 'yc' ? (
-            <path d="M 85 145 Q 100 170 115 145" stroke="#3f3f46" strokeWidth="4" fill="none" />
+            <path d="M 85 145 Q 100 170 115 145" stroke="#334155" strokeWidth="4" fill="none" />
           ) : (
             <>
               <polygon points="100,145 92,192 100,200 108,192" fill={tieColor} />
@@ -171,17 +170,8 @@ export default function AiInterviewerAvatar({
           )}
 
           {/* Eyebrows */}
-          {avatarEmotion === 'probing' ? (
-            <>
-              <path d="M 72 68 Q 82 62 90 68" stroke="#0f172a" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-              <path d="M 110 72 Q 118 72 128 68" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" fill="none" />
-            </>
-          ) : (
-            <>
-              <path d="M 72 70 Q 82 66 90 70" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" fill="none" />
-              <path d="M 110 70 Q 118 66 128 70" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" fill="none" />
-            </>
-          )}
+          <path d="M 72 70 Q 82 66 90 70" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" fill="none" />
+          <path d="M 110 70 Q 118 66 128 70" stroke="#0f172a" strokeWidth="3" strokeLinecap="round" fill="none" />
 
           {/* Eyes with Natural Blink */}
           {eyeBlink ? (
@@ -203,9 +193,9 @@ export default function AiInterviewerAvatar({
           {/* Glasses for Google persona */}
           {personaId === 'google' && (
             <>
-              <rect x="68" y="74" width="24" height="18" rx="5" fill="none" stroke="#0284c7" strokeWidth="2.5" />
-              <rect x="108" y="74" width="24" height="18" rx="5" fill="none" stroke="#0284c7" strokeWidth="2.5" />
-              <line x1="92" y1="82" x2="108" y2="82" stroke="#0284c7" strokeWidth="2.5" />
+              <rect x="68" y="74" width="24" height="18" rx="5" fill="none" stroke="#38bdf8" strokeWidth="2.5" />
+              <rect x="108" y="74" width="24" height="18" rx="5" fill="none" stroke="#38bdf8" strokeWidth="2.5" />
+              <line x1="92" y1="82" x2="108" y2="82" stroke="#38bdf8" strokeWidth="2.5" />
             </>
           )}
 
@@ -235,25 +225,25 @@ export default function AiInterviewerAvatar({
         </svg>
       </div>
 
-      {/* Bottom: Dynamic Live Subtitles & Broadcast Waveform */}
+      {/* Bottom: Subtitles & Audio Waveform Visualizer */}
       <div className="w-full z-20 space-y-2 text-left">
         {showCaptions && currentQuestionText && (
-          <div className="bg-white/95 backdrop-blur-md p-3 rounded-xl border border-slate-200 text-left shadow-sm">
-            <p className="text-[10px] text-teal-700 font-mono font-bold flex items-center gap-1 mb-0.5">
-              <span>💬</span>
+          <div className="bg-[#0B0D13]/90 backdrop-blur-md p-3 rounded-xl border border-white/10 text-left shadow-lg">
+            <p className="text-[10px] text-teal-400 font-mono font-bold flex items-center gap-1 mb-0.5">
+              <MessageSquare className="w-3 h-3" />
               <span>{personaName}:</span>
             </p>
-            <p className="text-xs text-slate-800 line-clamp-2 leading-relaxed font-medium">
+            <p className="text-xs text-slate-200 line-clamp-2 leading-relaxed font-medium">
               "{currentQuestionText}"
             </p>
           </div>
         )}
 
-        {/* Live Audio Visualizer Wave */}
-        <div className="flex items-center justify-between text-xs text-slate-500 font-mono pt-1">
+        {/* Live Audio Visualizer */}
+        <div className="flex items-center justify-between text-xs text-slate-400 font-mono pt-1">
           <div className="flex items-center gap-1.5">
-            <span className={`w-2 h-2 rounded-full ${isSpeaking ? 'bg-teal-600 animate-ping' : 'bg-emerald-600'}`} />
-            <span>{isSpeaking ? 'Interviewer Speaking...' : 'Interviewer Listening...'}</span>
+            <span className={`w-2 h-2 rounded-full ${isSpeaking ? 'bg-teal-400 animate-ping' : 'bg-emerald-400'}`} />
+            <span>{isSpeaking ? 'Neural Voice Speaking...' : 'AI Listening...'}</span>
           </div>
 
           {/* Waveform Equalizer */}
@@ -261,7 +251,7 @@ export default function AiInterviewerAvatar({
             {audioWaveBarHeights.map((h, i) => (
               <div
                 key={i}
-                className="w-1 bg-teal-600 rounded-full transition-all duration-100"
+                className="w-1 bg-gradient-to-t from-teal-500 to-cyan-400 rounded-full transition-all duration-100"
                 style={{ height: `${h}px` }}
               />
             ))}

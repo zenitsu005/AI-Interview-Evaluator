@@ -3,6 +3,26 @@ import { useAuth } from '../context/AuthContext';
 import { useInterview } from '../context/InterviewContext';
 import ShareReportCardModal from './ShareReportCardModal';
 import AnalyticsTrendSection from './AnalyticsTrendSection';
+import AppNavbar from './AppNavbar';
+import {
+  User,
+  Edit3,
+  LogOut,
+  Trophy,
+  Zap,
+  Brain,
+  Code2,
+  Users,
+  Sparkles,
+  Share2,
+  FileText,
+  ArrowRight,
+  CheckCircle2,
+  X,
+  ChevronRight,
+  TrendingUp,
+  Award,
+} from 'lucide-react';
 
 export default function ProfilePage() {
   const { user, logout, updateUserProfile } = useAuth();
@@ -60,49 +80,27 @@ export default function ProfilePage() {
     : 0;
 
   const getScoreColor = (score) => {
-    if (score >= 70) return 'text-emerald-700 border-emerald-300 bg-emerald-50';
-    if (score >= 40) return 'text-amber-700 border-amber-300 bg-amber-50';
-    return 'text-rose-700 border-rose-300 bg-rose-50';
+    if (score >= 70) return 'text-emerald-300 border-emerald-500/40 bg-emerald-950/60';
+    if (score >= 40) return 'text-amber-300 border-amber-500/40 bg-amber-950/60';
+    return 'text-rose-300 border-rose-500/40 bg-rose-950/60';
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
-      {/* ── Top Bar ── */}
-      <header className="bg-white/90 border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50 backdrop-blur-xl shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-sm shadow-sm text-white">
-            🎯
-          </div>
-          <span className="font-bold text-slate-900 text-sm tracking-tight">Candidate Profile & Analytics</span>
-        </div>
+    <div className="min-h-screen bg-[#0B0D13] text-slate-100 flex flex-col justify-between select-none font-sans">
+      {/* Universal Top Bar */}
+      <AppNavbar currentActive="profile" />
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setPhase('landing')}
-            className="text-xs text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
-          >
-            ← Home
-          </button>
-          <button
-            onClick={() => setPhase('setup')}
-            className="py-2 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md transition-all cursor-pointer"
-          >
-            🚀 Start New Interview
-          </button>
-        </div>
-      </header>
-
-      {/* ── Main Profile Body ── */}
+      {/* Main Profile Body */}
       <main className="max-w-5xl mx-auto w-full px-4 py-8 space-y-7 flex-1 text-left">
         {/* Profile Card Header */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
+        <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
           <div className="flex items-center gap-5">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-teal-600 p-0.5 shadow-md flex-shrink-0">
-              <div className="w-full h-full bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 p-0.5 shadow-xl shadow-teal-500/20 flex-shrink-0">
+              <div className="w-full h-full bg-[#0D111A] rounded-2xl flex items-center justify-center overflow-hidden">
                 {user?.picture ? (
                   <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-2xl font-black text-teal-700">
+                  <span className="text-2xl font-black text-teal-400 font-mono">
                     {user?.name ? user.name[0].toUpperCase() : 'U'}
                   </span>
                 )}
@@ -111,8 +109,8 @@ export default function ProfilePage() {
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">{user?.name || 'Candidate'}</h1>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-teal-50 border border-teal-200 text-teal-800 uppercase tracking-wider">
+                <h1 className="text-xl sm:text-2xl font-extrabold text-white">{user?.name || 'Candidate'}</h1>
+                <span className="text-[10px] font-bold px-3 py-0.5 rounded-full bg-teal-950/80 border border-teal-500/30 text-teal-300 uppercase tracking-wider font-mono">
                   Verified Candidate
                 </span>
                 <button
@@ -122,13 +120,14 @@ export default function ProfilePage() {
                     setEditEmail(user?.email || '');
                     setIsEditingProfile(true);
                   }}
-                  className="text-[11px] text-teal-700 hover:text-teal-900 font-mono px-2 py-0.5 rounded-lg border border-teal-200 bg-teal-50 hover:bg-teal-100 transition-all cursor-pointer flex items-center gap-1"
+                  className="text-[11px] text-teal-400 hover:text-teal-300 font-mono px-2.5 py-0.5 rounded-lg border border-teal-500/30 bg-teal-950/40 hover:bg-teal-950/80 transition-all cursor-pointer flex items-center gap-1"
                 >
-                  <span>✏️ Edit</span>
+                  <Edit3 className="w-3 h-3" />
+                  <span>Edit</span>
                 </button>
               </div>
-              <p className="text-xs text-slate-500 font-mono mt-0.5">{user?.email || 'guest@candidate.com'}</p>
-              <p className="text-[11px] text-slate-400 mt-1.5">
+              <p className="text-xs text-slate-400 font-mono mt-1">{user?.email || 'guest@candidate.com'}</p>
+              <p className="text-[11px] text-slate-500 mt-1">
                 Member since {user?.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '2026'}
               </p>
             </div>
@@ -142,9 +141,10 @@ export default function ProfilePage() {
                 setEditEmail(user?.email || '');
                 setIsEditingProfile(true);
               }}
-              className="text-xs text-teal-700 hover:text-teal-900 border border-teal-300 bg-teal-50 hover:bg-teal-100 px-3.5 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-sm font-semibold"
+              className="text-xs text-teal-300 hover:text-white border border-white/10 bg-[#171E2D] hover:bg-[#1E273A] px-4 py-2.5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shadow-sm font-semibold"
             >
-              <span>✏️ Change Email / Name</span>
+              <Edit3 className="w-3.5 h-3.5 text-teal-400" />
+              <span>Edit Profile</span>
             </button>
             <button
               type="button"
@@ -152,46 +152,50 @@ export default function ProfilePage() {
                 logout();
                 setPhase('landing');
               }}
-              className="text-xs text-slate-600 hover:text-red-600 border border-slate-200 bg-white hover:bg-red-50 px-4 py-2 rounded-xl transition-all cursor-pointer shadow-sm"
+              className="text-xs text-slate-300 hover:text-rose-400 border border-white/10 bg-[#171E2D] hover:bg-rose-950/30 px-4 py-2.5 rounded-xl transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
             >
-              Log Out
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Log Out</span>
             </button>
           </div>
         </div>
 
-        {/* ── Key Metrics & XP Credits ── */}
+        {/* Key Metrics & XP Credits */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Average Overall Score</p>
-            <p className="text-4xl font-black text-slate-900">{avgOverallScore}<span className="text-xs text-slate-400 font-normal">/100</span></p>
+          <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 text-center shadow-2xl">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">Average Overall Score</p>
+            <p className="text-4xl font-black text-white font-mono">{avgOverallScore}<span className="text-xs text-slate-500 font-normal">/100</span></p>
             <p className="text-[11px] text-slate-500 mt-1">Across all completed sessions</p>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Total Mock Interviews</p>
-            <p className="text-4xl font-black text-teal-700">{totalInterviews}</p>
+          <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 text-center shadow-2xl">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">Total Mock Interviews</p>
+            <p className="text-4xl font-black text-teal-400 font-mono">{totalInterviews}</p>
             <p className="text-[11px] text-slate-500 mt-1">Practice sessions finished</p>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Interview Readiness XP</p>
-            <p className="text-4xl font-black text-amber-600">⚡ {totalCredits.toLocaleString()}</p>
+          <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 text-center shadow-2xl">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">Interview Readiness XP</p>
+            <p className="text-4xl font-black text-amber-400 font-mono flex items-center justify-center gap-1.5">
+              <Zap className="w-7 h-7 text-amber-400 fill-amber-400" />
+              <span>{totalCredits.toLocaleString()}</span>
+            </p>
             <p className="text-[11px] text-slate-500 mt-1">Credits earned from practice</p>
           </div>
         </div>
 
-        {/* ── 4 Core Category Averages ── */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-            <span>📈</span> Average Performance Across 4 Core Dimensions
+        {/* 4 Core Category Averages */}
+        <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 shadow-2xl">
+          <h2 className="text-xs font-bold text-teal-400 uppercase tracking-wider mb-4 flex items-center gap-2 font-mono">
+            <TrendingUp className="w-4 h-4" /> Average Performance Across 4 Core Dimensions
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
             {[
-              { icon: '🧠', label: 'Aptitude & Logic', score: avgAptitude, color: 'text-blue-700' },
-              { icon: '💻', label: 'Technical Depth', score: avgTechnical, color: 'text-purple-700' },
-              { icon: '🤝', label: 'HR & Behavior', score: avgHR, color: 'text-emerald-700' },
+              { icon: Brain, label: 'Aptitude & Logic', score: avgAptitude, color: 'text-cyan-400' },
+              { icon: Code2, label: 'Technical Depth', score: avgTechnical, color: 'text-purple-400' },
+              { icon: Users, label: 'HR & Behavior', score: avgHR, color: 'text-emerald-400' },
               {
-                icon: '👤',
+                icon: User,
                 label: 'Presence & Comm.',
                 score:
                   totalInterviews > 0
@@ -211,30 +215,34 @@ export default function ProfilePage() {
                         ) / totalInterviews
                       )
                     : 0,
-                color: 'text-teal-700',
+                color: 'text-teal-400',
               },
-            ].map((d) => (
-              <div key={d.label} className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
-                <span className="text-2xl block mb-1">{d.icon}</span>
-                <p className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider">{d.label}</p>
-                <p className={`text-xl font-black mt-1 ${d.color}`}>{d.score}<span className="text-[10px] text-slate-400 font-normal">/100</span></p>
-              </div>
-            ))}
+            ].map((d) => {
+              const Icon = d.icon;
+              return (
+                <div key={d.label} className="bg-[#0D111A] p-4 rounded-2xl border border-white/5 text-center">
+                  <Icon className={`w-5 h-5 mx-auto mb-1 ${d.color}`} />
+                  <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider font-mono">{d.label}</p>
+                  <p className={`text-xl font-black mt-1 font-mono ${d.color}`}>{d.score}<span className="text-[10px] text-slate-500 font-normal">/100</span></p>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* ── Historical Performance Trendlines & Topic Mastery ── */}
+        {/* Historical Performance Trendlines & Topic Mastery */}
         <AnalyticsTrendSection
           history={history}
           currentReport={history.length > 0 ? history[history.length - 1].report : null}
           targetRole={history.length > 0 ? history[history.length - 1].targetRole : 'Software Engineer'}
         />
 
-        {/* ── Complete Interview History Table ── */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 flex-wrap gap-2">
-            <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <span>📜</span> All Completed Mock Interviews
+        {/* Complete Interview History Table */}
+        <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 shadow-2xl">
+          <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10 flex-wrap gap-2">
+            <h2 className="text-sm font-bold text-white flex items-center gap-2">
+              <FileText className="w-4 h-4 text-teal-400" />
+              <span>All Completed Mock Interviews</span>
             </h2>
             <div className="flex items-center gap-2">
               {totalInterviews > 0 && (
@@ -244,13 +252,13 @@ export default function ProfilePage() {
                     setSelectedShareReport(history[history.length - 1]);
                     setShowShareModal(true);
                   }}
-                  className="py-1.5 px-3 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+                  className="py-2 px-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 text-xs font-bold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>🛡️</span>
+                  <Share2 className="w-3.5 h-3.5 text-slate-950" />
                   <span>Share Latest Scorecard</span>
                 </button>
               )}
-              <span className="text-xs text-slate-600 font-mono bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+              <span className="text-xs text-slate-400 font-mono bg-[#0D111A] px-3 py-1.5 rounded-xl border border-white/5">
                 {totalInterviews} Recorded
               </span>
             </div>
@@ -258,12 +266,12 @@ export default function ProfilePage() {
 
           {totalInterviews === 0 ? (
             <div className="text-center py-10">
-              <span className="text-4xl block mb-2 opacity-50">🎯</span>
-              <p className="text-slate-800 font-semibold text-sm">No interviews completed yet</p>
-              <p className="text-slate-500 text-xs mt-1 mb-4">Start your first AI mock interview session to unlock your progress record.</p>
+              <Trophy className="w-12 h-12 text-teal-400/40 mx-auto mb-2" />
+              <p className="text-white font-semibold text-sm">No interviews completed yet</p>
+              <p className="text-slate-400 text-xs mt-1 mb-4">Start your first AI mock interview session to unlock your progress record.</p>
               <button
                 onClick={() => setPhase('setup')}
-                className="py-2.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-md cursor-pointer"
+                className="py-3 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-bold text-xs shadow-lg shadow-teal-500/20 cursor-pointer"
               >
                 Start First Mock Interview →
               </button>
@@ -273,12 +281,12 @@ export default function ProfilePage() {
               {history.map((record, i) => (
                 <div
                   key={record.id || i}
-                  className="bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-teal-500/50 p-4 rounded-xl transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group shadow-sm"
+                  className="bg-[#0D111A] hover:bg-[#171E2D] border border-white/5 hover:border-teal-500/40 p-4 rounded-2xl transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group shadow-md"
                 >
                   <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-slate-900 text-sm">{record.targetRole}</span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-slate-700 border border-slate-300">
+                      <span className="font-bold text-white text-sm">{record.targetRole}</span>
+                      <span className="text-[10px] font-bold font-mono px-2.5 py-0.5 rounded-full bg-[#131823] text-teal-300 border border-teal-500/30">
                         {record.difficultyLevel || 'Intermediate'} Level
                       </span>
                       <span className="text-[11px] text-slate-500 font-mono">
@@ -292,14 +300,14 @@ export default function ProfilePage() {
                       </span>
                     </div>
 
-                    <p className="text-xs text-slate-600">
+                    <p className="text-xs text-slate-400">
                       Evaluator Verdict:{' '}
-                      <strong className="text-slate-900">{record.readinessLevel}</strong>
+                      <strong className="text-teal-300 font-mono">{record.readinessLevel}</strong>
                     </p>
                   </div>
 
                   <div className="flex items-center gap-2.5 self-end sm:self-center flex-wrap">
-                    <div className={`px-3.5 py-1.5 rounded-xl border text-center font-black text-sm ${getScoreColor(record.overallScore)}`}>
+                    <div className={`px-3.5 py-1.5 rounded-xl border text-center font-black font-mono text-sm ${getScoreColor(record.overallScore)}`}>
                       {record.overallScore}<span className="text-[10px] font-normal opacity-70">/100</span>
                     </div>
                     <button
@@ -307,17 +315,18 @@ export default function ProfilePage() {
                         setSelectedShareReport(record);
                         setShowShareModal(true);
                       }}
-                      className="py-2 px-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-teal-700 hover:text-teal-900 text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer shadow-sm"
+                      className="py-2 px-3 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-teal-300 hover:text-white text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
                       title="Share / Download Social Scorecard"
                     >
-                      <span>🛡️</span>
+                      <Share2 className="w-3.5 h-3.5 text-teal-400" />
                       <span>Share Card</span>
                     </button>
                     <button
                       onClick={() => viewPastReport(record)}
-                      className="py-2 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-sm cursor-pointer"
+                      className="py-2 px-3.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 hover:from-teal-400 hover:to-emerald-300 text-xs font-bold shadow-md cursor-pointer flex items-center gap-1"
                     >
-                      View Report →
+                      <span>View Report</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
@@ -327,7 +336,7 @@ export default function ProfilePage() {
         </div>
       </main>
 
-      {/* ── Share Report Card Modal ── */}
+      {/* Share Report Card Modal */}
       <ShareReportCardModal
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}
@@ -338,26 +347,26 @@ export default function ProfilePage() {
         user={user}
       />
 
-      {/* ── Edit Profile Modal ── */}
+      {/* Edit Profile Modal */}
       {isEditingProfile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in select-none">
-          <div className="bg-white border border-slate-200 max-w-md w-full p-6 sm:p-8 shadow-2xl rounded-3xl relative text-left">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in select-none">
+          <div className="bg-[#131823] border border-white/10 max-w-md w-full p-6 sm:p-8 shadow-2xl rounded-3xl relative text-left">
             <button
               type="button"
               onClick={() => setIsEditingProfile(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg w-8 h-8 rounded-full flex items-center justify-center bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white text-lg w-8 h-8 rounded-full flex items-center justify-center bg-[#171E2D] hover:bg-[#1E273A] transition-colors cursor-pointer"
             >
-              ✕
+              <X className="w-4 h-4" />
             </button>
 
             <div className="mb-6">
-              <h2 className="text-xl font-extrabold text-slate-900">Edit Profile Details</h2>
-              <p className="text-xs text-slate-500 mt-1">Update your display name and registered email address.</p>
+              <h2 className="text-xl font-extrabold text-white">Edit Profile Details</h2>
+              <p className="text-xs text-slate-400 mt-1">Update your display name and registered email address.</p>
             </div>
 
             <form onSubmit={handleSaveProfile} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 font-mono">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">
                   Full Name
                 </label>
                 <input
@@ -366,12 +375,12 @@ export default function ProfilePage() {
                   onChange={(e) => setEditName(e.target.value)}
                   placeholder="e.g. Akshay Garg"
                   required
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none"
+                  className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none shadow-inner"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1 font-mono">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">
                   Your Personal Email Address
                 </label>
                 <input
@@ -380,13 +389,13 @@ export default function ProfilePage() {
                   onChange={(e) => setEditEmail(e.target.value)}
                   placeholder="your.real.email@gmail.com"
                   required
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none"
+                  className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none shadow-inner"
                 />
               </div>
 
               {saveSuccess && (
-                <div className="p-3 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold flex items-center gap-2">
-                  <span>✅</span>
+                <div className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                   <span>Profile updated successfully!</span>
                 </div>
               )}
@@ -395,13 +404,13 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsEditingProfile(false)}
-                  className="flex-1 py-3 px-4 rounded-xl border border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-semibold cursor-pointer"
+                  className="flex-1 py-3 px-4 rounded-xl border border-white/10 bg-[#171E2D] text-slate-300 hover:text-white text-xs font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md active:scale-95 cursor-pointer"
+                  className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 text-xs font-extrabold shadow-lg shadow-teal-500/20 active:scale-95 cursor-pointer"
                 >
                   Save Changes
                 </button>
@@ -411,7 +420,7 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <footer className="py-4 border-t border-slate-200 bg-white" />
+      <footer className="py-4 border-t border-white/10 bg-[#0E121B]" />
     </div>
   );
 }

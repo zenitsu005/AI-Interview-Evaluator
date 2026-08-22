@@ -36,12 +36,13 @@ const AppContent = () => {
     phase === 'text';
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 relative overflow-x-hidden">
-      {/* Ambient background glows */}
+    <div className="min-h-screen bg-[#0B0D13] text-slate-100 relative overflow-x-hidden selection:bg-teal-500 selection:text-black">
+      {/* Background Architectural Grid Pattern & Ambient Radial Glows */}
+      <div className="fixed inset-0 pointer-events-none bg-grid-pattern opacity-40 z-0" />
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-teal-500/10 rounded-full blur-[140px]" />
+        <div className="absolute top-1/3 -right-40 w-[500px] h-[500px] bg-cyan-500/8 rounded-full blur-[140px]" />
+        <div className="absolute -bottom-40 left-1/3 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-[140px]" />
       </div>
 
       <div className="relative z-10">

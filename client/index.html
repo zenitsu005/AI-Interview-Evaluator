@@ -1,30 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AI Interview Evaluator — High-Stakes Tech Interview Simulator</title>
-    <meta name="description" content="Master tech interviews with realistic Bar Raiser simulators, instant code evaluation, system design whiteboards, and behavioral analytics." />
+    <title>AI Interview Evaluator — Next-Gen Technical & Behavioral Interview Suite</title>
+    <meta name="description" content="AI-powered high-stakes interview simulator with natural voice debriefs, Bar Raiser rubrics, DSA sandbox, and ATS calibration." />
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <!-- Tailwind CDN Fallback for 100% Reliable Render -->
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- Tailwind CDN for Guaranteed CSS Utility Support -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
               sans: ['"Plus Jakarta Sans"', 'sans-serif'],
               editorial: ['"Instrument Serif"', 'serif']
+            },
+            colors: {
+              brand: {
+                50: '#f0fdfa',
+                100: '#ccfbf1',
+                200: '#99f6e4',
+                300: '#5eead4',
+                400: '#2dd4bf',
+                500: '#14b8a6',
+                600: '#0d9488',
+                700: '#0f766e',
+                800: '#115e59',
+                900: '#134e4a',
+                950: '#042f2e',
+              }
             }
           }
         }
       }
     </script>
   </head>
-  <body class="bg-[#F8FAFC] text-slate-900 font-sans antialiased selection:bg-teal-600 selection:text-white">
+  <body class="bg-[#0B0D13] text-slate-100 font-sans antialiased selection:bg-teal-500 selection:text-black">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

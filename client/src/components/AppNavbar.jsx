@@ -3,6 +3,23 @@ import { useInterview } from '../context/InterviewContext';
 import { useAuth } from '../context/AuthContext';
 import DropdownMenu from './ui/DropdownMenu';
 import Button from './ui/Button';
+import {
+  Sparkles,
+  Code2,
+  Bug,
+  DollarSign,
+  FileText,
+  Zap,
+  HeartPulse,
+  BarChart3,
+  User,
+  LogOut,
+  LogIn,
+  Menu,
+  X,
+  ChevronRight,
+  ShieldCheck,
+} from 'lucide-react';
 
 export default function AppNavbar({ currentActive = 'landing' }) {
   const { setPhase } = useInterview();
@@ -10,15 +27,15 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const featureItems = [
-    { id: 'dsa', label: 'DSA Live Studio', badge: 'Code' },
-    { id: 'bug-hunter', label: 'Bug Hunting Labs', badge: 'Debug' },
-    { id: 'negotiate', label: 'Salary Negotiation', badge: 'HR' },
+    { id: 'dsa', label: 'DSA Live Studio', badge: 'Code', icon: Code2 },
+    { id: 'bug-hunter', label: 'Bug Hunting Labs', badge: 'Debug', icon: Bug },
+    { id: 'negotiate', label: 'Salary Negotiation', badge: 'HR', icon: DollarSign },
   ];
 
   const prepToolItems = [
-    { id: 'resume-builder', label: 'ATS Resume Scorer', badge: 'ATS' },
-    { id: 'blitz', label: '60-Second Rapid Blitz', badge: 'Speed' },
-    { id: 'anxiety-prep', label: 'Interview Confidence Lab', badge: 'Pacing' },
+    { id: 'resume-builder', label: 'ATS Resume Scorer', badge: 'ATS', icon: FileText },
+    { id: 'blitz', label: '60-Second Rapid Blitz', badge: 'Speed', icon: Zap },
+    { id: 'anxiety-prep', label: 'Confidence & Pacing Lab', badge: 'Pacing', icon: HeartPulse },
   ];
 
   const handleSelectModule = (id) => {
@@ -26,7 +43,6 @@ export default function AppNavbar({ currentActive = 'landing' }) {
     setMobileMenuOpen(false);
   };
 
-  // Close mobile drawer on Escape key press
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && mobileMenuOpen) {
@@ -38,36 +54,40 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   }, [mobileMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl transition-all text-slate-900">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0B0D13]/85 backdrop-blur-2xl transition-all text-slate-100">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        
         {/* Brand Logo */}
         <button
           type="button"
           onClick={() => handleSelectModule('landing')}
-          className="flex items-center gap-2.5 cursor-pointer select-none group text-left border-none bg-transparent"
+          className="flex items-center gap-3 cursor-pointer select-none group text-left border-none bg-transparent"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-600 font-extrabold text-white text-xs shadow-md group-hover:bg-teal-500 transition-colors">
-            AI
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 font-extrabold text-slate-950 text-xs shadow-lg shadow-teal-500/20 group-hover:scale-105 transition-transform">
+            <Sparkles className="w-5 h-5" />
           </div>
-          <span className="font-semibold tracking-tight text-slate-900 text-sm sm:text-base">
-            Interview Evaluator
-          </span>
+          <div className="flex flex-col">
+            <span className="font-bold tracking-tight text-white text-sm sm:text-base leading-none">
+              AI Interview Evaluator
+            </span>
+            <span className="text-[10px] text-teal-400/90 font-mono font-medium tracking-wide mt-0.5">
+              Production Suite
+            </span>
+          </div>
         </button>
 
-        {/* Desktop SaaS Navigation */}
-        <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-600" aria-label="Main Navigation">
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-300" aria-label="Main Navigation">
           <button
             onClick={() => handleSelectModule('setup')}
-            className={`transition hover:text-slate-900 font-medium cursor-pointer ${
-              currentActive === 'setup' ? 'text-teal-600 font-bold' : 'text-slate-600'
+            className={`transition hover:text-white font-medium cursor-pointer ${
+              currentActive === 'setup' ? 'text-teal-400 font-bold' : 'text-slate-300'
             }`}
           >
             Mock Interview
           </button>
 
           <DropdownMenu
-            label="Practice Modules"
+            label="Practice Studios"
             items={featureItems}
             onItemSelect={handleSelectModule}
           />
@@ -80,11 +100,12 @@ export default function AppNavbar({ currentActive = 'landing' }) {
 
           <button
             onClick={() => handleSelectModule('analytics')}
-            className={`transition hover:text-slate-900 font-medium cursor-pointer ${
-              currentActive === 'analytics' ? 'text-teal-600 font-bold' : 'text-slate-600'
+            className={`transition hover:text-white font-medium cursor-pointer flex items-center gap-1.5 ${
+              currentActive === 'analytics' ? 'text-teal-400 font-bold' : 'text-slate-300'
             }`}
           >
-            Progress
+            <BarChart3 className="w-4 h-4 text-teal-400" />
+            <span>Progress</span>
           </button>
         </nav>
 
@@ -94,126 +115,127 @@ export default function AppNavbar({ currentActive = 'landing' }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleSelectModule('profile')}
-                className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 rounded-lg transition-all text-xs font-semibold text-slate-800 cursor-pointer"
+                className="flex items-center gap-2 bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 px-3.5 py-1.5 rounded-xl transition-all text-xs font-semibold text-slate-200 cursor-pointer"
               >
-                <div className="w-5 h-5 rounded-full bg-teal-600 flex items-center justify-center text-[10px] font-bold text-white">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-400 flex items-center justify-center text-[10px] font-bold text-slate-950">
                   {user?.name ? user.name[0].toUpperCase() : 'U'}
                 </div>
                 <span>{user?.name?.split(' ')[0]}</span>
               </button>
               <button
                 onClick={logout}
-                className="text-xs text-slate-500 hover:text-red-600 border border-slate-200 bg-white hover:bg-red-50 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                className="text-xs text-slate-400 hover:text-rose-400 border border-white/10 bg-[#131823] hover:bg-rose-950/30 px-3 py-1.5 rounded-xl transition-colors cursor-pointer flex items-center gap-1"
+                title="Log out"
               >
-                Logout
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Logout</span>
               </button>
             </div>
           ) : (
             <div className="flex items-center gap-3">
               <button
                 onClick={() => openAuth('login')}
-                className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 transition-colors cursor-pointer"
+                className="text-sm font-medium text-slate-300 hover:text-white px-3 py-1.5 transition-colors cursor-pointer flex items-center gap-1.5"
               >
-                Log In
+                <LogIn className="w-4 h-4 text-teal-400" />
+                <span>Log In</span>
               </button>
               <Button
                 variant="primary"
                 size="sm"
                 onClick={() => handleSelectModule('setup')}
+                className="shadow-lg shadow-teal-500/20"
               >
-                Start a mock interview
+                Start Simulator →
               </Button>
             </div>
           )}
         </div>
 
-        {/* Mobile Hamburger Toggle Button */}
+        {/* Mobile Hamburger Toggle */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 bg-slate-100 border border-slate-200 focus:outline-none cursor-pointer"
+          className="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white bg-[#171E2D] border border-white/10 focus:outline-none cursor-pointer"
           aria-expanded={mobileMenuOpen}
-          aria-controls="mobile-nav-drawer"
-          aria-label={mobileMenuOpen ? 'Close main navigation menu' : 'Open main navigation menu'}
+          aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
         >
-          <span className="text-base font-bold">{mobileMenuOpen ? '✕' : '☰'}</span>
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
-      {/* Mobile Drawer Navigation Menu */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div
-          id="mobile-nav-drawer"
-          className="lg:hidden border-b border-slate-200 bg-white p-4 space-y-4 animate-fade-in text-left shadow-lg"
-        >
-          <button
-            onClick={() => handleSelectModule('landing')}
-            className="block w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200"
-          >
-            🏠 Home Page
-          </button>
-
-          <button
-            onClick={() => handleSelectModule('setup')}
-            className="block w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-900 bg-slate-100 border border-slate-200"
-          >
-            🎯 Start a Mock Interview
-          </button>
-
-          <div className="space-y-2">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700 font-mono">Practice Modules</p>
-            {featureItems.map((f) => (
-              <button
-                key={f.id}
-                onClick={() => handleSelectModule(f.id)}
-                className="block w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="space-y-2 pt-2 border-t border-slate-100">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700 font-mono">Prep Tools</p>
-            {prepToolItems.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => handleSelectModule(p.id)}
-                className="block w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
+        <div className="lg:hidden border-b border-white/10 bg-[#0E121B] px-4 py-5 space-y-4 animate-fade-in text-left">
+          <div className="space-y-1">
             <button
-              onClick={() => handleSelectModule('analytics')}
-              className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900"
+              onClick={() => handleSelectModule('setup')}
+              className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-sm font-semibold text-white flex items-center justify-between"
             >
-              Progress & Analytics
+              <span>Mock Interview Simulator</span>
+              <ChevronRight className="w-4 h-4 text-slate-500" />
             </button>
+            <button
+              onClick={() => handleSelectModule('dsa')}
+              className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-sm font-semibold text-white flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <Code2 className="w-4 h-4 text-teal-400" /> DSA Live Studio
+              </span>
+              <ChevronRight className="w-4 h-4 text-slate-500" />
+            </button>
+            <button
+              onClick={() => handleSelectModule('bug-hunter')}
+              className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-sm font-semibold text-white flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <Bug className="w-4 h-4 text-cyan-400" /> Bug Hunting Labs
+              </span>
+              <ChevronRight className="w-4 h-4 text-slate-500" />
+            </button>
+            <button
+              onClick={() => handleSelectModule('negotiate')}
+              className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-sm font-semibold text-white flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-amber-400" /> Salary Negotiation
+              </span>
+              <ChevronRight className="w-4 h-4 text-slate-500" />
+            </button>
+            <button
+              onClick={() => handleSelectModule('resume-builder')}
+              className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-sm font-semibold text-white flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-emerald-400" /> ATS Resume Scorer
+              </span>
+              <ChevronRight className="w-4 h-4 text-slate-500" />
+            </button>
+          </div>
 
+          <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
             {!isAuthenticated ? (
-              <div className="flex gap-2 pt-2">
+              <>
                 <button
                   onClick={() => { openAuth('login'); setMobileMenuOpen(false); }}
-                  className="flex-1 py-2 rounded-lg text-xs font-semibold bg-slate-100 border border-slate-200 text-slate-800 text-center"
+                  className="flex-1 py-2.5 text-xs font-bold text-slate-300 bg-white/5 rounded-xl border border-white/10"
                 >
                   Log In
                 </button>
-                <button
-                  onClick={() => { handleSelectModule('setup'); }}
-                  className="flex-1 py-2 rounded-lg text-xs font-semibold bg-teal-600 text-white text-center"
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => handleSelectModule('setup')}
+                  className="flex-1"
                 >
-                  Start Mock
-                </button>
-              </div>
+                  Start Simulator
+                </Button>
+              </>
             ) : (
               <button
                 onClick={logout}
-                className="w-full py-2 rounded-lg text-xs font-semibold bg-red-50 text-red-600 border border-red-200 text-center"
+                className="w-full py-2.5 text-xs font-bold text-rose-400 bg-rose-950/30 rounded-xl border border-rose-500/20"
               >
-                Logout
+                Log Out
               </button>
             )}
           </div>

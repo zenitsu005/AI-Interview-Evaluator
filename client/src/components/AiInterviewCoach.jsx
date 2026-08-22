@@ -1,41 +1,56 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { sendCoachMessage } from '../services/api';
+import voiceAssistant from '../services/voiceAssistant';
+import {
+  MessageSquare,
+  Sparkles,
+  Send,
+  Volume2,
+  VolumeX,
+  User,
+  Bot,
+  Zap,
+  Star,
+  Flame,
+  Award,
+  ChevronRight,
+} from 'lucide-react';
 
 const COACH_PERSONAS = [
   {
     id: 'maya',
     name: 'Coach Maya',
     title: 'Principal FAANG Interview Mentor',
-    badge: '🌟 Empathetic & Energizing',
+    badge: 'Empathetic & Energizing',
     avatar: '👩‍🏫',
-    style: 'border-amber-200 bg-amber-50 text-amber-900',
+    style: 'border-amber-500/30 bg-amber-950/60 text-amber-300',
     welcome: "Hey there! I looked at your interview breakdown. Remember: every single top engineer has had rough interview simulations. What matters isn't where you start—it's how fast you calibrate. I'm here 24/7 to turn your gaps into your biggest strengths. How are you feeling about the session?",
   },
   {
     id: 'alex',
     name: 'Coach Alex',
     title: 'Staff Systems Architect & Tech Lead',
-    badge: '🎯 Tactical STAR Reframing',
+    badge: 'Tactical STAR Reframing',
     avatar: '👨‍💻',
-    style: 'border-teal-200 bg-teal-50 text-teal-900',
+    style: 'border-teal-500/30 bg-teal-950/60 text-teal-300',
     welcome: "Great job completing the simulation! Let's get tactical. I specialize in turning average answers into quantitative, metric-backed STAR stories and bulletproof system designs. Ask me how to reframe any question you struggled with!",
   },
   {
     id: 'vikram',
     name: 'Coach Vikram',
     title: 'VP of Engineering & Hiring Director',
-    badge: '💼 Indian Market & FAANG Insider',
+    badge: 'Hiring Committee Insider',
     avatar: '👔',
-    style: 'border-emerald-200 bg-emerald-50 text-emerald-900',
-    welcome: "Namaste! Having hired hundreds of engineers across Bangalore, Hyderabad, and Silicon Valley, I can tell you that hiring managers look for tenacity, clarity, and growth mindset. Let's sharpen your pitch so you walk away with the offer!",
+    style: 'border-emerald-500/30 bg-emerald-950/60 text-emerald-300',
+    welcome: "Namaste! Having hired hundreds of engineers, I can tell you that hiring managers look for tenacity, clarity, and growth mindset. Let's sharpen your pitch so you walk away with the offer!",
   },
 ];
 
 const QUICK_PROMPTS = [
-  '🔥 How do I bounce back from a low score?',
-  '⭐ Turn my weakest answer into a Top 1% response',
-  '🎙️ Give me a 30-second pep talk for my upcoming interview',
-  '💼 What would a Google/Amazon interviewer think of this performance?',
+  'Turn my weakest answer into a Top 1% response',
+  'Give me a 30-second pep talk for my upcoming interview',
+  'How do I bounce back from a low score?',
+  'What would a Google/Amazon interviewer think of this performance?',
 ];
 
 export default function AiInterviewCoach({ report, targetRole = 'Software Engineer', difficultyLevel = 'Intermediate' }) {
@@ -61,109 +76,83 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
   }, [messages, isLoading]);
 
   const speakText = (text) => {
-    if (!isVoiceEnabled || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.resume();
-
-    const clean = (text || '').replace(/[*#`_]/g, '').trim();
-    const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.rate = 1.0;
-    utterance.pitch = selectedPersona.id === 'maya' ? 1.05 : 0.95;
-
-    const voices = window.speechSynthesis.getVoices() || [];
-    const preferred =
-      selectedPersona.id === 'maya'
-        ? voices.find((v) => /samantha|zira|female|victoria|google/i.test(v.name)) || voices[0]
-        : voices.find((v) => /david|george|male|daniel|mark/i.test(v.name)) || voices[0];
-    if (preferred) utterance.voice = preferred;
-
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
-    window.speechSynthesis.speak(utterance);
+    if (!isVoiceEnabled) return;
+    voiceAssistant.speak(text, {
+      persona: selectedPersona.id,
+      gender: selectedPersona.id === 'maya' ? 'female' : 'male',
+      onStart: () => setIsSpeaking(true),
+      onEnd: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
+    });
   };
 
-  const handleSwitchPersona = (p) => {
-    setSelectedPersona(p);
-    setMessages([
-      {
-        sender: 'coach',
-        text: p.welcome,
-        quote: 'Continuous iteration is the differentiator of top 1% engineering talent.',
-        drill: 'Review 7-Day Roadmap Day 1 Focus',
-        time: 'Just now',
-      },
-    ]);
-    if (isVoiceEnabled) speakText(p.welcome);
-  };
+  const handleSendMessage = async (textToSend = null) => {
+    const query = (textToSend || inputText).trim();
+    if (!query || isLoading) return;
 
-  const handleSendMessage = async (customPrompt = null) => {
-    const textToSend = customPrompt || inputText;
-    if (!textToSend.trim() || isLoading) return;
-
-    const newMsgList = [...messages, { sender: 'user', text: textToSend, time: 'Just now' }];
-    setMessages(newMsgList);
-    setInputText('');
+    const userMessage = { sender: 'user', text: query, time: 'Just now' };
+    setMessages((prev) => [...prev, userMessage]);
+    if (!textToSend) setInputText('');
     setIsLoading(true);
 
     try {
       const res = await sendCoachMessage({
+        message: query,
         coachId: selectedPersona.id,
         targetRole,
         difficultyLevel,
         reportSummary: {
           overallScore: report?.overallScore,
-          readinessLevel: report?.readinessLevel,
+          readiness: report?.readinessLevel,
           weaknesses: report?.weaknesses,
           strengths: report?.strengths,
         },
-        conversation: newMsgList.map((m) => ({
-          role: m.sender === 'coach' ? 'assistant' : 'user',
-          content: m.text,
-        })),
-        userMessage: textToSend,
       });
 
-      const coachResponse = res?.reply || "You've got this! Keep practicing and each simulation will boost your confidence.";
+      const replyText = res?.reply || "Keep pushing forward! Let's conquer the next problem together.";
+      const coachMessage = {
+        sender: 'coach',
+        text: replyText,
+        quote: res?.motivationalQuote,
+        drill: res?.suggestedDrill,
+        time: 'Just now',
+      };
+
+      setMessages((prev) => [...prev, coachMessage]);
+      speakText(replyText);
+    } catch (e) {
+      console.warn('Coach communication error:', e);
       setMessages((prev) => [
         ...prev,
         {
           sender: 'coach',
-          text: coachResponse,
-          quote: res?.motivationalQuote || null,
-          drill: res?.suggestedDrill || null,
+          text: "I'm right here with you! Every mock drill builds real interview resilience.",
           time: 'Just now',
         },
       ]);
-      if (isVoiceEnabled) speakText(coachResponse);
-    } catch (err) {
-      console.warn('Coach response fallback:', err);
-      const fallbackReply = `That is a crucial insight for your ${targetRole} prep. Focus on structuring each technical explanation with clear trade-offs, and state your quantitative impact upfront.`;
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: 'coach',
-          text: fallbackReply,
-          time: 'Just now',
-        },
-      ]);
-      if (isVoiceEnabled) speakText(fallbackReply);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-5 text-left">
-      <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-slate-100">
-        <div>
-          <span className="text-xs font-mono font-bold uppercase tracking-wider text-teal-700">
-            🤖 24/7 AI Interview Coach & Motivator
-          </span>
-          <h3 className="text-base sm:text-lg font-bold text-slate-900">
-            Debrief & Strategy Coaching
-          </h3>
+    <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 sm:p-7 space-y-5 shadow-2xl text-left">
+      <div className="flex items-center justify-between flex-wrap gap-2 pb-4 border-b border-white/10">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400">
+            <Bot className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-bold text-white text-base flex items-center gap-2">
+              <span>24/7 AI Interview Coach & Mentor</span>
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-teal-950/80 text-teal-300 border border-teal-500/30 font-mono">
+                Neural Voice AI
+              </span>
+            </h3>
+            <p className="text-xs text-slate-400">
+              Interactive debriefing, STAR re-structuring, and psychological mindset calibration.
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -171,118 +160,127 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
             type="button"
             onClick={() => {
               setIsVoiceEnabled(!isVoiceEnabled);
-              if (isSpeaking) window.speechSynthesis?.cancel();
+              if (isSpeaking) voiceAssistant.stop();
             }}
-            className={`text-xs px-3 py-1.5 rounded-xl font-semibold border transition-all cursor-pointer shadow-xs ${
+            className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               isVoiceEnabled
-                ? 'bg-teal-50 text-teal-800 border-teal-200'
-                : 'bg-slate-50 text-slate-500 border-slate-200'
+                ? 'bg-teal-950/80 border-teal-500/40 text-teal-300'
+                : 'bg-[#171E2D] border-white/10 text-slate-500'
             }`}
+            title="Toggle Natural Voice Feedback"
           >
-            <span>{isVoiceEnabled ? '🔊 Voice On' : '🔇 Voice Muted'}</span>
+            {isVoiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            <span className="hidden sm:inline">{isVoiceEnabled ? 'Voice Active' : 'Muted'}</span>
           </button>
         </div>
       </div>
 
       {/* Coach Persona Selector */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {COACH_PERSONAS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            onClick={() => handleSwitchPersona(p)}
-            className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
-              selectedPersona.id === p.id
-                ? 'border-teal-600 bg-teal-50/70 ring-2 ring-teal-500/20 shadow-sm'
-                : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
-            }`}
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-2xl">{p.avatar}</span>
-              <div>
-                <p className="font-bold text-slate-900 text-xs sm:text-sm">{p.name}</p>
-                <p className="text-[11px] text-slate-500">{p.badge}</p>
-              </div>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* Chat Messages Log */}
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 h-72 overflow-y-auto space-y-3.5 shadow-inner">
-        {messages.map((m, idx) => (
-          <div
-            key={idx}
-            className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
-          >
-            <span className="text-[10px] text-slate-500 mb-1 px-1 font-sans">
-              {m.sender === 'user' ? 'You' : selectedPersona.name}
-            </span>
-            <div
-              className={`p-3.5 rounded-2xl max-w-lg text-xs sm:text-sm leading-relaxed ${
-                m.sender === 'user'
-                  ? 'bg-teal-600 text-white rounded-br-none shadow-sm'
-                  : 'bg-white text-slate-900 border border-slate-200 rounded-bl-none shadow-sm'
+        {COACH_PERSONAS.map((p) => {
+          const isSelected = selectedPersona.id === p.id;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => {
+                setSelectedPersona(p);
+                setMessages([
+                  {
+                    sender: 'coach',
+                    text: p.welcome,
+                    time: 'Just now',
+                  },
+                ]);
+                speakText(p.welcome);
+              }}
+              className={`p-3.5 rounded-2xl border text-left flex items-center gap-3 transition-all cursor-pointer ${
+                isSelected
+                  ? 'border-teal-400 bg-teal-950/60 ring-2 ring-teal-500/30 shadow-lg'
+                  : 'border-white/10 bg-[#0D111A] hover:bg-[#171E2D]'
               }`}
             >
-              <p>{m.text}</p>
-              {m.quote && (
-                <div className="mt-2.5 pt-2 border-t border-slate-100 text-[11px] text-amber-800 italic">
-                  💬 "{m.quote}"
-                </div>
-              )}
+              <span className="text-2xl">{p.avatar}</span>
+              <div className="min-w-0">
+                <p className="font-bold text-xs sm:text-sm text-white truncate">{p.name}</p>
+                <p className="text-[10px] text-slate-400 truncate">{p.title}</p>
+                <span className={`inline-block text-[9px] font-mono font-semibold mt-1 px-1.5 py-0.2 rounded border ${p.style}`}>
+                  {p.badge}
+                </span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Chat Stream */}
+      <div className="p-4 rounded-2xl bg-[#0D111A] border border-white/5 space-y-3.5 max-h-[300px] overflow-y-auto shadow-inner text-xs">
+        {messages.map((m, i) => (
+          <div
+            key={i}
+            className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'} space-y-1`}
+          >
+            <div
+              className={`p-3.5 rounded-2xl max-w-[85%] leading-relaxed ${
+                m.sender === 'user'
+                  ? 'bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-semibold shadow-md rounded-br-none'
+                  : 'bg-[#131823] border border-white/10 text-slate-200 shadow-sm rounded-bl-none'
+              }`}
+            >
+              {m.text}
             </div>
+
+            {m.quote && (
+              <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-200 text-[11px] font-sans italic max-w-[80%]">
+                "{m.quote}"
+              </div>
+            )}
           </div>
         ))}
         {isLoading && (
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <svg className="animate-spin h-3.5 w-3.5 text-teal-600" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-            </svg>
-            <span>{selectedPersona.name} is thinking...</span>
+          <div className="p-3 bg-[#131823] border border-white/10 rounded-2xl text-teal-400 text-xs flex items-center gap-2 max-w-[140px]">
+            <Sparkles className="w-4 h-4 animate-spin" />
+            <span>Thinking...</span>
           </div>
         )}
         <div ref={chatEndRef} />
       </div>
 
       {/* Quick Prompts */}
-      <div className="flex flex-wrap gap-2">
-        {QUICK_PROMPTS.map((prompt, idx) => (
+      <div className="flex flex-wrap gap-1.5 pt-1">
+        {QUICK_PROMPTS.map((prompt, i) => (
           <button
-            key={idx}
+            key={i}
             type="button"
             onClick={() => handleSendMessage(prompt)}
-            className="text-xs px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium transition-all shadow-xs cursor-pointer"
+            className="text-[11px] px-3 py-1.5 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
           >
-            {prompt}
+            <Sparkles className="w-3 h-3 text-teal-400" />
+            <span>{prompt}</span>
           </button>
         ))}
       </div>
 
-      {/* Chat Input */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSendMessage();
-        }}
-        className="flex items-center gap-2"
-      >
+      {/* Input Row */}
+      <div className="flex items-center gap-2 pt-1">
         <input
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder={`Ask ${selectedPersona.name} about your interview answers or strategy...`}
-          className="flex-1 bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-xs sm:text-sm text-slate-900 focus:outline-none shadow-sm"
+          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+          placeholder={`Ask ${selectedPersona.name} for actionable advice, STAR reframing, or mindset prep...`}
+          className="flex-1 bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl px-4 py-3 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none"
         />
         <button
-          type="submit"
+          type="button"
+          onClick={() => handleSendMessage()}
           disabled={isLoading || !inputText.trim()}
-          className="py-3 px-5 text-xs sm:text-sm font-bold bg-teal-600 hover:bg-teal-500 text-white rounded-xl shadow-md cursor-pointer disabled:opacity-50"
+          className="py-3 px-5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-bold text-xs shadow-md transition-all active:scale-95 disabled:opacity-40 cursor-pointer flex items-center gap-1.5"
         >
-          Send
+          <Send className="w-4 h-4" />
+          <span className="hidden sm:inline">Ask Coach</span>
         </button>
-      </form>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
+import {
+  HeartPulse,
+  Activity,
+  Mic,
+  Flame,
+  Sparkles,
+  CheckCircle2,
+  Video,
+  Play,
+  ArrowRight,
+  RotateCcw,
+  Zap,
+  Check,
+  Volume2,
+  Smile,
+  ShieldCheck,
+} from 'lucide-react';
 
 // Web Audio API Calming Tones and Fanfare
 const playCalmTone = (freq = 432, duration = 2.5) => {
@@ -272,62 +289,68 @@ export default function PreInterviewHypeLab() {
   const allPostureChecked = postureChecklist.shoulders && postureChecklist.eyeLevel && postureChecklist.spine;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col justify-between select-none">
-      {/* ── Universal Top Bar ── */}
+    <div className="min-h-screen bg-[#0B0D13] text-slate-100 flex flex-col justify-between select-none font-sans">
+      {/* Universal Top Bar */}
       <AppNavbar currentActive="anxiety-prep" />
 
-      {/* ── Main Content ── */}
+      {/* Main Content */}
       <main className="max-w-3xl mx-auto px-4 py-8 w-full space-y-6 text-left">
         {/* Header & Disclaimer Banner */}
-        <div className="space-y-2 border-b border-slate-200 pb-4">
+        <div className="space-y-2 border-b border-white/10 pb-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Interview Confidence Lab</h1>
-            <span className="text-[10px] font-mono font-bold text-teal-800 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-full">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Interview Confidence Lab</h1>
+            <span className="text-[10px] font-mono font-bold text-teal-300 bg-teal-950/80 border border-teal-500/30 px-3 py-1 rounded-full">
               Pacing & Anxiety Prep
             </span>
           </div>
-          <p className="text-xs text-slate-500 leading-relaxed text-pretty">
+          <p className="text-xs text-slate-400 leading-relaxed text-pretty">
             Guided practice for answer pacing, vocal resonance, and nervous system grounding. This lab provides educational coaching techniques.
           </p>
         </div>
 
         {/* Step Progress Pills */}
-        <div className="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200 justify-between gap-1 shadow-sm">
+        <div className="flex bg-[#0D111A] p-1.5 rounded-2xl border border-white/10 justify-between gap-1 shadow-inner">
           {[
-            { step: 1, label: '🫁 Box Breathing', desc: 'Heart-Rate Reset' },
-            { step: 2, label: '🎙️ Vocal Resonance', desc: 'Ground Shaky Tone' },
-            { step: 3, label: '🧘 Power Posture', desc: 'Executive Presence' },
-            { step: 4, label: '⚡ Brain Win', desc: 'Dopamine Activation' },
-          ].map((s) => (
-            <button
-              key={s.step}
-              type="button"
-              onClick={() => setActiveStep(s.step)}
-              className={`flex-1 py-2.5 px-2 rounded-xl text-center transition-all cursor-pointer ${
-                activeStep === s.step
-                  ? 'bg-teal-600 text-white font-bold shadow-sm scale-[1.02]'
-                  : activeStep > s.step
-                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <p className="text-xs font-semibold">{s.label}</p>
-              <p className="text-[10px] text-slate-500 font-mono hidden sm:block">{s.desc}</p>
-            </button>
-          ))}
+            { step: 1, label: 'Box Breathing', desc: 'Heart-Rate Reset', icon: HeartPulse },
+            { step: 2, label: 'Vocal Resonance', desc: 'Ground Shaky Tone', icon: Mic },
+            { step: 3, label: 'Power Posture', desc: 'Executive Presence', icon: ShieldCheck },
+            { step: 4, label: 'Brain Drill', desc: 'Dopamine Win', icon: Zap },
+          ].map((s) => {
+            const Icon = s.icon;
+            return (
+              <button
+                key={s.step}
+                type="button"
+                onClick={() => setActiveStep(s.step)}
+                className={`flex-1 py-2.5 px-2 rounded-xl text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 ${
+                  activeStep === s.step
+                    ? 'bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-bold shadow-md scale-[1.02]'
+                    : activeStep > s.step
+                    ? 'bg-emerald-950/50 text-emerald-300 border border-emerald-500/30 font-semibold'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Icon className="w-3.5 h-3.5" />
+                  <p className="text-xs font-semibold">{s.label}</p>
+                </div>
+                <p className="text-[10px] opacity-70 font-mono hidden sm:block">{s.desc}</p>
+              </button>
+            );
+          })}
         </div>
 
-        {/* ── STEP 1: Diaphragmatic Box Breathing ── */}
+        {/* STEP 1: Diaphragmatic Box Breathing */}
         {activeStep === 1 && (
-          <div className="bg-white border border-slate-200 p-6 sm:p-8 text-center space-y-6 shadow-sm rounded-2xl animate-fade-in">
+          <div className="bg-[#131823] border border-white/10 p-6 sm:p-8 text-center space-y-6 shadow-2xl rounded-3xl animate-fade-in">
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-teal-800 bg-teal-50 border border-teal-200 px-3 py-1 rounded-full inline-block">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-teal-300 bg-teal-950/80 border border-teal-500/30 px-3 py-1 rounded-full inline-block">
                 NEUROSCIENCE PROTOCOL • VAGUS NERVE STABILIZATION
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
+              <h2 className="text-2xl sm:text-3xl font-black text-white">
                 Reset Cortisol & Heart Rate
               </h2>
-              <p className="text-xs text-slate-500 max-w-md mx-auto">
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
                 Slow, rhythmic 4-second box breathing halts adrenaline spikes and restores clear, sharp memory recall.
               </p>
             </div>
@@ -335,20 +358,20 @@ export default function PreInterviewHypeLab() {
             {/* Glowing Breathing Visualizer */}
             <div className="relative w-48 h-48 sm:w-56 sm:h-56 mx-auto flex items-center justify-center">
               <div
-                className={`absolute inset-0 rounded-full border-4 border-teal-500/30 transition-all duration-1000 ${
+                className={`absolute inset-0 rounded-full border-4 transition-all duration-1000 ${
                   breathPhase === 'Inhale'
-                    ? 'scale-110 bg-teal-50 shadow-md shadow-teal-500/30'
+                    ? 'scale-110 bg-teal-950/60 border-teal-400 shadow-2xl shadow-teal-500/30'
                     : breathPhase === 'Hold'
-                    ? 'scale-110 bg-cyan-50 shadow-md shadow-cyan-500/30'
+                    ? 'scale-110 bg-cyan-950/60 border-cyan-400 shadow-2xl shadow-cyan-500/30'
                     : breathPhase === 'Exhale'
-                    ? 'scale-90 bg-emerald-50 shadow-md shadow-emerald-500/30'
-                    : 'scale-90 bg-slate-100'
+                    ? 'scale-90 bg-emerald-950/60 border-emerald-400 shadow-2xl shadow-emerald-500/30'
+                    : 'scale-90 bg-[#0D111A] border-white/10'
                 }`}
               />
               <div className="relative z-10 text-center space-y-1">
-                <span className="text-3xl sm:text-4xl font-black text-slate-900">{breathPhase}</span>
-                <p className="text-3xl font-black font-mono text-teal-700">{breathCounter}s</p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-widest">
+                <span className="text-3xl sm:text-4xl font-black text-white">{breathPhase}</span>
+                <p className="text-3xl font-black font-mono text-teal-400">{breathCounter}s</p>
+                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-mono">
                   Cycle {breathCyclesCompleted + 1} / 3
                 </p>
               </div>
@@ -358,35 +381,36 @@ export default function PreInterviewHypeLab() {
               <button
                 type="button"
                 onClick={() => setActiveStep(2)}
-                className="py-3 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer"
+                className="py-3.5 px-8 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 text-xs font-extrabold uppercase tracking-wider shadow-lg shadow-teal-500/20 transition-all active:scale-95 cursor-pointer flex items-center gap-2"
               >
-                Next: Vocal Resonance Warmup →
+                <span>Next: Vocal Resonance Warmup</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         )}
 
-        {/* ── STEP 2: Vocal Resonance & Grounding ── */}
+        {/* STEP 2: Vocal Resonance & Grounding */}
         {activeStep === 2 && (
-          <div className="bg-white border border-slate-200 p-6 sm:p-8 text-center space-y-6 shadow-sm rounded-2xl animate-fade-in">
+          <div className="bg-[#131823] border border-white/10 p-6 sm:p-8 text-center space-y-6 shadow-2xl rounded-3xl animate-fade-in">
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-teal-800 bg-teal-50 border border-teal-200 px-3 py-1 rounded-full inline-block">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-teal-300 bg-teal-950/80 border border-teal-500/30 px-3 py-1 rounded-full inline-block">
                 ACOUSTIC CALIBRATION • DEEP DIAPHRAGM PROJECTION
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
+              <h2 className="text-2xl sm:text-3xl font-black text-white">
                 Eliminate Shaky Voice
               </h2>
-              <p className="text-xs text-slate-500 max-w-md mx-auto">
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
                 Nervous tension causes vocal cords to tighten, making candidates sound hesitant. Read this sentence aloud with chest resonance:
               </p>
             </div>
 
             {/* Script to Read Aloud */}
-            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-left space-y-2 max-w-xl mx-auto shadow-sm">
-              <span className="text-[10px] uppercase font-bold text-teal-700 tracking-wider font-mono">
+            <div className="bg-[#0D111A] p-5 rounded-2xl border border-white/10 text-left space-y-2 max-w-xl mx-auto shadow-inner">
+              <span className="text-[10px] uppercase font-bold text-teal-400 tracking-wider font-mono">
                 Read Aloud with Steady Pitch:
               </span>
-              <p className="text-sm sm:text-base font-semibold text-slate-900 leading-relaxed italic font-sans">
+              <p className="text-sm sm:text-base font-semibold text-slate-100 leading-relaxed italic font-sans">
                 "I am excited to discuss my engineering background, architectural trade-offs, and how I deliver high-impact results for this team."
               </p>
             </div>
@@ -399,7 +423,7 @@ export default function PreInterviewHypeLab() {
                   className="w-3 rounded-full transition-all duration-100"
                   style={{
                     height: `${isMicTesting ? height : vocalCheckDone ? 50 : 15}%`,
-                    backgroundColor: isMicTesting ? '#0d9488' : vocalCheckDone ? '#10b981' : '#cbd5e1',
+                    backgroundColor: isMicTesting ? '#14b8a6' : vocalCheckDone ? '#10b981' : '#334155',
                   }}
                 />
               ))}
@@ -408,22 +432,22 @@ export default function PreInterviewHypeLab() {
             {/* Mic Energy Gauge */}
             <div className="max-w-md mx-auto space-y-2">
               <div className="flex justify-between text-xs font-mono">
-                <span className="text-slate-500">Vocal Power Resonance:</span>
-                <span className="text-teal-700 font-bold">
+                <span className="text-slate-400">Vocal Power Resonance:</span>
+                <span className="text-teal-400 font-bold">
                   {vocalCheckDone ? '100% (Grounded)' : `${vocalVolume}%`}
                 </span>
               </div>
-              <div className="h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+              <div className="h-3 bg-[#0D111A] rounded-full overflow-hidden border border-white/10">
                 <div
-                  className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 transition-all duration-150"
+                  className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-150"
                   style={{ width: vocalCheckDone ? '100%' : `${vocalVolume}%` }}
                 />
               </div>
             </div>
 
             {micPermissionDenied && (
-              <p className="text-[11px] text-amber-700 font-mono">
-                💡 Microphone permission is optional. You can test live or click "Quick Resonance Calibration".
+              <p className="text-[11px] text-amber-400 font-mono">
+                Microphone permission is optional. You can test live or click "Quick Resonance Calibration".
               </p>
             )}
 
@@ -434,25 +458,27 @@ export default function PreInterviewHypeLab() {
                     <button
                       type="button"
                       onClick={handleStartVocalTest}
-                      className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+                      className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 text-xs font-extrabold uppercase tracking-wider shadow-lg shadow-teal-500/20 transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2"
                     >
-                      <span>🎙️ Start Voice Test</span>
+                      <Mic className="w-3.5 h-3.5" />
+                      <span>Start Voice Test</span>
                     </button>
                     <button
                       type="button"
                       onClick={handleQuickCalibrate}
-                      className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 text-xs font-semibold tracking-wide transition-all cursor-pointer shadow-sm"
+                      className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] text-slate-200 border border-white/10 text-xs font-semibold tracking-wide transition-all cursor-pointer shadow-sm flex items-center justify-center gap-1.5"
                     >
-                      ⚡ Quick Tone Calibration
+                      <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+                      <span>Quick Tone Calibration</span>
                     </button>
                   </>
                 ) : (
                   <button
                     type="button"
                     onClick={handleStopVocalTest}
-                    className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer animate-pulse"
+                    className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer animate-pulse"
                   >
-                    ⏹️ Finish Reading (Save Resonance)
+                    Finish Reading (Save Resonance)
                   </button>
                 )
               ) : (
@@ -460,9 +486,11 @@ export default function PreInterviewHypeLab() {
                   <button
                     type="button"
                     onClick={() => setActiveStep(3)}
-                    className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 text-xs font-extrabold uppercase tracking-wider shadow-lg shadow-teal-500/20 transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2"
                   >
-                    <span>✅ Voice Grounded! Next: Posture Check →</span>
+                    <CheckCircle2 className="w-4 h-4 text-slate-950" />
+                    <span>Voice Grounded! Next: Posture Check</span>
+                    <ArrowRight className="w-4 h-4" />
                   </button>
                   <button
                     type="button"
@@ -471,9 +499,10 @@ export default function PreInterviewHypeLab() {
                       setVocalVolume(0);
                       handleStartVocalTest();
                     }}
-                    className="py-3 px-4 text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+                    className="py-3 px-4 text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer flex items-center gap-1.5"
                   >
-                    🔄 Re-test Voice
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Re-test Voice</span>
                   </button>
                 </div>
               )}
@@ -481,23 +510,23 @@ export default function PreInterviewHypeLab() {
           </div>
         )}
 
-        {/* ── STEP 3: Power Posture & Eye Contact ── */}
+        {/* STEP 3: Power Posture & Eye Contact */}
         {activeStep === 3 && (
-          <div className="bg-white border border-slate-200 p-6 sm:p-8 text-center space-y-6 shadow-sm rounded-2xl animate-fade-in">
+          <div className="bg-[#131823] border border-white/10 p-6 sm:p-8 text-center space-y-6 shadow-2xl rounded-3xl animate-fade-in">
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full inline-block">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-3 py-1 rounded-full inline-block">
                 NON-VERBAL COMMAND • POWER POSE CALIBRATION
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
+              <h2 className="text-2xl sm:text-3xl font-black text-white">
                 Executive Posture Alignment
               </h2>
-              <p className="text-xs text-slate-500 max-w-md mx-auto">
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
                 Sit upright, pull your shoulders slightly back, and align your gaze at eye level to project natural confidence.
               </p>
             </div>
 
-            {/* Posture Video Camera Mirror / Silhouette Guide */}
-            <div className="relative max-w-md mx-auto aspect-video rounded-2xl overflow-hidden border-2 border-teal-200 bg-slate-50 shadow-sm flex items-center justify-center">
+            {/* Posture Video Camera Mirror */}
+            <div className="relative max-w-md mx-auto aspect-video rounded-2xl overflow-hidden border-2 border-teal-500/30 bg-[#0D111A] shadow-inner flex items-center justify-center">
               <video
                 ref={videoRef}
                 autoPlay
@@ -509,16 +538,19 @@ export default function PreInterviewHypeLab() {
 
               {!cameraActive && (
                 <div className="p-6 text-center space-y-3 z-10">
-                  <div className="text-5xl animate-bounce">🧘</div>
-                  <p className="text-xs text-slate-700 font-medium max-w-xs mx-auto">
+                  <div className="w-14 h-14 rounded-2xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400 mx-auto">
+                    <ShieldCheck className="w-7 h-7" />
+                  </div>
+                  <p className="text-xs text-slate-300 font-medium max-w-xs mx-auto">
                     {cameraError ? cameraError : 'Camera Mirror Mode'}
                   </p>
                   <button
                     type="button"
                     onClick={startCamera}
-                    className="py-2 px-5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5 mx-auto"
+                    className="py-2 px-5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5 mx-auto"
                   >
-                    <span>📹 Enable Live Camera</span>
+                    <Video className="w-3.5 h-3.5" />
+                    <span>Enable Live Camera</span>
                   </button>
                 </div>
               )}
@@ -540,43 +572,43 @@ export default function PreInterviewHypeLab() {
             </div>
 
             {/* Interactive Posture Checkboxes */}
-            <div className="w-full max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 text-left text-xs">
+            <div className="w-full max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 text-left text-xs font-sans">
               <button
                 type="button"
                 onClick={() => toggleChecklistItem('shoulders')}
-                className={`p-3 rounded-xl border flex items-center gap-2.5 transition-all cursor-pointer ${
+                className={`p-3.5 rounded-2xl border flex items-center gap-2.5 transition-all cursor-pointer ${
                   postureChecklist.shoulders
-                    ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold shadow-sm'
-                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                    ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-bold shadow-md'
+                    : 'bg-[#0D111A] border-white/10 text-slate-400 hover:bg-[#171E2D]'
                 }`}
               >
-                <span>{postureChecklist.shoulders ? '✅' : '⚪'}</span>
+                {postureChecklist.shoulders ? <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> : <div className="w-4 h-4 rounded-full border border-white/20" />}
                 <span>Shoulders relaxed & wide</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => toggleChecklistItem('eyeLevel')}
-                className={`p-3 rounded-xl border flex items-center gap-2.5 transition-all cursor-pointer ${
+                className={`p-3.5 rounded-2xl border flex items-center gap-2.5 transition-all cursor-pointer ${
                   postureChecklist.eyeLevel
-                    ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold shadow-sm'
-                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                    ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-bold shadow-md'
+                    : 'bg-[#0D111A] border-white/10 text-slate-400 hover:bg-[#171E2D]'
                 }`}
               >
-                <span>{postureChecklist.eyeLevel ? '✅' : '⚪'}</span>
+                {postureChecklist.eyeLevel ? <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> : <div className="w-4 h-4 rounded-full border border-white/20" />}
                 <span>Direct eye-level gaze</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => toggleChecklistItem('spine')}
-                className={`p-3 rounded-xl border flex items-center gap-2.5 transition-all cursor-pointer ${
+                className={`p-3.5 rounded-2xl border flex items-center gap-2.5 transition-all cursor-pointer ${
                   postureChecklist.spine
-                    ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold shadow-sm'
-                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                    ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 font-bold shadow-md'
+                    : 'bg-[#0D111A] border-white/10 text-slate-400 hover:bg-[#171E2D]'
                 }`}
               >
-                <span>{postureChecklist.spine ? '✅' : '⚪'}</span>
+                {postureChecklist.spine ? <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" /> : <div className="w-4 h-4 rounded-full border border-white/20" />}
                 <span>Spine tall & upright</span>
               </button>
             </div>
@@ -585,45 +617,47 @@ export default function PreInterviewHypeLab() {
               <button
                 type="button"
                 onClick={() => setActiveStep(4)}
-                className="py-3.5 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer flex items-center gap-2"
+                className="py-3.5 px-8 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 text-xs font-extrabold uppercase tracking-wider shadow-lg shadow-teal-500/20 transition-all active:scale-95 cursor-pointer flex items-center gap-2"
               >
-                <span>Next: Quick-Win Brain Drill →</span>
+                <span>Next: Quick-Win Brain Drill</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         )}
 
-        {/* ── STEP 4: 1-Minute Dopamine Brain Victory ── */}
+        {/* STEP 4: 1-Minute Dopamine Brain Victory */}
         {activeStep === 4 && (
-          <div className="bg-white border border-slate-200 p-6 sm:p-8 text-center space-y-6 shadow-sm rounded-2xl animate-fade-in">
+          <div className="bg-[#131823] border border-white/10 p-6 sm:p-8 text-center space-y-6 shadow-2xl rounded-3xl animate-fade-in">
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-widest text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full inline-block">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-amber-400 bg-amber-950/80 border border-amber-500/30 px-3 py-1 rounded-full inline-block">
                 PREFRONTAL CORTEX ACTIVATION • 1-MINUTE QUICK WIN
               </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900">
+              <h2 className="text-2xl sm:text-3xl font-black text-white">
                 Trigger Peak Mental Momentum
               </h2>
-              <p className="text-xs text-slate-500 max-w-md mx-auto">
+              <p className="text-xs text-slate-400 max-w-md mx-auto">
                 Solve this quick concept check to prime your brain for high-speed technical problem solving:
               </p>
             </div>
 
             {/* Puzzle Card */}
-            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-left space-y-4 max-w-xl mx-auto shadow-sm">
+            <div className="bg-[#0D111A] p-5 sm:p-6 rounded-2xl border border-white/10 text-left space-y-4 max-w-xl mx-auto shadow-inner">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono font-bold text-amber-700">
+                <span className="text-[11px] font-mono font-bold text-amber-400">
                   Concept Drill #{selectedPuzzleIdx + 1} of {QUICK_WIN_PUZZLES.length}
                 </span>
                 <button
                   type="button"
                   onClick={handleNextPuzzle}
-                  className="text-xs text-slate-500 hover:text-slate-900 font-mono flex items-center gap-1 cursor-pointer"
+                  className="text-xs text-slate-400 hover:text-white font-mono flex items-center gap-1 cursor-pointer"
                 >
-                  <span>Next Drill ↻</span>
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Next Drill</span>
                 </button>
               </div>
 
-              <p className="font-bold text-slate-900 text-xs sm:text-sm leading-relaxed">
+              <p className="font-bold text-white text-xs sm:text-sm leading-relaxed">
                 {QUICK_WIN_PUZZLES[selectedPuzzleIdx].q}
               </p>
 
@@ -636,14 +670,14 @@ export default function PreInterviewHypeLab() {
                       key={i}
                       type="button"
                       onClick={() => handleAnswerPuzzle(i)}
-                      className={`p-3 rounded-xl border text-left text-xs transition-all cursor-pointer ${
+                      className={`p-3.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${
                         puzzleAnswered
                           ? isCorrect
-                            ? 'border-emerald-600 bg-emerald-50 text-emerald-900 font-bold shadow-sm'
+                            ? 'border-emerald-500/50 bg-emerald-950/60 text-emerald-300 font-bold shadow-sm'
                             : isSelected
-                            ? 'border-rose-500 bg-rose-50 text-rose-900'
-                            : 'border-slate-200 bg-slate-100 text-slate-400'
-                          : 'border-slate-200 bg-white hover:border-teal-500 hover:text-slate-900 shadow-sm'
+                            ? 'border-rose-500/50 bg-rose-950/60 text-rose-300 font-bold'
+                            : 'border-white/5 bg-[#0D111A] text-slate-500'
+                          : 'border-white/10 bg-[#171E2D] hover:bg-[#1E273A] text-slate-200 shadow-sm'
                       }`}
                     >
                       {opt}
@@ -653,11 +687,12 @@ export default function PreInterviewHypeLab() {
               </div>
 
               {puzzleAnswered && (
-                <div className="p-3.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 space-y-1 animate-fade-in shadow-sm">
-                  <p className="font-bold text-emerald-700 flex items-center gap-1">
-                    <span>💡</span> Explanation:
-                  </p>
-                  <p className="text-slate-600">{QUICK_WIN_PUZZLES[selectedPuzzleIdx].explanation}</p>
+                <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/30 text-xs text-amber-200 space-y-1 animate-fade-in shadow-sm flex items-start gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-amber-400 font-mono">Explanation:</p>
+                    <p className="text-amber-200/90 leading-relaxed">{QUICK_WIN_PUZZLES[selectedPuzzleIdx].explanation}</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -666,15 +701,17 @@ export default function PreInterviewHypeLab() {
               <button
                 type="button"
                 onClick={handleFinishHype}
-                className="w-full sm:w-auto py-3.5 px-8 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs sm:text-sm uppercase tracking-wider shadow-md transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+                className="w-full sm:w-auto py-4 px-8 rounded-2xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-xl shadow-teal-500/20 transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2"
               >
-                <span>🔥 I Am Primed & Ready — Start Interview! 🚀</span>
+                <Flame className="w-4 h-4 text-slate-950 fill-slate-950" />
+                <span>I Am Primed & Ready — Start Interview!</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
               {puzzleAnswered && (
                 <button
                   type="button"
                   onClick={handleNextPuzzle}
-                  className="py-3 px-5 text-xs text-slate-600 hover:text-slate-900 font-mono border border-slate-200 rounded-xl bg-white shadow-sm cursor-pointer"
+                  className="py-3 px-5 text-xs text-slate-300 hover:text-white font-mono border border-white/10 rounded-xl bg-[#171E2D] shadow-sm cursor-pointer"
                 >
                   Try Another Drill →
                 </button>
@@ -684,7 +721,7 @@ export default function PreInterviewHypeLab() {
         )}
       </main>
 
-      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
+      <footer className="py-4 border-t border-white/10 bg-[#0E121B] text-center" />
     </div>
   );
 }

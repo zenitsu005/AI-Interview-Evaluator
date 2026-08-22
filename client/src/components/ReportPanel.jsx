@@ -1,17 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import { useAuth } from '../context/AuthContext';
+import voiceAssistant from '../services/voiceAssistant';
 
 import AiInterviewCoach from './AiInterviewCoach';
 import SkillPassportModal from './SkillPassportModal';
 import AnalyticsTrendSection from './AnalyticsTrendSection';
 
+import {
+  Trophy,
+  Award,
+  TrendingUp,
+  BarChart3,
+  Brain,
+  Code2,
+  Users,
+  Radio,
+  CheckCircle2,
+  AlertTriangle,
+  Calendar,
+  Download,
+  Share2,
+  FileText,
+  Sparkles,
+  RotateCcw,
+  ShieldCheck,
+  Volume2,
+  Printer,
+  Briefcase,
+  Copy,
+  Check,
+  Zap,
+  Layers,
+  Activity,
+  Bug,
+} from 'lucide-react';
+
 const READINESS = {
-  'Not Ready': { color: 'text-rose-700', bg: 'bg-rose-50', border: 'border-rose-200', emoji: '❌', barColor: 'bg-rose-500' },
-  'Needs Improvement': { color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200', emoji: '⚠️', barColor: 'bg-amber-500' },
-  'Almost Ready': { color: 'text-yellow-700', bg: 'bg-yellow-50', border: 'border-yellow-200', emoji: '🔶', barColor: 'bg-yellow-500' },
-  'Interview Ready': { color: 'text-teal-700', bg: 'bg-teal-50', border: 'border-teal-200', emoji: '✅', barColor: 'bg-teal-500' },
-  'Excellent': { color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200', emoji: '🌟', barColor: 'bg-emerald-500' },
+  'Not Ready': { color: 'text-rose-400', bg: 'bg-rose-950/60', border: 'border-rose-500/40', icon: AlertTriangle, barColor: 'bg-rose-500' },
+  'Needs Improvement': { color: 'text-amber-400', bg: 'bg-amber-950/60', border: 'border-amber-500/40', icon: AlertTriangle, barColor: 'bg-amber-500' },
+  'Almost Ready': { color: 'text-yellow-400', bg: 'bg-yellow-950/60', border: 'border-yellow-500/40', icon: Zap, barColor: 'bg-yellow-500' },
+  'Interview Ready': { color: 'text-teal-300', bg: 'bg-teal-950/60', border: 'border-teal-500/40', icon: CheckCircle2, barColor: 'bg-teal-500' },
+  'Excellent': { color: 'text-emerald-300', bg: 'bg-emerald-950/60', border: 'border-emerald-500/40', icon: Trophy, barColor: 'bg-emerald-500' },
 };
 
 const DEFAULT_ROADMAP = [
@@ -24,31 +54,32 @@ const DEFAULT_ROADMAP = [
   { day: 7, topic: 'Full AI Mock Re-Test', action: 'Take a complete 15-question AI Multimodal Interview to benchmark score.', resource: 'AI Interview Evaluator' },
 ];
 
-const ScoreCard = ({ icon, label, score = 0, feedback = '', barColor = 'bg-blue-600' }) => {
+const ScoreCard = ({ icon: Icon, label, score = 0, feedback = '', barColor = 'bg-teal-500' }) => {
   const numScore = typeof score === 'number' && !isNaN(score) ? score : Number(score) || 0;
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between h-full shadow-sm hover:border-teal-500/40 transition-all text-left">
+    <div className="bg-[#131823] border border-white/10 rounded-2xl p-5 flex flex-col justify-between h-full shadow-xl hover:border-teal-500/40 transition-all text-left">
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-bold text-slate-900 flex items-center gap-1.5 text-xs sm:text-sm">
-            <span>{icon}</span> {label}
+        <div className="flex items-center justify-between mb-2.5">
+          <h3 className="font-bold text-white flex items-center gap-2 text-xs sm:text-sm">
+            {Icon && <Icon className="w-4 h-4 text-teal-400" />}
+            <span>{label}</span>
           </h3>
           <span
-            className={`text-lg font-black ${
-              numScore >= 70 ? 'text-emerald-700' : numScore >= 40 ? 'text-amber-700' : 'text-rose-700'
+            className={`text-lg font-black font-mono ${
+              numScore >= 70 ? 'text-emerald-400' : numScore >= 40 ? 'text-amber-400' : 'text-rose-400'
             }`}
           >
             {numScore}<span className="text-xs text-slate-500 font-normal">/100</span>
           </span>
         </div>
-        <div className="h-2 bg-slate-100 rounded-full mb-3 overflow-hidden border border-slate-200">
+        <div className="h-2 bg-[#0D111A] rounded-full mb-3 overflow-hidden border border-white/5">
           <div
             className={`h-full rounded-full ${barColor} transition-all duration-1000 shadow-sm`}
             style={{ width: `${Math.max(3, Math.min(100, numScore))}%` }}
           />
         </div>
       </div>
-      <p className="text-xs text-slate-600 leading-relaxed mt-1 font-normal">{feedback || 'Evaluation completed.'}</p>
+      <p className="text-xs text-slate-400 leading-relaxed mt-1 font-normal">{feedback || 'Evaluation completed.'}</p>
     </div>
   );
 };
@@ -82,39 +113,32 @@ export default function ReportPanel() {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  // Preload voices on mount
   useEffect(() => {
-    if (window.speechSynthesis) {
-      window.speechSynthesis.getVoices();
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-      };
-    }
     return () => {
-      window.speechSynthesis?.cancel();
+      voiceAssistant.stop();
     };
   }, []);
 
   if (!report) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 text-center space-y-4 text-slate-900">
-        <div className="w-16 h-16 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-3xl shadow-sm">
-          📊
+      <div className="min-h-screen bg-[#0B0D13] flex flex-col items-center justify-center p-6 text-center space-y-4 text-white">
+        <div className="w-16 h-16 rounded-2xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400 text-3xl shadow-xl">
+          <BarChart3 className="w-8 h-8" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900">No Report Data Available</h2>
-        <p className="text-xs text-slate-500 max-w-sm">Please complete an interview session or select a valid historical record.</p>
-        <button onClick={() => setPhase('landing')} className="py-2.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md cursor-pointer">
+        <h2 className="text-xl font-bold text-white">No Report Data Available</h2>
+        <p className="text-xs text-slate-400 max-w-sm">Please complete an interview session or select a past attempt from history.</p>
+        <button onClick={() => setPhase('landing')} className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 text-xs font-bold shadow-md cursor-pointer">
           ← Return to Home
         </button>
       </div>
     );
   }
 
-  // Safe normalization of all report metrics
   const readinessKey = Object.keys(READINESS).find(
     (k) => k.toLowerCase() === (report.readinessLevel || '').toLowerCase()
   ) || 'Not Ready';
   const r = READINESS[readinessKey];
+  const ReadinessIcon = r.icon || Trophy;
   const overallScoreVal = Number(report.overallScore) || 0;
 
   const isEchoOrParrot = (ans, qText) => {
@@ -191,10 +215,9 @@ export default function ReportPanel() {
     vocalSteadiness: 94,
   };
 
-  // Global Elo calculation
   let eloRating = 0;
   let percentileText = 'Baseline Entry (0th Percentile)';
-  let eloTier = { label: 'Unranked (0 Score)', badge: '🌱', color: 'text-rose-700 border-rose-200 bg-rose-50' };
+  let eloTier = { label: 'Unranked', badge: '🌱', color: 'text-rose-400 border-rose-500/30 bg-rose-950/40' };
 
   if (overallScoreVal > 0) {
     eloRating = Math.round(400 + (overallScoreVal / 100) * 1400);
@@ -207,23 +230,22 @@ export default function ReportPanel() {
     }
 
     if (eloRating >= 1650) {
-      eloTier = { label: 'Grandmaster / Top 1%', badge: '🏆', color: 'text-amber-800 border-amber-200 bg-amber-50' };
+      eloTier = { label: 'Grandmaster / Top 1%', badge: '🏆', color: 'text-amber-300 border-amber-500/40 bg-amber-950/60' };
     } else if (eloRating >= 1400) {
-      eloTier = { label: 'Diamond Tier', badge: '💎', color: 'text-teal-800 border-teal-200 bg-teal-50' };
+      eloTier = { label: 'Diamond Tier', badge: '💎', color: 'text-teal-300 border-teal-500/40 bg-teal-950/60' };
     } else if (eloRating >= 1100) {
-      eloTier = { label: 'Gold Tier', badge: '🥇', color: 'text-emerald-800 border-emerald-200 bg-emerald-50' };
+      eloTier = { label: 'Gold Tier', badge: '🥇', color: 'text-emerald-300 border-emerald-500/40 bg-emerald-950/60' };
     } else if (eloRating >= 700) {
-      eloTier = { label: 'Silver Tier', badge: '🥈', color: 'text-slate-800 border-slate-200 bg-slate-100' };
+      eloTier = { label: 'Silver Tier', badge: '🥈', color: 'text-slate-300 border-slate-700 bg-slate-900/60' };
     } else {
-      eloTier = { label: 'Bronze Tier', badge: '🥉', color: 'text-orange-800 border-orange-200 bg-orange-50' };
+      eloTier = { label: 'Bronze Tier', badge: '🥉', color: 'text-orange-300 border-orange-500/40 bg-orange-950/60' };
     }
   }
 
-  // Bar Raiser Persona Verdict
   const activeBarRaiser = interviewerPersona || {
     name: companyTrack === 'Google' ? 'Dr. Sanjay Rao' : companyTrack === 'Amazon' ? 'Marcus Vance' : 'Senior Bar Raiser',
     company: companyTrack || 'Target Company',
-    avatar: companyTrack === 'Google' ? '🌐' : companyTrack === 'Amazon' ? '📦' : '👔',
+    avatar: '👔',
     badge: `${companyTrack || 'Company'} Hiring Committee`,
   };
 
@@ -236,12 +258,12 @@ export default function ReportPanel() {
 
   const decisionBadgeColor =
     (barVerdict.hiringDecision || '').includes('Strong Hire')
-      ? 'text-emerald-800 border-emerald-300 bg-emerald-50 font-black'
+      ? 'text-emerald-300 border-emerald-500/40 bg-emerald-950/80 font-black'
       : (barVerdict.hiringDecision || '').includes('Lean Hire')
-      ? 'text-teal-800 border-teal-300 bg-teal-50 font-black'
+      ? 'text-teal-300 border-teal-500/40 bg-teal-950/80 font-black'
       : (barVerdict.hiringDecision || '').includes('Lean No Hire')
-      ? 'text-amber-800 border-amber-300 bg-amber-50 font-black'
-      : 'text-rose-800 border-rose-300 bg-rose-50 font-black';
+      ? 'text-amber-300 border-amber-500/40 bg-amber-950/80 font-black'
+      : 'text-rose-300 border-rose-500/40 bg-rose-950/80 font-black';
 
   const toggleDay = (day) => {
     setCompletedDays((prev) =>
@@ -286,105 +308,85 @@ export default function ReportPanel() {
   };
 
   const playVoiceSpeech = (text, idx, isTop1 = false) => {
-    if (!window.speechSynthesis) {
-      alert('Text-to-speech is not supported on this browser.');
-      return;
-    }
-    
-    if (playingVoiceIdx === `${idx}-${isTop1 ? 'top' : 'user'}`) {
-      window.speechSynthesis.cancel();
+    const key = `${idx}-${isTop1 ? 'top' : 'user'}`;
+    if (playingVoiceIdx === key) {
+      voiceAssistant.stop();
       setPlayingVoiceIdx(null);
       return;
     }
 
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.resume();
-
-    const cleanText = (text || '').replace(/[*#`_]/g, '').trim();
-    if (!cleanText) return;
-
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = isTop1 ? 0.95 : 1.0;
-    utterance.pitch = isTop1 ? 1.05 : 0.95;
-
-    const voices = window.speechSynthesis.getVoices() || [];
-    const preferred = isTop1
-      ? voices.find((v) => /david|george|male|daniel|mark|alex|google/i.test(v.name)) || voices[0]
-      : voices.find((v) => /samantha|zira|female|victoria|karen/i.test(v.name)) || voices[0];
-    if (preferred) utterance.voice = preferred;
-
-    utterance.onstart = () => setPlayingVoiceIdx(`${idx}-${isTop1 ? 'top' : 'user'}`);
-    utterance.onend = () => setPlayingVoiceIdx(null);
-    utterance.onerror = (e) => {
-      console.warn('Speech playback notice:', e);
-      setPlayingVoiceIdx(null);
-    };
-
-    window.speechSynthesis.speak(utterance);
+    voiceAssistant.speak(text, {
+      persona: isTop1 ? 'google' : 'general',
+      rate: isTop1 ? 0.95 : 1.0,
+      onStart: () => setPlayingVoiceIdx(key),
+      onEnd: () => setPlayingVoiceIdx(null),
+      onError: () => setPlayingVoiceIdx(null),
+    });
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 select-none">
+    <div className="min-h-screen bg-[#0B0D13] text-slate-100 select-none font-sans">
       {/* Top Bar */}
-      <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-40 shadow-sm flex-wrap gap-2">
+      <header className="bg-[#0E121B]/90 border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-40 backdrop-blur-xl shadow-lg flex-wrap gap-2">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-sm shadow-sm text-white font-bold">
-            🎯
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-slate-950 shadow-md">
+            <Sparkles className="w-4 h-4" />
           </div>
-          <span className="font-bold text-slate-900 text-sm sm:text-base tracking-tight">AI Interview Performance Report</span>
+          <span className="font-bold text-white text-sm sm:text-base tracking-tight">AI Interview Performance Report</span>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setShowPassportModal(true)}
-            className="py-2 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-teal-800 font-bold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
+            className="py-2 px-3.5 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-teal-500/40 text-teal-300 font-bold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
             title="View Verifiable Anti-Bias Skill Passport"
           >
-            <span>🌐</span>
+            <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
             <span>Skill Passport</span>
           </button>
 
           <button
             onClick={() => setShowCheatSheet(true)}
-            className="py-2 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
+            className="py-2 px-3.5 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-200 font-semibold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
           >
-            <span>📄</span>
+            <FileText className="w-3.5 h-3.5 text-amber-400" />
             <span>1-Page Cheat Sheet</span>
           </button>
           <button
             onClick={() => setPhase('negotiate')}
-            className="py-2 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
+            className="py-2 px-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
           >
-            <span>💼</span>
+            <Briefcase className="w-3.5 h-3.5" />
             <span>Salary Simulator</span>
           </button>
           <button
             onClick={openHistory}
-            className="py-2 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
+            className="py-2 px-3.5 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-300 font-semibold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
           >
-            <span>📊</span>
+            <BarChart3 className="w-3.5 h-3.5 text-cyan-400" />
             <span>Past Mocks</span>
           </button>
           <button
             onClick={() => window.print()}
-            className="py-2 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs shadow-sm cursor-pointer"
+            className="py-2 px-3.5 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-300 font-semibold text-xs shadow-sm cursor-pointer flex items-center gap-1.5"
             title="Print or Save PDF"
           >
-            🖨️ Export PDF
+            <Printer className="w-3.5 h-3.5" />
+            <span>Export PDF</span>
           </button>
           <button
             onClick={retakeSameExam}
-            className="py-2 px-3.5 text-xs font-bold flex items-center gap-1.5 shadow-sm bg-teal-600 hover:bg-teal-500 text-white rounded-xl cursor-pointer"
+            className="py-2 px-3.5 text-xs font-bold flex items-center gap-1.5 shadow-sm bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 rounded-xl cursor-pointer"
             title="Retake this exact exam track with same role, difficulty, and persona"
           >
-            <span>🔄</span>
-            <span>Retake Same Exam</span>
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Retake Exam</span>
           </button>
           <button
             onClick={restart}
-            className="py-2 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-semibold text-xs shadow-sm cursor-pointer"
+            className="py-2 px-3.5 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-300 font-semibold text-xs shadow-sm cursor-pointer"
             title="Start from role setup"
           >
-            ⚙️ New Setup
+            New Setup →
           </button>
         </div>
       </header>
@@ -392,73 +394,79 @@ export default function ReportPanel() {
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-7 text-left">
         {/* ── Executive Hero Card ── */}
-        <div className={`bg-white border-2 ${r.border} rounded-3xl p-6 sm:p-8 text-center space-y-4 shadow-sm relative overflow-hidden`}>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 shadow-xs">
-            <span>{r.emoji}</span> Interview Assessment Complete ({companyTrack || 'General'} Track • {difficultyLevel || 'Intermediate'})
+        <div className={`bg-[#131823] border-2 ${r.border} rounded-3xl p-6 sm:p-8 text-center space-y-4 shadow-2xl relative overflow-hidden`}>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#171E2D] border border-white/10 text-xs font-semibold text-slate-200 shadow-md">
+            <ReadinessIcon className="w-4 h-4 text-teal-400" />
+            <span>Interview Assessment Complete ({companyTrack || 'General'} Track • {difficultyLevel || 'Intermediate'})</span>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-600">
-            Evaluated for Target Role: <strong className="text-slate-900">{targetRole || 'Software Engineer'}</strong>
+          <p className="text-xs sm:text-sm text-slate-400">
+            Evaluated for Target Role: <strong className="text-white">{targetRole || 'Software Engineer'}</strong>
           </p>
 
-          <div className="flex items-center justify-center gap-8 flex-wrap">
+          <div className="flex items-center justify-center gap-8 flex-wrap pt-2">
             <div className="text-center">
-              <p className="text-5xl sm:text-6xl font-black text-slate-900 tracking-tight">{overallScoreVal}</p>
-              <p className="text-xs text-slate-500 font-mono mt-0.5 uppercase tracking-wider font-bold">Overall Score / 100</p>
+              <p className="text-5xl sm:text-6xl font-black text-white tracking-tight font-mono">{overallScoreVal}</p>
+              <p className="text-xs text-slate-400 font-mono mt-1 uppercase tracking-wider font-bold">Overall Score / 100</p>
             </div>
-            <div className={`px-5 py-2.5 rounded-2xl border ${r.border} ${r.bg} shadow-sm`}>
+            <div className={`px-6 py-3 rounded-2xl border ${r.border} ${r.bg} shadow-lg flex items-center gap-2`}>
+              <ReadinessIcon className="w-5 h-5 text-teal-300" />
               <span className={`font-black text-base sm:text-lg ${r.color}`}>{readinessKey}</span>
             </div>
           </div>
         </div>
 
-        {/* ── 🏢 Target Company Bar Raiser Verdict Card ── */}
-        <div className="bg-white border-2 border-amber-300 rounded-3xl p-5 sm:p-6 space-y-4 shadow-sm">
-          <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-slate-100">
+        {/* ── Bar Raiser Verdict Card ── */}
+        <div className="bg-[#131823] border-2 border-amber-500/40 rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl">
+          <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-white/10">
             <div className="flex items-center gap-3">
-              <span className="text-3xl">{activeBarRaiser.avatar}</span>
+              <div className="w-10 h-10 rounded-xl bg-amber-950/80 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold">
+                <Users className="w-5 h-5" />
+              </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-slate-900 text-sm sm:text-base">
+                  <h3 className="font-bold text-white text-sm sm:text-base">
                     {activeBarRaiser.name} ({activeBarRaiser.company})
                   </h3>
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full border border-amber-200 bg-amber-50 text-amber-900">
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full border border-amber-500/30 bg-amber-950/80 text-amber-300 font-mono">
                     {activeBarRaiser.badge || `${companyTrack} Bar Raiser`}
                   </span>
                 </div>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-400">
                   Official Hiring Committee Assessment & Cultural Alignment Rubric
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <span className={`text-xs font-black px-3.5 py-1.5 rounded-xl border shadow-xs uppercase tracking-wider ${decisionBadgeColor}`}>
+              <span className={`text-xs font-black px-4 py-2 rounded-xl border shadow-md uppercase tracking-wider ${decisionBadgeColor}`}>
                 {barVerdict.hiringDecision}
               </span>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-            <div className="md:col-span-2 bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1.5">
-              <span className="text-xs uppercase font-bold text-amber-800 flex items-center gap-1">
-                <span>💬</span> Bar Raiser Direct Assessment
+            <div className="md:col-span-2 bg-[#0D111A] p-4 rounded-2xl border border-white/5 space-y-1.5">
+              <span className="text-xs uppercase font-bold text-amber-400 flex items-center gap-1.5 font-mono">
+                <Sparkles className="w-3.5 h-3.5" /> Bar Raiser Direct Assessment
               </span>
-              <p className="text-slate-800 leading-relaxed text-xs sm:text-sm">
+              <p className="text-slate-300 leading-relaxed text-xs sm:text-sm">
                 {barVerdict.personaFeedback}
               </p>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col justify-between text-center space-y-1.5">
-              <span className="text-xs uppercase font-bold text-slate-600 truncate">
+            <div className="bg-[#0D111A] p-4 rounded-2xl border border-white/5 flex flex-col justify-between text-center space-y-1.5">
+              <span className="text-xs uppercase font-bold text-slate-400 truncate font-mono">
                 {barVerdict.criteriaName}
               </span>
-              <p className="text-3xl font-black text-amber-700">
+              <p className="text-3xl font-black text-amber-400 font-mono">
                 {barVerdict.coreCriteriaScore}<span className="text-xs text-slate-500 font-normal">/100</span>
               </p>
-              <div className="h-2 bg-slate-200 rounded-full overflow-hidden border border-slate-300">
+              <div className="h-2 bg-[#171E2D] rounded-full overflow-hidden border border-white/5">
                 <div
-                  className="h-full bg-amber-500 rounded-full"
+                  className="h-full bg-gradient-to-r from-amber-500 to-orange-400 rounded-full"
                   style={{ width: `${Math.max(5, barVerdict.coreCriteriaScore)}%` }}
                 />
               </div>
@@ -466,141 +474,142 @@ export default function ReportPanel() {
           </div>
         </div>
 
-        {/* ── Feature 13: Global Leaderboard & Elo Rating Card ── */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+        {/* ── Global Leaderboard & Elo Rating Card ── */}
+        <div className="bg-[#131823] border border-white/10 rounded-3xl p-5 sm:p-6 shadow-2xl">
           <div className="flex items-center justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-center text-2xl shadow-sm">
-                {eloTier.badge}
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400 text-2xl shadow-md">
+                <Trophy className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-extrabold text-slate-900 text-sm sm:text-base">Global Competitive Elo Ranking</h3>
+                  <h3 className="font-extrabold text-white text-sm sm:text-base">Global Competitive Elo Ranking</h3>
                   <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${eloTier.color}`}>
                     {eloTier.label}
                   </span>
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Percentile: <strong className={overallScoreVal > 0 ? "text-emerald-700 font-bold" : "text-slate-700"}>{percentileText}</strong> among candidates for {targetRole || 'Role'}
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Percentile: <strong className={overallScoreVal > 0 ? "text-emerald-400 font-bold" : "text-slate-400"}>{percentileText}</strong> among candidates for {targetRole || 'Role'}
                 </p>
               </div>
             </div>
 
-            <div className="bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-200 text-right">
-              <span className="text-[10px] text-slate-500 uppercase font-bold">Competitive Elo</span>
-              <p className="text-xl font-black text-slate-900 font-mono">{eloRating} <span className="text-xs text-teal-700 font-bold">pts</span></p>
+            <div className="bg-[#0D111A] px-5 py-3 rounded-2xl border border-white/5 text-right">
+              <span className="text-[10px] text-slate-400 uppercase font-bold font-mono">Competitive Elo</span>
+              <p className="text-2xl font-black text-white font-mono">{eloRating} <span className="text-xs text-teal-400 font-bold">pts</span></p>
             </div>
           </div>
         </div>
 
         {/* ── 4-Factor Performance Breakdown ── */}
         <div>
-          <h2 className="font-bold text-slate-900 mb-3 text-sm sm:text-base flex items-center gap-2">
-            <span>📊</span> Performance Breakdown (4 Core Dimensions)
+          <h2 className="font-bold text-white mb-3 text-sm sm:text-base flex items-center gap-2">
+            <Layers className="w-4 h-4 text-teal-400" />
+            <span>Performance Breakdown (4 Core Dimensions)</span>
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             <ScoreCard
-              icon="🧠"
+              icon={Brain}
               label="Aptitude & Logic"
               score={report.aptitudeScore}
               feedback={report.aptitudeFeedback}
-              barColor="bg-blue-600"
+              barColor="bg-blue-500"
             />
             <ScoreCard
-              icon="💻"
+              icon={Code2}
               label="Technical Skills"
               score={report.technicalScore}
               feedback={report.technicalFeedback}
-              barColor="bg-purple-600"
+              barColor="bg-teal-500"
             />
             <ScoreCard
-              icon="🤝"
+              icon={Users}
               label="HR & Behavioral"
               score={report.hrScore}
               feedback={report.hrFeedback}
-              barColor="bg-emerald-600"
+              barColor="bg-amber-500"
             />
             <ScoreCard
-              icon="👤"
+              icon={Activity}
               label="Presence & Delivery"
               score={report.presenceScore !== undefined ? report.presenceScore : 85}
-              feedback={report.presenceFeedback || "Evaluation of composure, eye contact, and vocal steadiness."}
-              barColor="bg-teal-600"
+              feedback={report.presenceFeedback || "Evaluation of composure, vocal steadiness, and communication speed."}
+              barColor="bg-emerald-500"
             />
           </div>
         </div>
 
-        {/* ── Speech Analytics & Gaze Timeline ── */}
+        {/* ── Speech Analytics & Composure ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-sm">
-            <h2 className="text-xs font-bold text-teal-800 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🎙️</span> Verbal Delivery & Speech Pace Analytics
+          <div className="bg-[#131823] border border-white/10 rounded-2xl p-5 space-y-3 shadow-xl">
+            <h2 className="text-xs font-bold text-teal-400 uppercase tracking-wider flex items-center gap-2 font-mono">
+              <Radio className="w-3.5 h-3.5" /> Verbal Delivery & Pace Analytics
             </h2>
             <div className="grid grid-cols-3 gap-2 text-center pt-1">
-              <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                <p className="text-[10px] text-slate-500 uppercase font-semibold">Filler Words</p>
-                <p className="text-base font-black text-amber-700 mt-0.5">{speechMetrics.fillerWordsCount} Detected</p>
+              <div className="bg-[#0D111A] p-3 rounded-xl border border-white/5">
+                <p className="text-[10px] text-slate-400 uppercase font-semibold">Filler Words</p>
+                <p className="text-base font-black text-amber-400 mt-0.5 font-mono">{speechMetrics.fillerWordsCount} Detected</p>
               </div>
-              <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                <p className="text-[10px] text-slate-500 uppercase font-semibold">Speaking Pace</p>
-                <p className="text-base font-black text-teal-700 mt-0.5">{speechMetrics.speakingPaceWpm} WPM</p>
+              <div className="bg-[#0D111A] p-3 rounded-xl border border-white/5">
+                <p className="text-[10px] text-slate-400 uppercase font-semibold">Speaking Pace</p>
+                <p className="text-base font-black text-teal-400 mt-0.5 font-mono">{speechMetrics.speakingPaceWpm} WPM</p>
               </div>
-              <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                <p className="text-[10px] text-slate-500 uppercase font-semibold">Pace Rating</p>
-                <p className="text-xs font-bold text-emerald-700 mt-1 truncate">{speechMetrics.paceRating}</p>
+              <div className="bg-[#0D111A] p-3 rounded-xl border border-white/5">
+                <p className="text-[10px] text-slate-400 uppercase font-semibold">Pace Rating</p>
+                <p className="text-xs font-bold text-emerald-400 mt-1 truncate">{speechMetrics.paceRating}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-sm">
-            <h2 className="text-xs font-bold text-teal-800 uppercase tracking-wider flex items-center gap-1.5">
-              <span>👁️</span> Executive Composure & Vocal Steadiness
+          <div className="bg-[#131823] border border-white/10 rounded-2xl p-5 space-y-3 shadow-xl">
+            <h2 className="text-xs font-bold text-teal-400 uppercase tracking-wider flex items-center gap-2 font-mono">
+              <Activity className="w-3.5 h-3.5" /> Executive Composure & Articulation
             </h2>
             <div className="grid grid-cols-2 gap-2 text-center pt-1">
-              <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                <p className="text-[10px] text-slate-500 uppercase font-semibold">Articulation Clarity</p>
-                <p className="text-base font-black text-teal-700 mt-0.5">{speechMetrics.clarityScore}%</p>
+              <div className="bg-[#0D111A] p-3 rounded-xl border border-white/5">
+                <p className="text-[10px] text-slate-400 uppercase font-semibold">Articulation Clarity</p>
+                <p className="text-base font-black text-teal-400 mt-0.5 font-mono">{speechMetrics.clarityScore}%</p>
               </div>
-              <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                <p className="text-[10px] text-slate-500 uppercase font-semibold">Vocal Steadiness</p>
-                <p className="text-base font-black text-emerald-700 mt-0.5">{speechMetrics.vocalSteadiness}%</p>
+              <div className="bg-[#0D111A] p-3 rounded-xl border border-white/5">
+                <p className="text-[10px] text-slate-400 uppercase font-semibold">Vocal Steadiness</p>
+                <p className="text-base font-black text-emerald-400 mt-0.5 font-mono">{speechMetrics.vocalSteadiness}%</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* ── Senior Evaluator Verdict ── */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-2">
-          <h2 className="font-bold text-teal-800 text-xs uppercase tracking-wider flex items-center gap-2">
-            <span>🏆</span> Senior Evaluator Verdict
+        <div className="bg-[#131823] border border-white/10 rounded-2xl p-6 shadow-xl space-y-2">
+          <h2 className="font-bold text-teal-400 text-xs uppercase tracking-wider flex items-center gap-2 font-mono">
+            <Award className="w-4 h-4" /> Senior Evaluator Verdict
           </h2>
-          <p className="text-slate-800 text-xs sm:text-sm leading-relaxed">{report.overallVerdict || 'Interview assessment completed.'}</p>
+          <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">{report.overallVerdict || 'Interview assessment completed.'}</p>
         </div>
 
         {/* ── Strengths & Improvement Areas ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
-            <h2 className="font-bold text-emerald-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
-              <span>✅</span> Identified Strengths
+          <div className="bg-[#131823] border border-emerald-500/30 rounded-2xl p-5 shadow-xl space-y-3">
+            <h2 className="font-bold text-emerald-400 text-xs uppercase tracking-wider flex items-center gap-1.5 font-mono">
+              <CheckCircle2 className="w-4 h-4" /> Identified Strengths
             </h2>
             <ul className="space-y-2">
               {strengthsList.map((s, i) => (
-                <li key={i} className="text-xs sm:text-sm text-slate-700 flex items-start gap-2">
-                  <span className="text-emerald-600 mt-0.5 font-bold">•</span>
+                <li key={i} className="text-xs sm:text-sm text-slate-300 flex items-start gap-2">
+                  <span className="text-emerald-400 mt-0.5 font-bold">•</span>
                   <span>{s}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
-            <h2 className="font-bold text-amber-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
-              <span>⚠️</span> Areas for Growth
+          <div className="bg-[#131823] border border-amber-500/30 rounded-2xl p-5 shadow-xl space-y-3">
+            <h2 className="font-bold text-amber-400 text-xs uppercase tracking-wider flex items-center gap-1.5 font-mono">
+              <AlertTriangle className="w-4 h-4" /> Areas for Growth
             </h2>
             <ul className="space-y-2">
               {weaknessesList.map((w, i) => (
-                <li key={i} className="text-xs sm:text-sm text-slate-700 flex items-start gap-2">
-                  <span className="text-amber-600 mt-0.5 font-bold">•</span>
+                <li key={i} className="text-xs sm:text-sm text-slate-300 flex items-start gap-2">
+                  <span className="text-amber-400 mt-0.5 font-bold">•</span>
                   <span>{w}</span>
                 </li>
               ))}
@@ -608,29 +617,30 @@ export default function ReportPanel() {
           </div>
         </div>
 
-        {/* ── Historical Performance Trendlines & Topic Mastery Matrix ── */}
+        {/* ── Analytics Trendlines & Mastery Matrix ── */}
         <AnalyticsTrendSection
           history={history}
           currentReport={report}
           targetRole={targetRole}
         />
 
-        {/* ── 24/7 Interactive AI Interview Coach & Motivator ── */}
+        {/* ── 24/7 Interactive AI Interview Coach ── */}
         <AiInterviewCoach
           report={report}
           targetRole={targetRole}
           difficultyLevel={difficultyLevel}
         />
 
-        {/* ── Personalized 7-Day AI Study Roadmap ── */}
+        {/* ── 7-Day AI Prep Roadmap ── */}
         {studyPlan.length > 0 && (
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-4 shadow-sm">
+          <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <h2 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-                  <span>📅</span> Personalized 7-Day Interview Prep Roadmap
+                <h2 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-teal-400" />
+                  <span>Personalized 7-Day Interview Prep Roadmap</span>
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-400 mt-0.5">
                   Targeted daily drills generated based on your exact interview gap areas.
                 </p>
               </div>
@@ -638,19 +648,19 @@ export default function ReportPanel() {
                 <button
                   type="button"
                   onClick={downloadStudyPlanCalendar}
-                  className="py-1.5 px-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-teal-800 text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer"
-                  title="Download 7-Day Plan to Google Calendar / Apple Calendar (.ics)"
+                  className="py-1.5 px-3.5 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-teal-300 text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer"
+                  title="Download 7-Day Plan to Google Calendar (.ics)"
                 >
-                  <span>📆</span>
+                  <Calendar className="w-3.5 h-3.5 text-teal-400" />
                   <span>Sync to Calendar (.ics)</span>
                 </button>
-                <span className="text-xs font-mono text-teal-800 font-bold bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200">
-                  {completedDays.length} / {studyPlan.length} Completed
+                <span className="text-xs font-mono text-teal-300 font-bold bg-teal-950/80 px-3 py-1 rounded-xl border border-teal-500/40">
+                  {completedDays.length} / {studyPlan.length} Done
                 </span>
               </div>
             </div>
 
-            {/* 7-Day Quick Tabs */}
+            {/* 7-Day Tabs */}
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 pt-2">
               {studyPlan.map((day) => {
                 const isDone = completedDays.includes(day.day);
@@ -659,16 +669,16 @@ export default function ReportPanel() {
                   <div
                     key={day.day}
                     onClick={() => setSelectedDayNumber(day.day)}
-                    className={`p-3 rounded-xl border cursor-pointer transition-all text-left relative ${
+                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all text-left relative ${
                       isSelected
-                        ? 'border-teal-600 bg-teal-50 ring-2 ring-teal-500/20 shadow-md scale-[1.02]'
+                        ? 'border-teal-400 bg-teal-950/70 ring-2 ring-teal-500/30 shadow-lg scale-[1.02]'
                         : isDone
-                        ? 'border-emerald-300 bg-emerald-50 hover:border-emerald-400'
-                        : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
+                        ? 'border-emerald-500/40 bg-emerald-950/40 hover:border-emerald-400'
+                        : 'border-white/10 bg-[#0D111A] hover:bg-[#171E2D]'
                     }`}
                   >
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className={`font-bold ${isSelected ? 'text-teal-900' : 'text-slate-900'}`}>Day {day.day}</span>
+                    <div className="flex items-center justify-between text-xs mb-1 font-mono">
+                      <span className={`font-bold ${isSelected ? 'text-teal-300' : 'text-slate-300'}`}>Day {day.day}</span>
                       <button
                         type="button"
                         onClick={(e) => {
@@ -676,31 +686,30 @@ export default function ReportPanel() {
                           toggleDay(day.day);
                         }}
                         className="text-xs hover:scale-110 transition-transform"
-                        title={isDone ? 'Mark as Incomplete' : 'Mark as Completed'}
                       >
-                        {isDone ? '✅' : '⚪'}
+                        {isDone ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <div className="w-3 h-3 rounded-full border border-slate-600" />}
                       </button>
                     </div>
-                    <p className="font-semibold text-slate-800 text-[11px] truncate">{day.topic}</p>
-                    <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{day.action}</p>
+                    <p className="font-semibold text-slate-200 text-[11px] truncate">{day.topic}</p>
+                    <p className="text-[10px] text-slate-400 mt-1 line-clamp-2">{day.action}</p>
                   </div>
                 );
               })}
             </div>
 
-            {/* ── Active Day Full Details View ── */}
+            {/* Active Day Details */}
             {activeDay && (
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-4 shadow-sm animate-fade-in text-left">
-                <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-200">
+              <div className="p-5 rounded-2xl bg-[#0D111A] border border-white/10 space-y-4 shadow-inner animate-fade-in text-left">
+                <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-white/10">
                   <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-xl bg-teal-50 border border-teal-200 text-teal-800 font-bold flex items-center justify-center text-xs font-mono">
+                    <span className="w-8 h-8 rounded-xl bg-teal-950 border border-teal-500/40 text-teal-300 font-bold flex items-center justify-center text-xs font-mono">
                       D{activeDay.day}
                     </span>
                     <div>
-                      <h3 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                      <h3 className="font-bold text-white text-sm sm:text-base flex items-center gap-2">
                         <span>Day {activeDay.day}:</span> {activeDay.topic}
                       </h3>
-                      <p className="text-xs text-slate-500 font-mono">
+                      <p className="text-xs text-slate-400 font-mono">
                         Target Time: 45-60 mins • High Impact Focus Area
                       </p>
                     </div>
@@ -710,57 +719,58 @@ export default function ReportPanel() {
                     <button
                       type="button"
                       onClick={() => toggleDay(activeDay.day)}
-                      className={`text-xs px-3.5 py-1.5 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                      className={`text-xs px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                         completedDays.includes(activeDay.day)
-                          ? 'bg-emerald-50 border border-emerald-300 text-emerald-800'
-                          : 'bg-teal-600 hover:bg-teal-500 text-white shadow-sm'
+                          ? 'bg-emerald-950 border border-emerald-500/40 text-emerald-300'
+                          : 'bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 shadow-md'
                       }`}
                     >
-                      <span>{completedDays.includes(activeDay.day) ? '✅ Completed' : 'Mark Complete'}</span>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>{completedDays.includes(activeDay.day) ? 'Completed' : 'Mark Complete'}</span>
                     </button>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                  <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-1.5">
-                    <span className="text-xs uppercase font-bold text-teal-800 flex items-center gap-1">
-                      <span>🎯</span> Daily Action Drill & Plan
+                  <div className="bg-[#131823] p-4 rounded-xl border border-white/5 space-y-1.5">
+                    <span className="text-xs uppercase font-bold text-teal-400 flex items-center gap-1.5 font-mono">
+                      <Sparkles className="w-3.5 h-3.5" /> Daily Action Drill
                     </span>
-                    <p className="text-slate-800 leading-relaxed text-xs sm:text-sm">
+                    <p className="text-slate-300 leading-relaxed text-xs sm:text-sm">
                       {activeDay.action}
                     </p>
                   </div>
 
-                  <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-1.5">
-                    <span className="text-xs uppercase font-bold text-emerald-800 flex items-center gap-1">
-                      <span>📚</span> Curated Study Resource & Reference
+                  <div className="bg-[#131823] p-4 rounded-xl border border-white/5 space-y-1.5">
+                    <span className="text-xs uppercase font-bold text-emerald-400 flex items-center gap-1.5 font-mono">
+                      <FileText className="w-3.5 h-3.5" /> Curated Reference Material
                     </span>
-                    <p className="text-slate-800 leading-relaxed text-xs sm:text-sm">
-                      {activeDay.resource || 'Official tech documentation, LeetCode curated list, and system design whitepapers.'}
+                    <p className="text-slate-300 leading-relaxed text-xs sm:text-sm">
+                      {activeDay.resource || 'Official tech documentation, curated algorithmic problems, and design whitepapers.'}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-2 flex items-center justify-between flex-wrap gap-2 text-xs border-t border-slate-200">
-                  <span className="text-xs text-slate-600 font-medium">Ready to practice this topic?</span>
+                <div className="pt-2 flex items-center justify-between flex-wrap gap-2 text-xs border-t border-white/10">
+                  <span className="text-xs text-slate-400 font-medium">Ready to practice this topic?</span>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setPhase('dsa')}
-                      className="text-xs bg-white hover:bg-slate-100 text-teal-800 border border-slate-200 px-3 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1 shadow-xs cursor-pointer"
+                      className="text-xs bg-[#171E2D] hover:bg-[#1E273A] text-teal-300 border border-white/10 px-3 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1 shadow-xs cursor-pointer"
                     >
-                      <span>💻</span> Open DSA Studio
+                      <Code2 className="w-3.5 h-3.5 text-teal-400" /> Open DSA Studio
                     </button>
                     <button
                       onClick={() => setPhase('bug-hunter')}
-                      className="text-xs bg-white hover:bg-slate-100 text-rose-800 border border-slate-200 px-3 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1 shadow-xs cursor-pointer"
+                      className="text-xs bg-[#171E2D] hover:bg-[#1E273A] text-cyan-300 border border-white/10 px-3 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1 shadow-xs cursor-pointer"
                     >
-                      <span>🐛</span> Bug Hunter Drills
+                      <Bug className="w-3.5 h-3.5 text-cyan-400" /> Bug Hunter Drills
                     </button>
                     <button
                       onClick={() => setPhase('blitz')}
-                      className="text-xs bg-white hover:bg-slate-100 text-amber-800 border border-slate-200 px-3 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1 shadow-xs cursor-pointer"
+                      className="text-xs bg-[#171E2D] hover:bg-[#1E273A] text-amber-300 border border-white/10 px-3 py-1.5 rounded-xl font-semibold transition-all flex items-center gap-1 shadow-xs cursor-pointer"
                     >
-                      <span>⚡</span> 60s Blitz Warmup
+                      <Zap className="w-3.5 h-3.5 text-amber-400" /> 60s Blitz Warmup
                     </button>
                   </div>
                 </div>
@@ -769,14 +779,15 @@ export default function ReportPanel() {
           </div>
         )}
 
-        {/* ── Question-by-Question Assessments with AI Voice Speech Replay ── */}
+        {/* ── Question-by-Question Assessments with AI Voice Playback ── */}
         <div className="space-y-4">
-          <h2 className="font-bold text-slate-900 text-sm sm:text-base flex items-center gap-2">
-            <span>📝</span> Question Evaluations & AI Voice Playback ({evalList.length} Questions)
+          <h2 className="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+            <FileText className="w-4 h-4 text-teal-400" />
+            <span>Question Evaluations & Neural Audio Playback ({evalList.length} Questions)</span>
           </h2>
 
           {evalList.length === 0 ? (
-            <div className="bg-white border border-slate-200 rounded-2xl text-center py-6 text-slate-500 text-xs">
+            <div className="bg-[#131823] border border-white/10 rounded-2xl text-center py-6 text-slate-400 text-xs">
               No individual question evaluations recorded for this attempt.
             </div>
           ) : (
@@ -792,47 +803,48 @@ export default function ReportPanel() {
               return (
                 <div
                   key={idx}
-                  className={`bg-white border-2 rounded-2xl p-5 transition-all shadow-sm ${
+                  className={`bg-[#131823] border-2 rounded-3xl p-5 sm:p-6 transition-all shadow-xl ${
                     isCorrect
-                      ? 'border-emerald-200'
+                      ? 'border-emerald-500/40'
                       : isPartial
-                      ? 'border-amber-200'
-                      : 'border-rose-200'
+                      ? 'border-amber-500/40'
+                      : 'border-rose-500/40'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                      <span className="text-xs font-bold font-mono px-2.5 py-0.5 rounded-lg bg-[#0D111A] text-slate-300 border border-white/10">
                         Q{q.questionNumber || idx + 1}
                       </span>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">
                         {q.round || 'Question'}
                       </span>
                     </div>
 
                     <span
-                      className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+                      className={`text-xs font-bold px-3 py-1 rounded-full border flex items-center gap-1.5 ${
                         isCorrect
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                          ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
                           : isPartial
-                          ? 'bg-amber-50 text-amber-800 border-amber-300'
-                          : 'bg-rose-50 text-rose-800 border-rose-300'
+                          ? 'bg-amber-950/80 text-amber-300 border-amber-500/40'
+                          : 'bg-rose-950/80 text-rose-300 border-rose-500/40'
                       }`}
                     >
-                      {isCorrect ? '✅ Correct' : isPartial ? '⚠️ Partially Correct' : '❌ Incorrect'}
+                      {isCorrect ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertTriangle className="w-3.5 h-3.5" />}
+                      <span>{isCorrect ? 'Correct' : isPartial ? 'Partially Correct' : 'Needs Work'}</span>
                     </span>
                   </div>
 
-                  <p className="font-bold text-slate-900 text-xs sm:text-sm mb-3">
+                  <p className="font-bold text-white text-xs sm:text-sm mb-3.5">
                     {q.question}
                   </p>
 
                   {/* Benchmark Tab Switcher */}
-                  <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 mb-3 max-w-md">
+                  <div className="flex bg-[#0D111A] p-1 rounded-xl border border-white/10 mb-3 max-w-md">
                     <button
                       onClick={() => setActiveTierTabs({ ...activeTierTabs, [idx]: 'yours' })}
                       className={`flex-1 text-xs py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
-                        activeTab === 'yours' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                        activeTab === 'yours' ? 'bg-teal-500 text-slate-950 shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                       }`}
                     >
                       Your Answer
@@ -840,37 +852,38 @@ export default function ReportPanel() {
                     <button
                       onClick={() => setActiveTierTabs({ ...activeTierTabs, [idx]: 'model' })}
                       className={`flex-1 text-xs py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
-                        activeTab === 'model' ? 'bg-teal-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                        activeTab === 'model' ? 'bg-teal-500 text-slate-950 shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      💡 Model Solution
+                      Model Solution
                     </button>
                     <button
                       onClick={() => setActiveTierTabs({ ...activeTierTabs, [idx]: 'top1' })}
                       className={`flex-1 text-xs py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
-                        activeTab === 'top1' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                        activeTab === 'top1' ? 'bg-amber-500 text-slate-950 shadow-sm font-bold' : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      🥇 Top 1% Benchmark
+                      Top 1% Benchmark
                     </button>
                   </div>
 
-                  <div className="space-y-2 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200">
+                  <div className="space-y-2.5 text-xs bg-[#0D111A] p-4 rounded-2xl border border-white/5">
                     {activeTab === 'yours' && (
                       <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-slate-600 font-bold uppercase text-xs">Candidate Answer</span>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-slate-400 font-bold uppercase text-xs font-mono">Candidate Answer</span>
                           {q.candidateAnswer && (
                             <button
                               type="button"
                               onClick={() => playVoiceSpeech(q.candidateAnswer, idx, false)}
-                              className="text-xs text-teal-700 hover:text-teal-900 font-semibold flex items-center gap-1 cursor-pointer"
+                              className="text-xs text-teal-400 hover:text-teal-300 font-semibold flex items-center gap-1.5 cursor-pointer"
                             >
-                              <span>{playingVoiceIdx === `${idx}-user` ? '⏹️ Stop Voice' : '🔊 Listen to Your Answer'}</span>
+                              <Volume2 className="w-3.5 h-3.5" />
+                              <span>{playingVoiceIdx === `${idx}-user` ? 'Stop Audio' : 'Listen to Your Answer'}</span>
                             </button>
                           )}
                         </div>
-                        <p className="text-slate-800 font-mono text-xs mt-0.5 whitespace-pre-wrap">
+                        <p className="text-slate-300 font-mono text-xs mt-0.5 whitespace-pre-wrap leading-relaxed">
                           {q.candidateAnswer || '(No response provided)'}
                         </p>
                       </div>
@@ -878,19 +891,20 @@ export default function ReportPanel() {
 
                     {activeTab === 'model' && (
                       <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-emerald-800 font-bold uppercase text-xs block">
-                            💡 Correct / Model Solution
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-teal-400 font-bold uppercase text-xs block font-mono">
+                            Model Solution
                           </span>
                           <button
                             type="button"
-                            onClick={() => handleCopyText(q.expectedAnswer || 'Optimal architectural and reasoning response.', `model-${idx}`)}
-                            className="text-xs text-teal-800 hover:text-teal-950 font-mono flex items-center gap-1 bg-white px-2 py-0.5 rounded border border-slate-200 cursor-pointer shadow-xs"
+                            onClick={() => handleCopyText(q.expectedAnswer || 'Optimal architectural response.', `model-${idx}`)}
+                            className="text-xs text-slate-300 hover:text-white font-mono flex items-center gap-1 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10 cursor-pointer"
                           >
-                            <span>{copiedKey === `model-${idx}` ? '✓ Copied' : '📋 Copy'}</span>
+                            {copiedKey === `model-${idx}` ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                            <span>{copiedKey === `model-${idx}` ? 'Copied' : 'Copy'}</span>
                           </button>
                         </div>
-                        <p className="text-slate-800 font-mono text-xs mt-0.5 whitespace-pre-wrap">
+                        <p className="text-slate-300 font-mono text-xs mt-0.5 whitespace-pre-wrap leading-relaxed">
                           {q.expectedAnswer || 'Optimal architectural and reasoning response.'}
                         </p>
                       </div>
@@ -898,34 +912,36 @@ export default function ReportPanel() {
 
                     {activeTab === 'top1' && (
                       <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-amber-900 font-bold uppercase text-xs">
-                            🥇 Staff Engineer / Top 1% Benchmark Answer
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-amber-400 font-bold uppercase text-xs font-mono">
+                            Staff Engineer / Top 1% Benchmark
                           </span>
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
                               onClick={() => handleCopyText(q.tierComparison?.staffTop1 || q.expectedAnswer, `top1-${idx}`)}
-                              className="text-xs text-amber-900 hover:text-black font-mono flex items-center gap-1 bg-white px-2 py-0.5 rounded border border-slate-200 cursor-pointer shadow-xs"
+                              className="text-xs text-slate-300 hover:text-white font-mono flex items-center gap-1 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10 cursor-pointer"
                             >
-                              <span>{copiedKey === `top1-${idx}` ? '✓ Copied' : '📋 Copy'}</span>
+                              {copiedKey === `top1-${idx}` ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                              <span>{copiedKey === `top1-${idx}` ? 'Copied' : 'Copy'}</span>
                             </button>
                             <button
                               type="button"
                               onClick={() =>
                                 playVoiceSpeech(
-                                  q.tierComparison?.staffTop1 || q.expectedAnswer || 'Demonstrates clear architectural trade-offs, quantitative SLA metrics, and failure recovery handling.',
+                                  q.tierComparison?.staffTop1 || q.expectedAnswer || 'Demonstrates clear architectural trade-offs and failure recovery handling.',
                                   idx,
                                   true
                                 )
                               }
-                              className="text-xs text-amber-800 hover:text-amber-950 font-semibold flex items-center gap-1 cursor-pointer"
+                              className="text-xs text-amber-300 hover:text-amber-200 font-semibold flex items-center gap-1 cursor-pointer"
                             >
-                              <span>{playingVoiceIdx === `${idx}-top` ? '⏹️ Stop Voice' : '🔊 Listen to Staff 1% Voice'}</span>
+                              <Volume2 className="w-3.5 h-3.5" />
+                              <span>{playingVoiceIdx === `${idx}-top` ? 'Stop Audio' : 'Listen to Staff 1% Voice'}</span>
                             </button>
                           </div>
                         </div>
-                        <p className="text-slate-800 font-mono text-xs mt-0.5 whitespace-pre-wrap">
+                        <p className="text-slate-300 font-mono text-xs mt-0.5 whitespace-pre-wrap leading-relaxed">
                           {q.tierComparison?.staffTop1 ||
                             q.expectedAnswer ||
                             'Demonstrates clear architectural trade-offs, quantitative SLA metrics, and failure recovery handling.'}
@@ -934,9 +950,9 @@ export default function ReportPanel() {
                     )}
 
                     {(displayFeedback || q.feedback) && (
-                      <div className="pt-2 border-t border-slate-200">
-                        <span className="text-teal-800 font-bold uppercase text-xs block">AI Assessment</span>
-                        <p className="text-slate-700 text-xs mt-0.5">{displayFeedback || q.feedback}</p>
+                      <div className="pt-2 border-t border-white/10">
+                        <span className="text-teal-400 font-bold uppercase text-xs block font-mono">AI Assessment</span>
+                        <p className="text-slate-300 text-xs mt-0.5 leading-relaxed">{displayFeedback || q.feedback}</p>
                       </div>
                     )}
                   </div>
@@ -947,15 +963,15 @@ export default function ReportPanel() {
         </div>
 
         {/* ── Retake Same Exam Action Banner ── */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-sm">
-          <div className="space-y-1 text-center sm:text-left">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-mono font-bold uppercase">
-              <span>🎯</span> Instant Re-Test & Skill Calibration
+        <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-2xl">
+          <div className="space-y-1.5 text-center sm:text-left">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/80 border border-teal-500/30 text-teal-300 text-xs font-mono font-bold uppercase">
+              <Sparkles className="w-3.5 h-3.5" /> Instant Re-Test & Calibration
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900">
+            <h3 className="text-base sm:text-lg font-bold text-white">
               Ready to improve your score for {targetRole || 'Software Engineer'}?
             </h3>
-            <p className="text-xs text-slate-500 max-w-xl">
+            <p className="text-xs text-slate-400 max-w-xl leading-relaxed">
               Retake this exact interview exam track ({difficultyLevel || 'Intermediate'} Level • {companyTrack || 'General'} Track) to apply your feedback, eliminate filler words, and boost your score.
             </p>
           </div>
@@ -963,46 +979,47 @@ export default function ReportPanel() {
           <div className="flex items-center gap-3 flex-shrink-0 flex-wrap justify-center">
             <button
               onClick={retakeSameExam}
-              className="py-3.5 px-6 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-98 cursor-pointer flex items-center gap-2"
+              className="py-3.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 text-xs sm:text-sm font-bold shadow-xl shadow-teal-500/20 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
             >
-              <span>🔄</span>
-              <span>Retake Same Exam Now</span>
+              <RotateCcw className="w-4 h-4" />
+              <span>Retake Same Exam</span>
             </button>
             <button
               onClick={restart}
-              className="py-3.5 px-5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition-all shadow-xs"
+              className="py-3.5 px-5 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-300 text-xs font-semibold cursor-pointer transition-all shadow-md"
             >
-              Start New Role Setup →
+              Start New Setup →
             </button>
           </div>
         </div>
       </main>
 
-      {/* ── Feature 11: 1-Page Printable Cheat Sheet Modal ── */}
+      {/* ── 1-Page Cheat Sheet Modal ── */}
       {showCheatSheet && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto text-left">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in text-left">
+          <div className="bg-[#131823] border border-white/10 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowCheatSheet(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-base cursor-pointer"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white text-base cursor-pointer"
             >
               ✕
             </button>
 
-            <div className="border-b border-slate-100 pb-3">
+            <div className="border-b border-white/10 pb-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <span>📄</span> 1-Page Interview Day Cheat Sheet
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-teal-400" />
+                  <span>1-Page Interview Day Cheat Sheet</span>
                 </h2>
-                <span className="text-xs font-mono text-teal-700 font-bold">{targetRole || 'Software Engineer'}</span>
+                <span className="text-xs font-mono text-teal-400 font-bold">{targetRole || 'Software Engineer'}</span>
               </div>
-              <p className="text-xs text-slate-500 mt-1">High-density summary tailored to your interview performance.</p>
+              <p className="text-xs text-slate-400 mt-1">High-density summary tailored to your interview performance.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-                <h3 className="font-bold text-teal-800 uppercase text-xs">⭐ STAR Formula Drill</h3>
-                <ul className="text-slate-700 space-y-1 text-xs">
+              <div className="bg-[#0D111A] p-4 rounded-xl border border-white/5 space-y-2">
+                <h3 className="font-bold text-teal-400 uppercase text-xs font-mono">STAR Formula Drill</h3>
+                <ul className="text-slate-300 space-y-1 text-xs">
                   <li><strong>S (Situation):</strong> Set context in 15 seconds.</li>
                   <li><strong>T (Task):</strong> Explain the blocker or challenge.</li>
                   <li><strong>A (Action):</strong> Use "I designed/built", not "we".</li>
@@ -1010,18 +1027,18 @@ export default function ReportPanel() {
                 </ul>
               </div>
 
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-                <h3 className="font-bold text-amber-800 uppercase text-xs">⚠️ Key Focus Areas</h3>
-                <ul className="text-slate-700 space-y-1 text-xs">
+              <div className="bg-[#0D111A] p-4 rounded-xl border border-white/5 space-y-2">
+                <h3 className="font-bold text-amber-400 uppercase text-xs font-mono">Key Focus Areas</h3>
+                <ul className="text-slate-300 space-y-1 text-xs">
                   {weaknessesList.map((w, i) => (
                     <li key={i}>• {w}</li>
                   ))}
                 </ul>
               </div>
 
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 sm:col-span-2">
-                <h3 className="font-bold text-emerald-800 uppercase text-xs">💡 Golden Rules for {companyTrack || 'General'} Track</h3>
-                <p className="text-slate-700 text-xs leading-relaxed">
+              <div className="bg-[#0D111A] p-4 rounded-xl border border-white/5 space-y-2 sm:col-span-2">
+                <h3 className="font-bold text-emerald-400 uppercase text-xs font-mono">Golden Rules for {companyTrack || 'General'} Track</h3>
+                <p className="text-slate-300 text-xs leading-relaxed">
                   1. Always state O(N) time and auxiliary space complexity before coding.<br />
                   2. In system design, outline Load Balancers, Redis Cache & Database Sharding trade-offs first.<br />
                   3. Avoid filler words by taking 2-second silent pauses to structure thoughts.
@@ -1032,16 +1049,17 @@ export default function ReportPanel() {
             <div className="pt-2 flex items-center justify-end gap-3">
               <button
                 onClick={() => window.print()}
-                className="py-2.5 px-5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-md cursor-pointer"
+                className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 text-xs font-bold shadow-md cursor-pointer flex items-center gap-1.5"
               >
-                🖨️ Print Cheat Sheet
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print Cheat Sheet</span>
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── Feature 6: Cryptographic Verified Skill Passport Modal ── */}
+      {/* ── Skill Passport Modal ── */}
       <SkillPassportModal
         isOpen={showPassportModal}
         onClose={() => setShowPassportModal(false)}
@@ -1051,8 +1069,6 @@ export default function ReportPanel() {
         companyTrack={companyTrack}
         difficultyLevel={difficultyLevel}
       />
-
-      <footer className="py-4 border-t border-slate-200 bg-white text-center" />
     </div>
   );
 }

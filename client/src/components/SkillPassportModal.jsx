@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { ShieldCheck, Lock, User, CheckCircle2, Sparkles, Brain, Code2, Users, Activity, Copy, Check } from 'lucide-react';
 
 export default function SkillPassportModal({ isOpen, onClose, report, user, targetRole = 'Software Engineer', companyTrack = 'Amazon', difficultyLevel = 'Intermediate' }) {
   const [isAnonymous, setIsAnonymous] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
@@ -23,100 +25,114 @@ export default function SkillPassportModal({ isOpen, onClose, report, user, targ
     return hash;
   }
 
+  const handleCopyLink = () => {
+    navigator.clipboard?.writeText(`https://ai-interview-evaluator.app/passport/${passportId}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in text-left">
-      <div className="bg-white border border-slate-200 max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[92vh] overflow-y-auto rounded-3xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in text-left">
+      <div className="bg-[#131823] border border-white/10 max-w-xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[92vh] overflow-y-auto rounded-3xl">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg font-bold cursor-pointer"
+          className="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold cursor-pointer"
         >
           ✕
         </button>
 
         {/* Top Header & Anti-Bias Toggle */}
-        <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-100">
+        <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-white/10">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-teal-800 bg-teal-50 border border-teal-200 px-2.5 py-0.5 rounded-full inline-block">
-              🌐 PROOF-OF-SKILL PASSPORT
+            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-teal-300 bg-teal-950/80 border border-teal-500/30 px-3 py-1 rounded-full inline-flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-teal-400" /> PROOF-OF-SKILL PASSPORT
             </span>
-            <h2 className="text-lg sm:text-xl font-black text-slate-900 mt-1">
+            <h2 className="text-lg sm:text-xl font-extrabold text-white mt-1.5">
               Verified Technical Skill Passport
             </h2>
           </div>
 
-          {/* Anti-Bias Toggle Button */}
           <button
             type="button"
             onClick={() => setIsAnonymous(!isAnonymous)}
-            className={`text-xs px-3 py-1.5 rounded-xl border font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
+            className={`text-xs px-3.5 py-1.5 rounded-xl border font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
               isAnonymous
-                ? 'border-teal-300 bg-teal-50 text-teal-900'
-                : 'border-emerald-300 bg-emerald-50 text-emerald-900'
+                ? 'border-teal-500/40 bg-teal-950/80 text-teal-300'
+                : 'border-emerald-500/40 bg-emerald-950/80 text-emerald-300'
             }`}
           >
-            <span>{isAnonymous ? '🔒 Anti-Bias (Anonymous)' : '👤 Public (Real Name)'}</span>
+            {isAnonymous ? <Lock className="w-3.5 h-3.5" /> : <User className="w-3.5 h-3.5" />}
+            <span>{isAnonymous ? 'Anti-Bias (Anonymous)' : 'Public (Real Name)'}</span>
           </button>
         </div>
 
-        {/* ── Official Skill Passport Certificate Card ── */}
-        <div className="p-6 rounded-2xl border-2 border-teal-200 bg-gradient-to-b from-teal-50/40 via-white to-slate-50 space-y-4 shadow-sm relative overflow-hidden">
+        {/* Certificate Card */}
+        <div className="p-6 rounded-2xl border-2 border-teal-500/40 bg-gradient-to-b from-[#171E2D] via-[#131823] to-[#0D111A] space-y-4 shadow-xl relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-teal-100 border border-teal-300 flex items-center justify-center text-xl shadow-xs">
-                🌐
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-teal-950 border border-teal-500/40 flex items-center justify-center text-teal-400">
+                <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-black text-slate-900">{candidateDisplayName}</p>
-                <p className="text-[11px] font-mono text-teal-700 font-bold">{passportId}</p>
+                <p className="text-sm font-extrabold text-white">{candidateDisplayName}</p>
+                <p className="text-[11px] font-mono text-teal-400 font-bold">{passportId}</p>
               </div>
             </div>
 
             <div className="text-right">
-              <span className="text-[10px] uppercase font-bold text-slate-500 block">Overall Score</span>
-              <p className="text-2xl font-black text-slate-900 font-mono">{overallScoreVal}<span className="text-xs text-slate-500">/100</span></p>
+              <span className="text-[10px] uppercase font-bold text-slate-400 block font-mono">Overall Score</span>
+              <p className="text-2xl font-black text-white font-mono">{overallScoreVal}<span className="text-xs text-slate-500 font-normal">/100</span></p>
             </div>
           </div>
 
-          <div className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between text-xs font-sans">
-            <span className="text-slate-600">Target Role: <strong className="text-slate-900">{targetRole}</strong></span>
-            <span className="text-teal-800 font-bold bg-teal-50 px-2 py-0.5 rounded border border-teal-200">{companyTrack} Track</span>
+          <div className="p-3 bg-[#0D111A] rounded-xl border border-white/5 flex items-center justify-between text-xs font-mono">
+            <span className="text-slate-300">Target Role: <strong className="text-white">{targetRole}</strong></span>
+            <span className="text-teal-300 font-bold bg-teal-950 px-2 py-0.5 rounded border border-teal-500/30">{companyTrack} Track</span>
           </div>
 
-          {/* 4 Core Pillar Scores */}
+          {/* 4 Pillars */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-            <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-xs">
-              <p className="text-[10px] text-slate-600 uppercase font-bold">🧠 Aptitude</p>
-              <p className="text-base font-black text-blue-700 mt-0.5">{aptScore}%</p>
+            <div className="p-3 bg-[#0D111A] rounded-xl border border-white/5">
+              <p className="text-[10px] text-slate-400 uppercase font-bold flex items-center justify-center gap-1">
+                <Brain className="w-3 h-3 text-blue-400" /> Aptitude
+              </p>
+              <p className="text-base font-black text-blue-400 mt-1 font-mono">{aptScore}%</p>
             </div>
-            <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-xs">
-              <p className="text-[10px] text-slate-600 uppercase font-bold">💻 Technical</p>
-              <p className="text-base font-black text-purple-700 mt-0.5">{techScore}%</p>
+            <div className="p-3 bg-[#0D111A] rounded-xl border border-white/5">
+              <p className="text-[10px] text-slate-400 uppercase font-bold flex items-center justify-center gap-1">
+                <Code2 className="w-3 h-3 text-teal-400" /> Technical
+              </p>
+              <p className="text-base font-black text-teal-400 mt-1 font-mono">{techScore}%</p>
             </div>
-            <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-xs">
-              <p className="text-[10px] text-slate-600 uppercase font-bold">🤝 HR Fit</p>
-              <p className="text-base font-black text-emerald-700 mt-0.5">{hrScore}%</p>
+            <div className="p-3 bg-[#0D111A] rounded-xl border border-white/5">
+              <p className="text-[10px] text-slate-400 uppercase font-bold flex items-center justify-center gap-1">
+                <Users className="w-3 h-3 text-amber-400" /> STAR Fit
+              </p>
+              <p className="text-base font-black text-amber-400 mt-1 font-mono">{hrScore}%</p>
             </div>
-            <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-xs">
-              <p className="text-[10px] text-slate-600 uppercase font-bold">👁️ Presence</p>
-              <p className="text-base font-black text-teal-700 mt-0.5">{presenceScore}%</p>
+            <div className="p-3 bg-[#0D111A] rounded-xl border border-white/5">
+              <p className="text-[10px] text-slate-400 uppercase font-bold flex items-center justify-center gap-1">
+                <Activity className="w-3 h-3 text-emerald-400" /> Presence
+              </p>
+              <p className="text-base font-black text-emerald-400 mt-1 font-mono">{presenceScore}%</p>
             </div>
           </div>
 
-          {/* Verification Hash & Security Seal */}
-          <div className="pt-2 flex items-center justify-between text-[11px] text-slate-600 font-mono border-t border-slate-200">
-            <span>✓ Verified by AI Multimodal Vision Engine</span>
-            <span className="text-teal-800 font-bold">STATUS: VALID</span>
+          <div className="pt-2 flex items-center justify-between text-[10px] text-slate-400 font-mono border-t border-white/5">
+            <span>Cryptographic Proof Engine V3</span>
+            <span className="text-teal-400 font-bold">STATUS: AUTHENTICATED ✓</span>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="space-y-2.5">
+        {/* Action Row */}
+        <div className="flex items-center gap-3">
           <button
-            onClick={() => window.print()}
-            className="w-full py-3 text-xs text-white bg-teal-600 hover:bg-teal-500 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+            type="button"
+            onClick={handleCopyLink}
+            className="flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-bold text-xs shadow-md transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
           >
-            <span>🖨️</span>
-            <span>Export / Print High-Resolution Skill Passport PDF</span>
+            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            <span>{copied ? 'Verification URL Copied!' : 'Copy Shareable Passport Link'}</span>
           </button>
         </div>
       </div>
