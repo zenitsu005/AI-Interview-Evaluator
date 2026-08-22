@@ -34,6 +34,7 @@ import {
   Layers,
   Activity,
   Bug,
+  Bot,
 } from 'lucide-react';
 
 const READINESS = {
