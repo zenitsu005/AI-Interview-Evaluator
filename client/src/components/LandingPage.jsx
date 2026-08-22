@@ -43,12 +43,6 @@ export default function LandingPage({ onNavigate }) {
           {/* Subtle Ambient Backlight Glow */}
           <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-96 h-44 bg-teal-500/15 rounded-full blur-[100px] pointer-events-none" />
 
-          {/* 1. Refined Badge Pill */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-950/60 px-4 py-1.5 text-xs font-semibold text-teal-300 shadow-lg shadow-teal-950/60 backdrop-blur-xl">
-            <Sparkles className="w-3.5 h-3.5 text-teal-400 animate-pulse" />
-            <span>Ek bar aaoge, job leke jaoge</span>
-          </div>
-
           {/* Headline with Professional Gradient */}
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.14]">
             Fail safely in simulation.{" "}
