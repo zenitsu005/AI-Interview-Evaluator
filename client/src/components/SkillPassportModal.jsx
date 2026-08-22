@@ -119,8 +119,8 @@ export default function SkillPassportModal({ isOpen, onClose, report, user, targ
           </div>
 
           <div className="pt-2 flex items-center justify-between text-[10px] text-slate-400 font-mono border-t border-white/5">
-            <span>Cryptographic Proof Engine V3</span>
-            <span className="text-teal-400 font-bold">STATUS: AUTHENTICATED ✓</span>
+            <span>Skill Verification Record</span>
+            <span className="text-teal-400 font-bold">STATUS: VERIFIED</span>
           </div>
         </div>
 

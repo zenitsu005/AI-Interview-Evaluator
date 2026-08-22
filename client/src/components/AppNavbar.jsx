@@ -65,14 +65,9 @@ export default function AppNavbar({ currentActive = 'landing' }) {
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 font-extrabold text-slate-950 text-xs shadow-lg shadow-teal-500/20 group-hover:scale-105 transition-transform">
             <Sparkles className="w-5 h-5" />
           </div>
-          <div className="flex flex-col">
-            <span className="font-bold tracking-tight text-white text-sm sm:text-base leading-none">
-              AI Interview Evaluator
-            </span>
-            <span className="text-[10px] text-teal-400/90 font-mono font-medium tracking-wide mt-0.5">
-              Production Suite
-            </span>
-          </div>
+          <span className="font-bold tracking-tight text-white text-sm sm:text-base">
+            AI Interview Evaluator
+          </span>
         </button>
 
         {/* Desktop Navigation */}
@@ -146,7 +141,7 @@ export default function AppNavbar({ currentActive = 'landing' }) {
                 onClick={() => handleSelectModule('setup')}
                 className="shadow-lg shadow-teal-500/20"
               >
-                Start Simulator →
+                Start Interview →
               </Button>
             </div>
           )}
@@ -171,7 +166,7 @@ export default function AppNavbar({ currentActive = 'landing' }) {
               onClick={() => handleSelectModule('setup')}
               className="w-full text-left py-2.5 px-3 rounded-xl hover:bg-white/5 text-sm font-semibold text-white flex items-center justify-between"
             >
-              <span>Mock Interview Simulator</span>
+              <span>Mock Interview</span>
               <ChevronRight className="w-4 h-4 text-slate-500" />
             </button>
             <button
@@ -227,7 +222,7 @@ export default function AppNavbar({ currentActive = 'landing' }) {
                   onClick={() => handleSelectModule('setup')}
                   className="flex-1"
                 >
-                  Start Simulator
+                  Start Interview
                 </Button>
               </>
             ) : (

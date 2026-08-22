@@ -27,9 +27,6 @@ export function HowItWorksPage({ onNavigate }) {
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-12 text-left flex-1">
         {/* Header */}
         <div className="space-y-4 border-b border-white/10 pb-8">
-          <span className="text-xs font-bold font-mono uppercase tracking-wider text-teal-400">
-            Methodology & Transparency Disclosures
-          </span>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
             How Evaluation Works
           </h1>
@@ -129,9 +126,6 @@ export function PrivacyPage({ onNavigate }) {
 
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-10 text-left flex-1">
         <div className="space-y-3 border-b border-white/10 pb-8">
-          <span className="text-xs font-bold font-mono uppercase tracking-wider text-teal-400">
-            Privacy-by-Design Commitment
-          </span>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
             Privacy Policy & Data Controls
           </h1>
@@ -226,9 +220,6 @@ export function SecurityPage({ onNavigate }) {
 
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-8 text-left flex-1">
         <div className="space-y-3 border-b border-white/10 pb-8">
-          <span className="text-xs font-bold font-mono uppercase tracking-wider text-teal-400">
-            Infrastructure Protection
-          </span>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
             Security Architecture & Code Sandboxing
           </h1>
@@ -272,9 +263,6 @@ export function AccessibilityPage({ onNavigate }) {
 
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-8 text-left flex-1">
         <div className="space-y-3 border-b border-white/10 pb-8">
-          <span className="text-xs font-bold font-mono uppercase tracking-wider text-teal-400">
-            WCAG 2.2 AA Commitment
-          </span>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
             Accessibility Statement
           </h1>
@@ -382,9 +370,6 @@ export function AnalyticsPage({ onNavigate }) {
       <main className="max-w-5xl mx-auto w-full px-6 py-12 space-y-8 text-left flex-1">
         <div className="space-y-3 border-b border-white/10 pb-8 flex items-center justify-between flex-wrap gap-4">
           <div>
-            <span className="text-xs font-bold font-mono uppercase tracking-wider text-teal-400">
-              Candidate Progress Log
-            </span>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
               Score Analytics & Practice History
             </h1>

@@ -86,9 +86,6 @@ export default function LandingPage({ onNavigate }) {
               <Layers className="w-6 h-6 text-teal-400" />
               <span>Targeted Practice Studios</span>
             </h2>
-            <span className="text-xs font-mono text-slate-400 hidden sm:inline">
-              Production Simulator V3
-            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -225,7 +222,7 @@ export default function LandingPage({ onNavigate }) {
               <span className="font-extrabold text-white text-sm">AI Interview Evaluator</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-relaxed text-pretty">
-              High-fidelity AI interview simulation suite engineered for modern software engineers.
+              Practice technical, coding, and behavioral interviews with real-time AI feedback.
             </p>
           </div>
 

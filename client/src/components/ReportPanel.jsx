@@ -356,7 +356,7 @@ export default function ReportPanel() {
             className="py-2 px-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
           >
             <Briefcase className="w-3.5 h-3.5" />
-            <span>Salary Simulator</span>
+            <span>Salary Negotiation</span>
           </button>
           <button
             onClick={openHistory}

@@ -225,10 +225,6 @@ export default function CodeSandbox({ code, onChange, onRun }) {
               <span>Complexity Guard</span>
             </button>
           </div>
-
-          <span className="text-[10px] font-mono text-teal-400/80 font-bold hidden sm:inline">
-            Sandbox V3 Runtime
-          </span>
         </div>
 
         {/* Tab 1: Terminal Console Output */}
