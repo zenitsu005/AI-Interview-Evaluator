@@ -16,6 +16,7 @@ import {
   Layers,
   UserCheck,
   Shield,
+  Brain,
 } from 'lucide-react';
 
 const ROLES = [
@@ -371,8 +372,8 @@ export default function InterviewSetup({ onNavigate }) {
                             : 'bg-[#131823] border-white/10 hover:border-white/20 text-slate-300'
                         }`}
                       >
-                        <div className="w-12 h-12 rounded-2xl bg-[#171E2D] border border-white/10 flex items-center justify-center text-2xl flex-shrink-0">
-                          {p.avatar || '👔'}
+                        <div className="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400 flex-shrink-0 shadow-md">
+                          <Brain className="w-6 h-6 text-teal-400" />
                         </div>
                         <div className="space-y-1 flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
