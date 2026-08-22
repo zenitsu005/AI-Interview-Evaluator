@@ -67,7 +67,7 @@ export default function AnalyticsTrendSection({ history = [], currentReport = nu
       subtopics: ['Idempotency & Queues', 'CAP & Sharding Trade-offs', 'High Concurrency Bottlenecks'],
     },
     {
-      category: 'STAR Leadership & Behavioral Fit',
+      category: 'HR Round',
       icon: Users,
       score: latestSession.hr,
       level: latestSession.hr >= 85 ? 'Master' : latestSession.hr >= 70 ? 'Proficient' : 'Developing',

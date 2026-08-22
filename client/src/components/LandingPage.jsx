@@ -107,7 +107,7 @@ export default function LandingPage({ onNavigate }) {
                     Full AI Interview Simulator
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-400 leading-relaxed mt-2 text-pretty">
-                    Simulate all core rounds: Aptitude Logic, Technical Depth, System Architecture, and STAR Behavioral Fit with live audio debriefs.
+                    Simulate all core rounds: Aptitude Logic, Technical Depth, System Architecture, and HR Round with live audio debriefs.
                   </p>
                 </div>
               </div>

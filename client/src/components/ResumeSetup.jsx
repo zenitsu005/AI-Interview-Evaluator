@@ -32,7 +32,7 @@ const DIFFICULTY_LEVELS = [
 ];
 
 const COMPANY_TRACKS = [
-  { id: 'General', label: '🌐 Standard Industry Bar', sub: 'Balanced technical & STAR behavioral questions' },
+  { id: 'General', label: '🌐 Standard Industry Bar', sub: 'Balanced technical & HR round questions' },
   { id: 'Google', label: '🔴 Google Track', sub: 'Algorithmic efficiency, time complexity & Googlyness' },
   { id: 'Amazon', label: '🟠 Amazon Bar-Raiser', sub: '16 Leadership Principles, STAR drills & AWS scaling' },
   { id: 'McKinsey', label: '💼 McKinsey / Consulting', sub: 'Case studies, market sizing & quantitative logic' },

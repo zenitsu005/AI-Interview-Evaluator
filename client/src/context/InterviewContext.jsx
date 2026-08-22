@@ -129,7 +129,7 @@ export const InterviewProvider = ({ children }) => {
   const ROUNDS = [
     { id: 'aptitude', label: 'Aptitude & Logic', total: questionsPerRound, color: 'blue' },
     { id: 'technical', label: 'Technical', total: questionsPerRound, color: 'purple' },
-    { id: 'hr', label: 'HR & Behavioral', total: questionsPerRound, color: 'green' },
+    { id: 'hr', label: 'HR Round', total: questionsPerRound, color: 'green' },
   ];
 
 
@@ -461,9 +461,9 @@ const generateInstantOpeningQuestion = (role, level, persona) => {
                 'Explicitly state edge-case boundary conditions upfront before proposing final architecture',
               ],
               roundScores: [
-                { round: 'Aptitude & Logic', score: 90, feedback: 'Strong deductive reasoning and clear problem decomposition.' },
-                { round: 'Technical Architecture', score: 86, feedback: 'Good distributed systems trade-off analysis and modular design.' },
-                { round: 'HR & Behavioral', score: 88, feedback: 'High ownership and customer obsession alignment.' },
+                { round: 'Aptitude & Logic', score: 92, feedback: 'Strong computational thinking and analytical problem solving.' },
+                { round: 'Technical Depth', score: 85, feedback: 'Deep algorithmic understanding and production architecture.' },
+                { round: 'HR Round', score: 88, feedback: 'High ownership, teamwork, and clear communication alignment.' },
               ],
             };
           }

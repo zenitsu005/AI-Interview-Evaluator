@@ -533,7 +533,7 @@ export default function ReportPanel() {
             />
             <ScoreCard
               icon={Users}
-              label="HR & Behavioral"
+              label="HR Round"
               score={report.hrScore}
               feedback={report.hrFeedback}
               barColor="bg-amber-500"

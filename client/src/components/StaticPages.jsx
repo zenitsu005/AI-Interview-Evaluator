@@ -48,7 +48,7 @@ export function HowItWorksPage({ onNavigate }) {
               </div>
               <h3 className="text-base font-bold text-white">Select Role & Format</h3>
               <p className="text-xs text-slate-400 leading-relaxed text-pretty">
-                Configure your target level and choose from DSA, System Design, Bug Hunting, or STAR Behavioral.
+                Configure your target level and choose from DSA, System Design, Bug Hunting, or HR Round.
               </p>
               <span className="text-[11px] font-mono text-teal-400/80 block pt-2">Duration: 5 – 60 min</span>
             </div>

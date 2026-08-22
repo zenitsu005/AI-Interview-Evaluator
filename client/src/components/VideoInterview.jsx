@@ -30,7 +30,7 @@ import {
 const ROUND_CONFIG = {
   aptitude: { label: 'Aptitude & Logic', color: 'bg-blue-950/80 text-blue-300 border-blue-500/40', icon: Brain },
   technical: { label: 'Technical Depth', color: 'bg-teal-950/80 text-teal-300 border-teal-500/40', icon: Code2 },
-  hr: { label: 'STAR Behavioral Fit', color: 'bg-amber-950/80 text-amber-300 border-amber-500/40', icon: Users },
+  hr: { label: 'HR Round', color: 'bg-amber-950/80 text-amber-300 border-amber-500/40', icon: Users },
 };
 
 export default function VideoInterview() {

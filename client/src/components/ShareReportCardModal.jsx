@@ -92,7 +92,7 @@ export default function ShareReportCardModal({
     const metrics = [
       { label: 'Aptitude & Logic', val: `${aptScore}%`, x: 400, y: 280, color: '#60A5FA' },
       { label: 'Technical Depth', val: `${techScore}%`, x: 770, y: 280, color: '#2DD4BF' },
-      { label: 'STAR Behavioral Fit', val: `${hrScore}%`, x: 400, y: 410, color: '#FBBF24' },
+      { label: 'HR Round', val: `${hrScore}%`, x: 400, y: 410, color: '#FBBF24' },
       { label: 'Presence & Delivery', val: `${presenceScore}%`, x: 770, y: 410, color: '#34D399' },
     ];
 

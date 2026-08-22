@@ -4,7 +4,7 @@ import { useInterview } from '../context/InterviewContext';
 const ROUND_CONFIG = {
   aptitude: { label: 'Aptitude & Logic', color: 'bg-blue-50 text-blue-700 border-blue-200', emoji: '🧠' },
   technical: { label: 'Technical', color: 'bg-purple-50 text-purple-700 border-purple-200', emoji: '💻' },
-  hr: { label: 'HR & Behavioral', color: 'bg-emerald-50 text-emerald-700 border-emerald-200', emoji: '🤝' },
+  hr: { label: 'HR Round', color: 'bg-emerald-50 text-emerald-700 border-emerald-200', emoji: '👥' },
 };
 
 export default function InterviewChat() {
