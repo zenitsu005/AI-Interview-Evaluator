@@ -114,7 +114,7 @@ export default function LandingPage({ onNavigate }) {
 
               <div className="pt-6">
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-400 group-hover:text-teal-300">
-                  <span>Start Full Mock Interview</span>
+                  <span className="group-hover:underline">Start Full Mock Interview</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
@@ -142,7 +142,7 @@ export default function LandingPage({ onNavigate }) {
 
               <div className="pt-6">
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-400 group-hover:text-teal-300">
-                  <span>Practice Coding</span>
+                  <span className="group-hover:underline">Practice Coding</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
@@ -170,7 +170,7 @@ export default function LandingPage({ onNavigate }) {
 
               <div className="pt-6">
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-400 group-hover:text-teal-300">
-                  <span>Debug Code Snippets</span>
+                  <span className="group-hover:underline">Debug Code Snippets</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
@@ -198,7 +198,7 @@ export default function LandingPage({ onNavigate }) {
 
               <div className="pt-6">
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-400 group-hover:text-teal-300">
-                  <span>Negotiate Compensation</span>
+                  <span className="group-hover:underline">Negotiate Compensation</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
@@ -226,7 +226,7 @@ export default function LandingPage({ onNavigate }) {
 
               <div className="pt-6">
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-400 group-hover:text-teal-300">
-                  <span>Audit & Scorer</span>
+                  <span className="group-hover:underline">Audit & Scorer</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
@@ -254,7 +254,7 @@ export default function LandingPage({ onNavigate }) {
 
               <div className="pt-6">
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-400 group-hover:text-teal-300">
-                  <span>Start Rapid Blitz</span>
+                  <span className="group-hover:underline">Start Rapid Blitz</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
