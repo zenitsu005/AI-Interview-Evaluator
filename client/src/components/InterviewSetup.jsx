@@ -81,21 +81,21 @@ const POPULAR_CHIPS = [
 const LEVELS = [
   {
     id: 'Beginner',
-    label: 'Foundational (L3)',
+    label: 'Junior / Entry Level',
     color: 'border-teal-500/40 text-teal-400 bg-teal-950/40',
-    desc: 'Core data structures, gentle probing, and standard fundamentals.',
+    desc: 'Core data structures, fundamental concepts, and standard problem solving.',
   },
   {
     id: 'Intermediate',
-    label: 'Standard Production (L4/L5)',
+    label: 'Mid-Level Engineer',
     color: 'border-cyan-500/40 text-cyan-400 bg-cyan-950/40',
-    desc: 'Realistic production systems, edge-case resilience, and optimal complexity.',
+    desc: 'Real-world scenarios, edge-case handling, and optimal time complexity.',
   },
   {
     id: 'Experienced',
-    label: 'Staff Level (L6+)',
+    label: 'Senior / Lead Engineer',
     color: 'border-amber-500/40 text-amber-400 bg-amber-950/40',
-    desc: 'Distributed trade-offs, catastrophic failure recovery, and deep architectural probing.',
+    desc: 'System architecture trade-offs, scalability, and deep technical probing.',
   },
 ];
 
