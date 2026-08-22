@@ -25,8 +25,9 @@ import {
 } from 'lucide-react';
 
 export default function ProfilePage() {
-  const { user, logout, updateUserProfile } = useAuth();
-  const { history, setPhase, setReport, setRole, setDifficultyLevel } = useInterview();
+  const { user, history: authHistory, logout, updateUserProfile } = useAuth();
+  const { setPhase, setReport, setRole, setDifficultyLevel } = useInterview();
+  const history = Array.isArray(authHistory) ? authHistory : [];
   const [showShareModal, setShowShareModal] = useState(false);
   const [selectedShareReport, setSelectedShareReport] = useState(null);
 

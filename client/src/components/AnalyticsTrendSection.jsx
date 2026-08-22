@@ -2,8 +2,9 @@ import React from 'react';
 import { Compass, TrendingUp, BarChart3, Activity, Brain, Code2, Users, Radio, CheckCircle2 } from 'lucide-react';
 
 export default function AnalyticsTrendSection({ history = [], currentReport = null, targetRole = 'Software Engineer' }) {
-  const sessions = history.length > 0
-    ? history.slice(-5)
+  const safeHistory = Array.isArray(history) ? history : [];
+  const sessions = safeHistory.length > 0
+    ? safeHistory.slice(-5)
     : [
         {
           date: 'Initial Assessment',
