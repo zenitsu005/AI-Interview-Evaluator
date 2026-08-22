@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AppNavbar from './AppNavbar';
 import { useAuth } from '../context/AuthContext';
+import { useInterview } from '../context/InterviewContext';
 import {
   Sparkles,
   ShieldCheck,
@@ -366,6 +367,7 @@ export function SupportPage({ onNavigate }) {
 // ─────────────────────────────────────────────────────────────
 export function AnalyticsPage({ onNavigate }) {
   const { user, history } = useAuth();
+  const { viewPastReport } = useInterview();
   const userHistory = Array.isArray(history) ? history : [];
   const completedCount = userHistory.length;
 
@@ -394,12 +396,6 @@ export function AnalyticsPage({ onNavigate }) {
             <span>Start New Mock Session</span>
             <ArrowRight className="w-4 h-4" />
           </button>
-        </div>
-
-        {/* Disclaimer Notice */}
-        <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl text-xs text-slate-400 shadow-sm flex items-center gap-2.5 backdrop-blur-md">
-          <Info className="w-4 h-4 text-teal-400 flex-shrink-0" />
-          <span><strong>Note on Analytics:</strong> Practice scores represent coaching performance signals on specific prompts. They are designed to track practice progress over time, not to predict hiring outcomes.</span>
         </div>
 
         {/* Practice Module Breakdown */}
@@ -474,25 +470,30 @@ export function AnalyticsPage({ onNavigate }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/50 text-slate-300">
-                  {userHistory.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-white/5 transition-colors">
-                      <td className="p-4 text-slate-400">{item.date ? new Date(item.date).toLocaleDateString() : 'Today'}</td>
-                      <td className="p-4 text-white font-bold">{item.targetRole || item.module || 'Mock Interview'}</td>
-                      <td className="p-4 text-teal-400">{item.difficultyLevel || 'Standard'}</td>
-                      <td className="p-4 font-bold text-emerald-400">
-                        {item.overallScore ? `${item.overallScore}%` : (item.hiringDecision || 'Completed')}
-                      </td>
-                      <td className="p-4">
-                        <button
-                          onClick={() => onNavigate('setup')}
-                          className="text-teal-400 hover:text-teal-300 cursor-pointer flex items-center gap-1 font-sans font-bold"
-                        >
-                          <span>Review</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {userHistory.map((item, idx) => {
+                    const displayScore = item.overallScore !== undefined && item.overallScore !== null
+                      ? `${item.overallScore}%`
+                      : (item.hiringDecision || 'Completed');
+                    return (
+                      <tr key={idx} className="hover:bg-white/5 transition-colors">
+                        <td className="p-4 text-slate-400">{item.date ? new Date(item.date).toLocaleDateString() : 'Today'}</td>
+                        <td className="p-4 text-white font-bold">{item.targetRole || item.module || 'Mock Interview'}</td>
+                        <td className="p-4 text-teal-400">{item.difficultyLevel || 'Standard'}</td>
+                        <td className="p-4 font-bold text-emerald-400">
+                          {displayScore}
+                        </td>
+                        <td className="p-4">
+                          <button
+                            onClick={() => viewPastReport(item)}
+                            className="text-teal-400 hover:text-teal-300 cursor-pointer flex items-center gap-1 font-sans font-bold hover:underline"
+                          >
+                            <span>Review</span>
+                            <ChevronRight className="w-3 h-3" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
