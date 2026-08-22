@@ -162,14 +162,10 @@ export default function VideoInterview() {
         audio: false,
       });
       streamRef.current = s;
+      setCamReady(true);
       if (videoRef.current) {
         videoRef.current.srcObject = s;
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current.play().catch(() => {});
-          setCamReady(true);
-        };
-      } else {
-        setCamReady(true);
+        videoRef.current.play().catch(() => {});
       }
     } catch (err) {
       console.warn('Camera notice:', err);
@@ -179,9 +175,25 @@ export default function VideoInterview() {
     }
   };
 
+  const attachVideoStream = (node) => {
+    videoRef.current = node;
+    if (node && streamRef.current && streamRef.current.active) {
+      if (node.srcObject !== streamRef.current) {
+        node.srcObject = streamRef.current;
+        node.play().catch(() => {});
+      }
+    }
+  };
+
   useEffect(() => {
     if (!virtualMode) {
-      startCamera();
+      if (!streamRef.current || !streamRef.current.active) {
+        startCamera();
+      } else if (videoRef.current && videoRef.current.srcObject !== streamRef.current) {
+        videoRef.current.srcObject = streamRef.current;
+        videoRef.current.play().catch(() => {});
+        setCamReady(true);
+      }
     }
     return () => {
       if (streamRef.current) {
@@ -192,7 +204,7 @@ export default function VideoInterview() {
       }
       voiceAssistant.stop();
     };
-  }, []);
+  }, [meetingLayout, virtualMode]);
 
   const speakText = (text) => {
     if (!text) return;
@@ -559,7 +571,7 @@ export default function VideoInterview() {
                   </div>
                 ) : (
                   <video
-                    ref={videoRef}
+                    ref={attachVideoStream}
                     autoPlay
                     playsInline
                     muted
