@@ -54,7 +54,7 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   }, [mobileMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-[#0B0F14]/85 backdrop-blur-2xl transition-all text-slate-100">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0B0D13]/85 backdrop-blur-2xl transition-all text-slate-100">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Brand Logo */}
         <button
@@ -62,10 +62,10 @@ export default function AppNavbar({ currentActive = 'landing' }) {
           onClick={() => handleSelectModule('landing')}
           className="flex items-center gap-3 cursor-pointer select-none group text-left border-none bg-transparent"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-400 to-emerald-400 text-slate-950 font-extrabold shadow-[0_0_15px_rgba(45,212,191,0.3)] group-hover:scale-105 transition-transform">
-            <Sparkles className="w-5 h-5 text-slate-950" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 font-extrabold text-slate-950 text-xs shadow-lg shadow-teal-500/20 group-hover:scale-105 transition-transform">
+            <Sparkles className="w-5 h-5" />
           </div>
-          <span className="font-extrabold tracking-tight text-white text-base sm:text-lg">
+          <span className="font-bold tracking-tight text-white text-sm sm:text-base">
             AI Interview Evaluator
           </span>
         </button>
@@ -110,16 +110,16 @@ export default function AppNavbar({ currentActive = 'landing' }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleSelectModule('profile')}
-                className="flex items-center gap-2 bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/80 px-3.5 py-1.5 rounded-full transition-all text-xs font-semibold text-slate-200 cursor-pointer"
+                className="flex items-center gap-2 bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 px-3.5 py-1.5 rounded-xl transition-all text-xs font-semibold text-slate-200 cursor-pointer"
               >
-                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-teal-400 to-emerald-400 flex items-center justify-center text-[10px] font-bold text-slate-950">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-teal-500 to-cyan-400 flex items-center justify-center text-[10px] font-bold text-slate-950">
                   {user?.name ? user.name[0].toUpperCase() : 'U'}
                 </div>
                 <span>{user?.name?.split(' ')[0]}</span>
               </button>
               <button
                 onClick={logout}
-                className="text-xs text-slate-400 hover:text-rose-400 border border-slate-800/80 bg-slate-900/60 hover:bg-rose-950/30 px-3 py-1.5 rounded-full transition-colors cursor-pointer flex items-center gap-1"
+                className="text-xs text-slate-400 hover:text-rose-400 border border-white/10 bg-[#131823] hover:bg-rose-950/30 px-3 py-1.5 rounded-xl transition-colors cursor-pointer flex items-center gap-1"
                 title="Log out"
               >
                 <LogOut className="w-3.5 h-3.5" />
@@ -135,14 +135,14 @@ export default function AppNavbar({ currentActive = 'landing' }) {
                 <LogIn className="w-4 h-4 text-teal-400" />
                 <span>Log In</span>
               </button>
-              <button
-                type="button"
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={() => handleSelectModule('setup')}
-                className="rounded-full px-5 py-2 bg-gradient-to-r from-teal-400 to-emerald-400 hover:from-teal-300 hover:to-emerald-300 text-slate-950 font-extrabold text-xs shadow-[0_0_20px_rgba(45,212,191,0.35)] hover:shadow-[0_0_25px_rgba(45,212,191,0.5)] transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
+                className="shadow-lg shadow-teal-500/20"
               >
-                <span>Start Interview</span>
-                <span className="text-sm">→</span>
-              </button>
+                Start Interview →
+              </Button>
             </div>
           )}
         </div>
