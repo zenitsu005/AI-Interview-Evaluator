@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AppNavbar from './AppNavbar';
+import { useAuth } from '../context/AuthContext';
 import {
   Sparkles,
   ShieldCheck,
@@ -14,6 +15,7 @@ import {
   ChevronRight,
   Info,
   AlertTriangle,
+  BarChart3,
 } from 'lucide-react';
 
 // ─────────────────────────────────────────────────────────────
@@ -363,20 +365,31 @@ export function SupportPage({ onNavigate }) {
 // 7. ANALYTICS & PROGRESS DASHBOARD PAGE
 // ─────────────────────────────────────────────────────────────
 export function AnalyticsPage({ onNavigate }) {
+  const { user, history } = useAuth();
+  const userHistory = Array.isArray(history) ? history : [];
+  const completedCount = userHistory.length;
+
+  const dsaCount = userHistory.filter((h) => (h.module || h.type || '').toLowerCase().includes('dsa')).length;
+  const sysDesignCount = userHistory.filter((h) => (h.module || h.type || '').toLowerCase().includes('system') || (h.module || '').toLowerCase().includes('design')).length;
+  const bugHuntCount = userHistory.filter((h) => (h.module || h.type || '').toLowerCase().includes('bug')).length;
+
   return (
-    <div className="min-h-screen bg-[#0B0D13] text-slate-100 flex flex-col justify-between select-none font-sans">
+    <div className="min-h-screen bg-[#080C10] text-slate-100 flex flex-col justify-between select-none font-sans">
       <AppNavbar currentActive="analytics" />
 
       <main className="max-w-5xl mx-auto w-full px-6 py-12 space-y-8 text-left flex-1">
-        <div className="space-y-3 border-b border-white/10 pb-8 flex items-center justify-between flex-wrap gap-4">
+        <div className="space-y-3 border-b border-slate-800/80 pb-8 flex items-center justify-between flex-wrap gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
               Score Analytics & Practice History
             </h1>
+            <p className="text-xs text-slate-400 mt-1">
+              {user?.name ? `Logged in as ${user.name}` : 'Track your mock interview evaluations and module practice records.'}
+            </p>
           </div>
           <button
             onClick={() => onNavigate('setup')}
-            className="py-3 px-5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 text-xs font-extrabold shadow-lg shadow-teal-500/20 transition-all active:scale-98 cursor-pointer flex items-center gap-1.5"
+            className="py-3 px-6 rounded-full bg-gradient-to-r from-teal-400 to-emerald-400 text-slate-950 text-xs font-extrabold shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_25px_rgba(45,212,191,0.5)] transition-all active:scale-95 cursor-pointer flex items-center gap-2"
           >
             <span>Start New Mock Session</span>
             <ArrowRight className="w-4 h-4" />
@@ -384,79 +397,110 @@ export function AnalyticsPage({ onNavigate }) {
         </div>
 
         {/* Disclaimer Notice */}
-        <div className="bg-[#131823] border border-white/10 p-4 rounded-2xl text-xs text-slate-300 shadow-sm flex items-center gap-2">
+        <div className="bg-slate-900/60 border border-slate-800/80 p-4 rounded-2xl text-xs text-slate-400 shadow-sm flex items-center gap-2.5 backdrop-blur-md">
           <Info className="w-4 h-4 text-teal-400 flex-shrink-0" />
           <span><strong>Note on Analytics:</strong> Practice scores represent coaching performance signals on specific prompts. They are designed to track practice progress over time, not to predict hiring outcomes.</span>
         </div>
 
         {/* Practice Module Breakdown */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs">
-          <div className="bg-[#131823] border border-white/10 p-6 rounded-3xl space-y-2 shadow-2xl">
+          <div className="bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl space-y-2 shadow-xl backdrop-blur-md">
             <span className="text-slate-400 font-mono">DSA Practice</span>
-            <p className="text-2xl font-black text-emerald-400 font-mono">Passed 4 / 4</p>
-            <p className="text-[11px] text-slate-500">Average time: 14 mins</p>
+            <p className="text-2xl font-black text-emerald-400 font-mono">
+              {dsaCount > 0 ? `${dsaCount} Sessions` : '0 Sessions'}
+            </p>
+            <p className="text-[11px] text-slate-500">
+              {dsaCount > 0 ? 'Live coding challenges recorded' : 'No DSA challenges completed yet'}
+            </p>
           </div>
 
-          <div className="bg-[#131823] border border-white/10 p-6 rounded-3xl space-y-2 shadow-2xl">
-            <span className="text-slate-400 font-mono">System Design</span>
-            <p className="text-2xl font-black text-teal-400 font-mono">88% Rubric</p>
-            <p className="text-[11px] text-slate-500 font-mono">Focus: Caching Trade-offs</p>
+          <div className="bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl space-y-2 shadow-xl backdrop-blur-md">
+            <span className="text-slate-400 font-mono">Mock Interviews</span>
+            <p className="text-2xl font-black text-teal-400 font-mono">
+              {completedCount > 0 ? `${completedCount} Completed` : '0 Completed'}
+            </p>
+            <p className="text-[11px] text-slate-500 font-mono">
+              {completedCount > 0 ? 'Full multi-round evaluations' : 'Ready to start first simulation'}
+            </p>
           </div>
 
-          <div className="bg-[#131823] border border-white/10 p-6 rounded-3xl space-y-2 shadow-2xl">
+          <div className="bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl space-y-2 shadow-xl backdrop-blur-md">
             <span className="text-slate-400 font-mono">Bug Hunting</span>
-            <p className="text-2xl font-black text-amber-400 font-mono">3 Audits Done</p>
-            <p className="text-[11px] text-slate-500 font-mono">Focus: Race Conditions</p>
+            <p className="text-2xl font-black text-amber-400 font-mono">
+              {bugHuntCount > 0 ? `${bugHuntCount} Audits` : '0 Audits'}
+            </p>
+            <p className="text-[11px] text-slate-500 font-mono">
+              {bugHuntCount > 0 ? 'Code audits analyzed' : 'No debugging labs completed yet'}
+            </p>
           </div>
         </div>
 
-        {/* Accessible Table Alternative */}
+        {/* Evaluation Records */}
         <section className="space-y-4 pt-4">
           <h2 className="text-lg font-bold text-white">Recent Evaluation Records</h2>
 
-          <div className="overflow-x-auto border border-white/10 rounded-3xl bg-[#131823] shadow-2xl">
-            <table className="w-full text-left text-xs font-mono">
-              <thead className="bg-[#0D111A] text-slate-400 uppercase text-[10px] border-b border-white/10">
-                <tr>
-                  <th className="p-4">Date</th>
-                  <th className="p-4">Module</th>
-                  <th className="p-4">Role Level</th>
-                  <th className="p-4">Score / Result</th>
-                  <th className="p-4">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5 text-slate-300">
-                <tr>
-                  <td className="p-4 text-slate-400">Today</td>
-                  <td className="p-4 text-white font-bold">DSA Studio</td>
-                  <td className="p-4 text-teal-400">Senior Engineer</td>
-                  <td className="p-4 text-emerald-400 font-bold">All Tests Passed</td>
-                  <td className="p-4">
-                    <button onClick={() => onNavigate('dsa')} className="text-teal-400 hover:text-teal-300 cursor-pointer flex items-center gap-1">
-                      <span>Re-try</span>
-                      <ChevronRight className="w-3 h-3" />
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="p-4 text-slate-400">Yesterday</td>
-                  <td className="p-4 text-white font-bold">System Design</td>
-                  <td className="p-4 text-teal-400">Staff Architect</td>
-                  <td className="p-4 text-teal-300 font-bold">88% Rubric Score</td>
-                  <td className="p-4">
-                    <button onClick={() => onNavigate('video')} className="text-teal-400 hover:text-teal-300 cursor-pointer flex items-center gap-1">
-                      <span>Review</span>
-                      <ChevronRight className="w-3 h-3" />
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          {completedCount === 0 ? (
+            <div className="p-10 text-center space-y-4 bg-slate-900/60 border border-slate-800/80 rounded-2xl shadow-xl backdrop-blur-md">
+              <div className="w-14 h-14 rounded-2xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400 mx-auto shadow-md">
+                <BarChart3 className="w-7 h-7" />
+              </div>
+              <div className="space-y-1.5 max-w-md mx-auto">
+                <h3 className="text-base font-extrabold text-white">No Evaluation Records Yet</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  Your account was created today. Complete a full mock interview or practice in one of our targeted studios to begin tracking your performance signals and rubrics.
+                </p>
+              </div>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => onNavigate('setup')}
+                  className="rounded-full px-6 py-3 bg-gradient-to-r from-teal-400 to-emerald-400 text-slate-950 text-xs font-extrabold shadow-[0_0_20px_rgba(45,212,191,0.3)] hover:shadow-[0_0_25px_rgba(45,212,191,0.45)] transition-all active:scale-95 cursor-pointer inline-flex items-center gap-2"
+                >
+                  <span>Start Your First Interview</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto border border-slate-800/80 rounded-2xl bg-slate-900/60 shadow-xl backdrop-blur-md">
+              <table className="w-full text-left text-xs font-mono">
+                <thead className="bg-[#0B0F14] text-slate-400 uppercase text-[10px] border-b border-slate-800/80">
+                  <tr>
+                    <th className="p-4">Date</th>
+                    <th className="p-4">Module / Track</th>
+                    <th className="p-4">Role Level</th>
+                    <th className="p-4">Score / Decision</th>
+                    <th className="p-4">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/50 text-slate-300">
+                  {userHistory.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-white/5 transition-colors">
+                      <td className="p-4 text-slate-400">{item.date ? new Date(item.date).toLocaleDateString() : 'Today'}</td>
+                      <td className="p-4 text-white font-bold">{item.targetRole || item.module || 'Mock Interview'}</td>
+                      <td className="p-4 text-teal-400">{item.difficultyLevel || 'Standard'}</td>
+                      <td className="p-4 font-bold text-emerald-400">
+                        {item.overallScore ? `${item.overallScore}%` : (item.hiringDecision || 'Completed')}
+                      </td>
+                      <td className="p-4">
+                        <button
+                          onClick={() => onNavigate('setup')}
+                          className="text-teal-400 hover:text-teal-300 cursor-pointer flex items-center gap-1 font-sans font-bold"
+                        >
+                          <span>Review</span>
+                          <ChevronRight className="w-3 h-3" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
       </main>
 
-      <footer className="py-4 border-t border-white/10 bg-[#0E121B] text-center" />
+      <footer className="py-4 border-t border-slate-800/80 bg-[#080C10] text-center" />
     </div>
   );
 }
