@@ -126,18 +126,6 @@ export default function AppNavbar({ currentActive = 'landing' }) {
             items={prepToolItems}
             onItemSelect={handleSelectModule}
           />
-
-          <button
-            onClick={() => handleSelectModule('analytics')}
-            className={`px-3 py-1.5 rounded-xl transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
-              currentActive === 'analytics'
-                ? 'bg-teal-500/15 text-teal-300 font-semibold border border-teal-500/30'
-                : 'hover:bg-white/[0.06] hover:text-white text-slate-300'
-            }`}
-          >
-            <BarChart3 className="w-4 h-4 text-teal-400" />
-            <span>Progress</span>
-          </button>
         </nav>
 
         {/* Desktop Right Actions */}
