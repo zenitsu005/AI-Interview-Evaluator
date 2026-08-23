@@ -52,64 +52,119 @@ export default function ResumeOptimizer() {
 
   // Structured Form Data for Real-Time Live Canvas
   const [formData, setFormData] = useState({
-    fullName: 'Alex Morgan',
-    jobTitle: 'Full Stack Software Engineer',
-    email: 'alex.morgan@example.com',
-    phone: '+1 (555) 234-5678',
-    location: 'San Francisco, CA',
-    linkedin: 'linkedin.com/in/alexmorgan-dev',
-    github: 'github.com/alexmorgan',
-    summary: 'Results-driven Software Engineer with 3+ years of experience building high-throughput microservices, real-time web applications, and scalable distributed architectures. Passionate about system latency optimization, TypeScript, React, and cloud-native solutions.',
-    skills: 'TypeScript, React, Node.js, Python, PostgreSQL, Redis, Docker, AWS, GraphQL, RESTful APIs, Git, Jest',
+    fullName: '',
+    jobTitle: '',
+    email: '',
+    phone: '',
+    location: '',
+    linkedin: '',
+    github: '',
+    summary: '',
+    skills: '',
     experience: [
       {
         id: 1,
-        role: 'Senior Frontend Engineer',
-        company: 'CloudScale Technologies',
-        period: '2023 — Present',
-        location: 'San Francisco, CA',
-        bullets: [
-          'Architected responsive Next.js and Tailwind dashboards reducing first-contentful paint by 42% across 150k monthly active users.',
-          'Engineered real-time WebSocket state management pipeline reducing message serialization overhead by 35%.',
-          'Mentored 4 junior engineers on clean React architecture and automated end-to-end Cypress testing.'
-        ]
-      },
-      {
-        id: 2,
-        role: 'Full Stack Developer',
-        company: 'Nexus Digital Labs',
-        period: '2021 — 2023',
-        location: 'Austin, TX',
-        bullets: [
-          'Built 12+ RESTful microservices in Node.js and Express handling 2M daily API transactions with 99.98% uptime.',
-          'Optimized PostgreSQL index schemas and Redis cache invalidation strategies, dropping P95 latency from 240ms to 45ms.'
-        ]
+        role: '',
+        company: '',
+        period: '',
+        location: '',
+        bullets: ['']
       }
     ],
     projects: [
       {
         id: 1,
-        title: 'AI Multimodal Evaluator',
-        technologies: 'React, Node.js, Web Audio API, Gemini 2.5',
-        description: 'Real-time interview simulator computing STAR rubrics, speech cadence pacing, and test sandbox execution.'
-      },
-      {
-        id: 2,
-        title: 'Distributed Distributed Cache Cluster',
-        technologies: 'C++20, Consistent Hashing, POSIX Sockets',
-        description: 'Lock-free distributed key-value store with consistent hashing replication and zero-copy deserialization.'
+        title: '',
+        technologies: '',
+        description: ''
       }
     ],
     education: [
       {
         id: 1,
-        degree: 'B.S. in Computer Science',
-        institution: 'University of California, Berkeley',
-        year: '2017 — 2021',
-        details: 'GPA: 3.85 / 4.0 • Focus on Distributed Systems & Algorithms'
+        degree: '',
+        institution: '',
+        year: '',
+        details: ''
       }
     ]
   });
+
+  // Dynamic Array Handlers
+  const addExperience = () => {
+    setFormData((prev) => ({
+      ...prev,
+      experience: [
+        ...prev.experience,
+        { id: Date.now(), role: '', company: '', period: '', location: '', bullets: [''] }
+      ]
+    }));
+  };
+
+  const removeExperience = (idx) => {
+    setFormData((prev) => {
+      if (prev.experience.length <= 1) {
+        return {
+          ...prev,
+          experience: [{ id: Date.now(), role: '', company: '', period: '', location: '', bullets: [''] }]
+        };
+      }
+      return {
+        ...prev,
+        experience: prev.experience.filter((_, i) => i !== idx)
+      };
+    });
+  };
+
+  const addProject = () => {
+    setFormData((prev) => ({
+      ...prev,
+      projects: [
+        ...prev.projects,
+        { id: Date.now(), title: '', technologies: '', description: '' }
+      ]
+    }));
+  };
+
+  const removeProject = (idx) => {
+    setFormData((prev) => {
+      if (prev.projects.length <= 1) {
+        return {
+          ...prev,
+          projects: [{ id: Date.now(), title: '', technologies: '', description: '' }]
+        };
+      }
+      return {
+        ...prev,
+        projects: prev.projects.filter((_, i) => i !== idx)
+      };
+    });
+  };
+
+  const addEducation = () => {
+    setFormData((prev) => ({
+      ...prev,
+      education: [
+        ...prev.education,
+        { id: Date.now(), degree: '', institution: '', year: '', details: '' }
+      ]
+    }));
+  };
+
+  const removeEducation = (idx) => {
+    setFormData((prev) => {
+      if (prev.education.length <= 1) {
+        return {
+          ...prev,
+          education: [{ id: Date.now(), degree: '', institution: '', year: '', details: '' }]
+        };
+      }
+      return {
+        ...prev,
+        education: prev.education.filter((_, i) => i !== idx)
+      };
+    });
+  };
 
   // Raw text / file upload state
   const [resumeText, setResumeText] = useState('');
@@ -124,14 +179,15 @@ export default function ResumeOptimizer() {
   const [copied, setCopied] = useState(false);
   const [isStartingInterview, setIsStartingInterview] = useState(false);
 
-  // Resume Strength Calculation
+  // Real-Time Resume Strength Calculation based on actual user input
   const calculateResumeStrength = () => {
-    let score = 30;
-    if (formData.fullName && formData.email && formData.phone) score += 15;
-    if (formData.summary.length > 50) score += 15;
-    if (formData.skills.length > 20) score += 15;
-    if (formData.experience.length >= 2) score += 15;
-    if (formData.projects.length >= 1) score += 10;
+    let score = 0;
+    if (formData.fullName.trim()) score += 15;
+    if (formData.email.trim() || formData.phone.trim()) score += 15;
+    if (formData.summary.trim().length > 20) score += 20;
+    if (formData.skills.trim().length > 10) score += 20;
+    if (formData.experience.some(e => e.role.trim() || e.company.trim())) score += 20;
+    if (formData.projects.some(p => p.title.trim()) || formData.education.some(ed => ed.degree.trim())) score += 10;
     return Math.min(score, 100);
   };
 
@@ -140,9 +196,9 @@ export default function ResumeOptimizer() {
   // Helper to compile structured form into plaintext for ATS audit
   const compileFormDataToText = () => {
     return `
-Name: ${formData.fullName}
+Name: ${formData.fullName || 'Candidate'}
 Job Title: ${formData.jobTitle || targetRole}
-Contact: ${formData.email} | ${formData.phone} | ${formData.location} | ${formData.linkedin} | ${formData.github}
+Contact: ${[formData.email, formData.phone, formData.location, formData.linkedin, formData.github].filter(Boolean).join(' | ')}
 
 PROFESSIONAL SUMMARY:
 ${formData.summary}
@@ -151,13 +207,13 @@ TECHNICAL SKILLS:
 ${formData.skills}
 
 WORK EXPERIENCE:
-${formData.experience.map(e => `${e.role} at ${e.company} (${e.period}, ${e.location}):\n${e.bullets.map(b => `- ${b}`).join('\n')}`).join('\n\n')}
+${formData.experience.filter(e => e.role || e.company).map(e => `${e.role} at ${e.company} (${e.period}, ${e.location}):\n${e.bullets.filter(Boolean).map(b => `- ${b}`).join('\n')}`).join('\n\n')}
 
 PROJECTS:
-${formData.projects.map(p => `${p.title} [${p.technologies}]: ${p.description}`).join('\n')}
+${formData.projects.filter(p => p.title).map(p => `${p.title} [${p.technologies}]: ${p.description}`).join('\n')}
 
 EDUCATION:
-${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - ${ed.details}`).join('\n')}
+${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - ${ed.details}`).join('\n')}
     `.trim();
   };
 
@@ -186,7 +242,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
       }
 
       if (!textToSend.trim()) {
-        setError('Please provide your resume content to analyze.');
+        setError('Please enter your resume details or upload a file to analyze.');
         setIsLoading(false);
         return;
       }
@@ -211,9 +267,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
     setIsStartingInterview(true);
     setError(null);
     try {
-      const textToUse = atsResult?.optimizedResume
-        ? compileFormDataToText()
-        : compileFormDataToText();
+      const textToUse = compileFormDataToText();
 
       if (setGlobalTargetRole) setGlobalTargetRole(targetRole.trim());
       await handleResumeSubmit(textToUse, null, targetRole.trim(), 'Intermediate');
@@ -233,6 +287,17 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  // Check if user has entered any data for right-side preview
+  const hasUserEnteredAnyData = Boolean(
+    formData.fullName.trim() ||
+    formData.jobTitle.trim() ||
+    formData.summary.trim() ||
+    formData.skills.trim() ||
+    formData.experience.some(e => e.role.trim() || e.company.trim()) ||
+    formData.projects.some(p => p.title.trim()) ||
+    formData.education.some(ed => ed.degree.trim())
+  );
 
   return (
     <div className="min-h-screen bg-[#0B0D13] text-slate-100 flex flex-col justify-between select-none font-sans relative">
@@ -271,7 +336,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
             </div>
           </div>
 
-          {/* Template & Action Controls */}
+          {/* Action Controls */}
           <div className="flex items-center gap-2 flex-wrap">
             {/* Mobile Tab Switcher */}
             <div className="lg:hidden flex bg-white/[0.05] p-0.5 rounded-xl border border-white/10 text-xs">
@@ -378,6 +443,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                         type="text"
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        placeholder="e.g. Alex Morgan"
                         className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
                       />
                     </div>
@@ -387,6 +453,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                         type="text"
                         value={formData.jobTitle}
                         onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                        placeholder="e.g. Full Stack Software Engineer"
                         className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
                       />
                     </div>
@@ -396,6 +463,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder="e.g. alex.morgan@example.com"
                         className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
                       />
                     </div>
@@ -405,6 +473,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                         type="text"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        placeholder="e.g. +1 (555) 234-5678"
                         className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
                       />
                     </div>
@@ -414,6 +483,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                         type="text"
                         value={formData.location}
                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        placeholder="e.g. San Francisco, CA"
                         className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
                       />
                     </div>
@@ -423,6 +493,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                         type="text"
                         value={formData.linkedin}
                         onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                        placeholder="e.g. linkedin.com/in/alexmorgan"
                         className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
                       />
                     </div>
@@ -441,7 +512,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                     rows={3}
                     value={formData.summary}
                     onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                    placeholder="Briefly state your core expertise, key achievements, and technical specializations..."
+                    placeholder="Write 2-4 sentences highlighting your core technical domain, key achievements, and passions..."
                     className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none leading-relaxed"
                   />
                 </div>
@@ -455,7 +526,7 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                     rows={2}
                     value={formData.skills}
                     onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                    placeholder="e.g. React, TypeScript, Python, Docker, PostgreSQL, AWS, Microservices..."
+                    placeholder="e.g. TypeScript, React, Node.js, Python, PostgreSQL, Redis, Docker, AWS, GraphQL..."
                     className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none font-mono"
                   />
                 </div>
@@ -466,10 +537,28 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                     <h3 className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-2">
                       <Briefcase className="w-4 h-4" /> Employment History
                     </h3>
+                    <button
+                      type="button"
+                      onClick={addExperience}
+                      className="px-2.5 py-1 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Position</span>
+                    </button>
                   </div>
 
                   {formData.experience.map((exp, idx) => (
-                    <div key={exp.id || idx} className="p-4 rounded-xl bg-[#121724] border border-white/[0.06] space-y-2.5 text-xs">
+                    <div key={exp.id || idx} className="p-4 rounded-xl bg-[#121724] border border-white/[0.06] space-y-2.5 text-xs relative group">
+                      {formData.experience.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeExperience(idx)}
+                          className="absolute top-3 right-3 text-slate-500 hover:text-rose-400 transition-colors p-1 cursor-pointer"
+                          title="Remove position"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <input
                           type="text"
@@ -479,8 +568,8 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                             updated[idx].role = e.target.value;
                             setFormData({ ...formData, experience: updated });
                           }}
-                          placeholder="Job Title"
-                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-white font-semibold"
+                          placeholder="Job Title (e.g. Senior Frontend Engineer)"
+                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-white font-semibold placeholder-slate-500 focus:border-teal-400 focus:outline-none"
                         />
                         <input
                           type="text"
@@ -490,8 +579,8 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                             updated[idx].company = e.target.value;
                             setFormData({ ...formData, experience: updated });
                           }}
-                          placeholder="Company Name"
-                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-white"
+                          placeholder="Company Name (e.g. CloudScale Tech)"
+                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-white placeholder-slate-500 focus:border-teal-400 focus:outline-none"
                         />
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -503,8 +592,8 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                             updated[idx].period = e.target.value;
                             setFormData({ ...formData, experience: updated });
                           }}
-                          placeholder="Duration (e.g. 2022 — Present)"
-                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300"
+                          placeholder="Duration (e.g. 2023 — Present)"
+                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300 placeholder-slate-500 focus:border-teal-400 focus:outline-none"
                         />
                         <input
                           type="text"
@@ -514,8 +603,8 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                             updated[idx].location = e.target.value;
                             setFormData({ ...formData, experience: updated });
                           }}
-                          placeholder="Location (e.g. Remote / NYC)"
-                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300"
+                          placeholder="Location (e.g. San Francisco, CA)"
+                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300 placeholder-slate-500 focus:border-teal-400 focus:outline-none"
                         />
                       </div>
                       <textarea
@@ -526,8 +615,8 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                           updated[idx].bullets = e.target.value.split('\n');
                           setFormData({ ...formData, experience: updated });
                         }}
-                        placeholder="Bullet points (one per line with quantified metrics e.g. 'Reduced latency by 30%')..."
-                        className="w-full bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300 font-mono text-[11px] leading-relaxed"
+                        placeholder="Bullet points (one per line, e.g. 'Architected Next.js dashboard reducing latency by 42%')..."
+                        className="w-full bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300 placeholder-slate-500 font-mono text-[11px] leading-relaxed focus:border-teal-400 focus:outline-none"
                       />
                     </div>
                   ))}
@@ -535,36 +624,155 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
 
                 {/* 🚀 Projects & Education */}
                 <div className="p-5 rounded-2xl bg-[#0E131F]/90 border border-white/[0.08] space-y-4 shadow-sm">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-2">
-                    <School className="w-4 h-4" /> Education & Projects
-                  </h3>
-                  {formData.education.map((ed, idx) => (
-                    <div key={ed.id || idx} className="p-3 rounded-xl bg-[#121724] border border-white/[0.06] grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                      <input
-                        type="text"
-                        value={ed.degree}
-                        onChange={(e) => {
-                          const updated = [...formData.education];
-                          updated[idx].degree = e.target.value;
-                          setFormData({ ...formData, education: updated });
-                        }}
-                        placeholder="Degree / Certificate"
-                        className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-white font-semibold"
-                      />
-                      <input
-                        type="text"
-                        value={ed.institution}
-                        onChange={(e) => {
-                          const updated = [...formData.education];
-                          updated[idx].institution = e.target.value;
-                          setFormData({ ...formData, education: updated });
-                        }}
-                        placeholder="Institution / University"
-                        className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300"
-                      />
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-2">
+                      <School className="w-4 h-4" /> Education & Projects
+                    </h3>
+                  </div>
+
+                  {/* Projects subsection */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-300">Technical Projects</span>
+                      <button
+                        type="button"
+                        onClick={addProject}
+                        className="px-2 py-0.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Add Project</span>
+                      </button>
                     </div>
-                  ))}
+
+                    {formData.projects.map((proj, idx) => (
+                      <div key={proj.id || idx} className="p-3 rounded-xl bg-[#121724] border border-white/[0.06] space-y-2 text-xs relative">
+                        {formData.projects.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeProject(idx)}
+                            className="absolute top-2 right-2 text-slate-500 hover:text-rose-400 p-1 cursor-pointer"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input
+                            type="text"
+                            value={proj.title}
+                            onChange={(e) => {
+                              const updated = [...formData.projects];
+                              updated[idx].title = e.target.value;
+                              setFormData({ ...formData, projects: updated });
+                            }}
+                            placeholder="Project Title (e.g. AI Evaluator)"
+                            className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-white font-semibold placeholder-slate-500 focus:border-teal-400 focus:outline-none"
+                          />
+                          <input
+                            type="text"
+                            value={proj.technologies}
+                            onChange={(e) => {
+                              const updated = [...formData.projects];
+                              updated[idx].technologies = e.target.value;
+                              setFormData({ ...formData, projects: updated });
+                            }}
+                            placeholder="Tech Stack (e.g. React, Node.js, WebSockets)"
+                            className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300 placeholder-slate-500 focus:border-teal-400 focus:outline-none"
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          value={proj.description}
+                          onChange={(e) => {
+                            const updated = [...formData.projects];
+                            updated[idx].description = e.target.value;
+                            setFormData({ ...formData, projects: updated });
+                          }}
+                          placeholder="Brief description of impact, metrics, and outcomes..."
+                          className="w-full bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300 placeholder-slate-500 text-xs focus:border-teal-400 focus:outline-none"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Education subsection */}
+                  <div className="space-y-3 pt-2 border-t border-white/[0.06]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-slate-300">Education & Degrees</span>
+                      <button
+                        type="button"
+                        onClick={addEducation}
+                        className="px-2 py-0.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Add Degree</span>
+                      </button>
+                    </div>
+
+                    {formData.education.map((ed, idx) => (
+                      <div key={ed.id || idx} className="p-3 rounded-xl bg-[#121724] border border-white/[0.06] space-y-2 text-xs relative">
+                        {formData.education.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => removeEducation(idx)}
+                            className="absolute top-2 right-2 text-slate-500 hover:text-rose-400 p-1 cursor-pointer"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input
+                            type="text"
+                            value={ed.degree}
+                            onChange={(e) => {
+                              const updated = [...formData.education];
+                              updated[idx].degree = e.target.value;
+                              setFormData({ ...formData, education: updated });
+                            }}
+                            placeholder="Degree (e.g. B.S. in Computer Science)"
+                            className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-white font-semibold placeholder-slate-500 focus:border-teal-400 focus:outline-none"
+                          />
+                          <input
+                            type="text"
+                            value={ed.institution}
+                            onChange={(e) => {
+                              const updated = [...formData.education];
+                              updated[idx].institution = e.target.value;
+                              setFormData({ ...formData, education: updated });
+                            }}
+                            placeholder="University / College"
+                            className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300 placeholder-slate-500 focus:border-teal-400 focus:outline-none"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <input
+                            type="text"
+                            value={ed.year}
+                            onChange={(e) => {
+                              const updated = [...formData.education];
+                              updated[idx].year = e.target.value;
+                              setFormData({ ...formData, education: updated });
+                            }}
+                            placeholder="Graduation Year (e.g. 2021)"
+                            className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300 placeholder-slate-500 focus:border-teal-400 focus:outline-none"
+                          />
+                          <input
+                            type="text"
+                            value={ed.details}
+                            onChange={(e) => {
+                              const updated = [...formData.education];
+                              updated[idx].details = e.target.value;
+                              setFormData({ ...formData, education: updated });
+                            }}
+                            placeholder="GPA / Honors (e.g. GPA 3.8 / 4.0)"
+                            className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300 placeholder-slate-500 focus:border-teal-400 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
                 </div>
+
               </div>
             ) : (
               /* Raw Text & PDF Upload View */
@@ -644,100 +852,123 @@ ${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - $
                 {/* Header Block */}
                 <div className="border-b border-slate-300 pb-4 space-y-1 text-center">
                   <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 uppercase">
-                    {formData.fullName || 'YOUR NAME'}
+                    {formData.fullName.trim() || 'YOUR NAME'}
                   </h1>
                   <p className="text-sm font-semibold text-teal-700 tracking-wide">
-                    {formData.jobTitle || targetRole}
+                    {formData.jobTitle.trim() || targetRole}
                   </p>
                   <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] text-slate-600 pt-1">
                     {formData.email && <span>{formData.email}</span>}
                     {formData.phone && <span>• {formData.phone}</span>}
                     {formData.location && <span>• {formData.location}</span>}
                     {formData.linkedin && <span>• {formData.linkedin}</span>}
+                    {!formData.email && !formData.phone && !formData.location && (
+                      <span className="text-slate-400 italic">email@example.com • +1 (555) 000-0000 • City, Country</span>
+                    )}
                   </div>
                 </div>
 
                 {/* Professional Summary */}
-                {formData.summary && (
-                  <div className="space-y-1.5">
-                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
-                      Professional Summary
-                    </h2>
-                    <p className="text-xs text-slate-700 leading-relaxed text-justify">
-                      {formData.summary}
-                    </p>
-                  </div>
-                )}
+                <div className="space-y-1.5">
+                  <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
+                    Professional Summary
+                  </h2>
+                  <p className="text-xs text-slate-700 leading-relaxed text-justify">
+                    {formData.summary.trim() ? (
+                      formData.summary
+                    ) : (
+                      <span className="text-slate-400 italic">
+                        Your professional summary will render here in real-time as you enter your details on the left.
+                      </span>
+                    )}
+                  </p>
+                </div>
 
                 {/* Skills Section */}
-                {formData.skills && (
-                  <div className="space-y-1.5">
-                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
-                      Technical Skills & Competencies
-                    </h2>
-                    <p className="text-xs text-slate-700 leading-relaxed font-mono">
-                      {formData.skills}
-                    </p>
-                  </div>
-                )}
+                <div className="space-y-1.5">
+                  <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
+                    Technical Skills & Competencies
+                  </h2>
+                  <p className="text-xs text-slate-700 leading-relaxed font-mono">
+                    {formData.skills.trim() ? (
+                      formData.skills
+                    ) : (
+                      <span className="text-slate-400 italic font-sans">
+                        Add technical skills, languages, and frameworks on the left to see live formatting.
+                      </span>
+                    )}
+                  </p>
+                </div>
 
                 {/* Experience Section */}
-                {formData.experience.length > 0 && (
-                  <div className="space-y-3">
-                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
-                      Professional Experience
-                    </h2>
-                    {formData.experience.map((exp, idx) => (
+                <div className="space-y-3">
+                  <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
+                    Professional Experience
+                  </h2>
+                  {formData.experience.some(e => e.role.trim() || e.company.trim()) ? (
+                    formData.experience.filter(e => e.role.trim() || e.company.trim()).map((exp, idx) => (
                       <div key={idx} className="space-y-1">
                         <div className="flex items-center justify-between text-xs font-bold text-slate-900">
-                          <span>{exp.role} — <span className="font-semibold text-slate-700">{exp.company}</span></span>
-                          <span className="font-mono text-[11px] text-slate-600">{exp.period}</span>
+                          <span>{exp.role || 'Job Title'} — <span className="font-semibold text-slate-700">{exp.company || 'Company Name'}</span></span>
+                          <span className="font-mono text-[11px] text-slate-600">{exp.period || 'Duration'}</span>
                         </div>
-                        <p className="text-[11px] text-slate-500 italic">{exp.location}</p>
+                        {exp.location && <p className="text-[11px] text-slate-500 italic">{exp.location}</p>}
                         <ul className="list-disc list-inside text-xs text-slate-700 space-y-1 pl-1">
                           {exp.bullets.filter(b => b.trim()).map((bullet, bIdx) => (
                             <li key={bIdx} className="leading-relaxed">{bullet}</li>
                           ))}
                         </ul>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    ))
+                  ) : (
+                    <p className="text-xs text-slate-400 italic">
+                      Add your work experience, past positions, and achievement bullets on the left.
+                    </p>
+                  )}
+                </div>
 
                 {/* Projects Section */}
-                {formData.projects.length > 0 && (
-                  <div className="space-y-2">
-                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
-                      Key Technical Projects
-                    </h2>
-                    {formData.projects.map((proj, idx) => (
+                <div className="space-y-2">
+                  <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
+                    Key Technical Projects
+                  </h2>
+                  {formData.projects.some(p => p.title.trim()) ? (
+                    formData.projects.filter(p => p.title.trim()).map((proj, idx) => (
                       <div key={idx} className="text-xs space-y-0.5">
                         <div className="font-bold text-slate-900">
-                          {proj.title} <span className="font-mono text-[11px] text-teal-700">[{proj.technologies}]</span>
+                          {proj.title} {proj.technologies && <span className="font-mono text-[11px] text-teal-700">[{proj.technologies}]</span>}
                         </div>
-                        <p className="text-xs text-slate-700 leading-relaxed">{proj.description}</p>
+                        {proj.description && <p className="text-xs text-slate-700 leading-relaxed">{proj.description}</p>}
                       </div>
-                    ))}
-                  </div>
-                )}
+                    ))
+                  ) : (
+                    <p className="text-xs text-slate-400 italic">
+                      Add engineering projects, tech stack, and key metrics on the left.
+                    </p>
+                  )}
+                </div>
 
                 {/* Education Section */}
-                {formData.education.length > 0 && (
-                  <div className="space-y-2">
-                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
-                      Education & Credentials
-                    </h2>
-                    {formData.education.map((ed, idx) => (
+                <div className="space-y-2">
+                  <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
+                    Education & Credentials
+                  </h2>
+                  {formData.education.some(ed => ed.degree.trim() || ed.institution.trim()) ? (
+                    formData.education.filter(ed => ed.degree.trim() || ed.institution.trim()).map((ed, idx) => (
                       <div key={idx} className="flex justify-between items-baseline text-xs">
                         <div>
-                          <span className="font-bold text-slate-900">{ed.degree}</span> — <span className="text-slate-700">{ed.institution}</span>
+                          <span className="font-bold text-slate-900">{ed.degree || 'Degree'}</span>{ed.institution && <span> — <span className="text-slate-700">{ed.institution}</span></span>}
                           {ed.details && <p className="text-[11px] text-slate-600">{ed.details}</p>}
                         </div>
-                        <span className="font-mono text-[11px] text-slate-600 shrink-0">{ed.year}</span>
+                        {ed.year && <span className="font-mono text-[11px] text-slate-600 shrink-0">{ed.year}</span>}
                       </div>
-                    ))}
-                  </div>
-                )}
+                    ))
+                  ) : (
+                    <p className="text-xs text-slate-400 italic">
+                      Add degree, university, and graduation year on the left.
+                    </p>
+                  )}
+                </div>
 
               </div>
 
