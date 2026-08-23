@@ -340,33 +340,16 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
       <section className="sticky top-20 z-40 bg-[#0E131F]/90 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-8 py-3 shadow-md">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           
-          {/* Target Role Selector & Resume Strength */}
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2 bg-white/[0.04] border border-white/10 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200">
-              <Briefcase className="w-3.5 h-3.5 text-teal-400" />
-              <span>Targeting:</span>
-              <select
-                value={targetRole}
-                onChange={(e) => setTargetRole(e.target.value)}
-                className="bg-transparent text-teal-300 font-bold focus:outline-none cursor-pointer text-xs"
-              >
-                {QUICK_ROLES.map(r => (
-                  <option key={r} value={r} className="bg-[#121724] text-white">{r}</option>
-                ))}
-              </select>
+          {/* Live Strength Meter */}
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-slate-400">ATS Strength:</span>
+            <div className="w-28 bg-white/[0.08] h-2 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-500"
+                style={{ width: `${strength}%` }}
+              />
             </div>
-
-            {/* Live Strength Meter */}
-            <div className="hidden md:flex items-center gap-2 text-xs">
-              <span className="text-slate-400">ATS Strength:</span>
-              <div className="w-24 bg-white/[0.08] h-2 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-500"
-                  style={{ width: `${strength}%` }}
-                />
-              </div>
-              <span className="font-bold text-teal-300 font-mono">{strength}%</span>
-            </div>
+            <span className="font-bold text-teal-300 font-mono">{strength}%</span>
           </div>
 
           {/* Action Controls */}
@@ -880,20 +863,12 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
 
           </div>
 
-          {/* ── RIGHT PANE: RESUME.IO CLASSIC DOCUMENT CANVAS PREVIEW ── */}
-          <div className={`lg:col-span-6 space-y-4 ${mobilePane === 'editor' ? 'hidden lg:block' : 'block'}`}>
+          {/* ── RIGHT PANE: RESUME DOCUMENT CANVAS PREVIEW ── */}
+          <div className={`lg:col-span-6 ${mobilePane === 'editor' ? 'hidden lg:block' : 'block'}`}>
             
             {/* Live Document Preview Card */}
-            <div className="rounded-2xl border border-white/[0.08] bg-[#0E131F]/90 backdrop-blur-2xl p-4 sm:p-6 shadow-2xl space-y-4">
+            <div className="rounded-2xl border border-white/[0.08] bg-[#0E131F]/90 backdrop-blur-2xl p-4 sm:p-6 shadow-2xl">
               
-              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs font-bold text-slate-200">Real-Time Classic Resume Canvas</span>
-                </div>
-                <span className="text-[11px] font-mono text-teal-400 uppercase tracking-wide">Template: Classic Ivory</span>
-              </div>
-
               {/* Authentic White A4 Paper Canvas */}
               <div className="bg-[#FAFBFD] text-slate-900 rounded-xl p-8 sm:p-10 shadow-xl min-h-[720px] font-sans text-left space-y-6 select-text">
                 
