@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  IconRotateClockwise2 as RotateCcw,
-  IconMessageDots as MessageSquare,
-  IconSparkles as Sparkles,
-} from '@tabler/icons-react';
+  TbRotateClockwise2 as RotateCcw,
+  TbMessageDots as MessageSquare,
+  TbSparkles as Sparkles,
+} from 'react-icons/tb';
 
 export default function AiInterviewerAvatar({
   isSpeaking = false,

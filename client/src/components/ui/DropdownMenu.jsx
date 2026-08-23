@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { IconChevronDown as ChevronDown } from '@tabler/icons-react';
+import { TbChevronDown as ChevronDown } from 'react-icons/tb';
 
 export default function DropdownMenu({ label, items, onItemSelect }) {
   const [isOpen, setIsOpen] = useState(false);

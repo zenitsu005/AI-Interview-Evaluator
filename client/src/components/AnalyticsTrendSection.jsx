@@ -1,15 +1,15 @@
 import React from 'react';
 import {
-  IconCompass as Compass,
-  IconTrendingUp as TrendingUp,
-  IconChartBar as BarChart3,
-  IconActivity as Activity,
-  IconBrain as Brain,
-  IconCode as Code2,
-  IconUsers as Users,
-  IconRadio as Radio,
-  IconCircleCheck as CheckCircle2,
-} from '@tabler/icons-react';
+  TbCompass as Compass,
+  TbTrendingUp as TrendingUp,
+  TbChartBar as BarChart3,
+  TbActivity as Activity,
+  TbBrain as Brain,
+  TbCode as Code2,
+  TbUsers as Users,
+  TbRadio as Radio,
+  TbCircleCheck as CheckCircle2,
+} from 'react-icons/tb';
 
 export default function AnalyticsTrendSection({ history = [], currentReport = null, targetRole = 'Software Engineer' }) {
   const safeHistory = Array.isArray(history) ? history : [];

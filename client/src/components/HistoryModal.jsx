@@ -2,12 +2,12 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useInterview } from '../context/InterviewContext';
 import {
-  IconFileText as FileText,
-  IconX as X,
-  IconChevronRight as ChevronRight,
-  IconTrophy as Trophy,
-  IconClock as Clock,
-} from '@tabler/icons-react';
+  TbFileText as FileText,
+  TbX as X,
+  TbChevronRight as ChevronRight,
+  TbTrophy as Trophy,
+  TbClock as Clock,
+} from 'react-icons/tb';
 
 export default function HistoryModal() {
   const { historyModalOpen, closeHistory, history } = useAuth();

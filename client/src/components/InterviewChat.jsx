@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import {
-  IconBrain,
-  IconCode,
-  IconUsers,
-  IconLoader2,
-  IconAlertCircle,
-  IconSend,
-} from '@tabler/icons-react';
+  TbBrain as IconBrain,
+  TbCode as IconCode,
+  TbUsers as IconUsers,
+  TbLoader2 as IconLoader2,
+  TbAlertCircle as IconAlertCircle,
+  TbSend as IconSend,
+} from 'react-icons/tb';
 
 const ROUND_CONFIG = {
   aptitude: { label: 'Aptitude & Logic', color: 'bg-blue-50 text-blue-700 border-blue-200', icon: IconBrain },

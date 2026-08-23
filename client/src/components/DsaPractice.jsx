@@ -4,19 +4,19 @@ import { generateDsaProblem } from '../services/api';
 import AppNavbar from './AppNavbar';
 import DopamineCelebrationModal from './DopamineCelebrationModal';
 import {
-  IconCode as Code2,
-  IconPlayerPlay as Play,
-  IconSparkles as Sparkles,
-  IconRotateClockwise2 as RotateCcw,
-  IconTrash as Trash2,
-  IconCopy as Copy,
-  IconCheck as Check,
-  IconCircleCheck as CheckCircle2,
-  IconAlertTriangle as AlertTriangle,
-  IconBulb as Lightbulb,
-  IconArrowRight as ArrowRight,
-  IconBolt as Zap,
-} from '@tabler/icons-react';
+  TbCode as Code2,
+  TbPlayerPlay as Play,
+  TbSparkles as Sparkles,
+  TbRotateClockwise2 as RotateCcw,
+  TbTrash as Trash2,
+  TbCopy as Copy,
+  TbCheck as Check,
+  TbCircleCheck as CheckCircle2,
+  TbAlertTriangle as AlertTriangle,
+  TbBulb as Lightbulb,
+  TbArrowRight as ArrowRight,
+  TbBolt as Zap,
+} from 'react-icons/tb';
 
 const DIFFICULTY_CONFIG = [
   {

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import DropdownMenu from './ui/DropdownMenu';
 import Button from './ui/Button';
 import {
-  TbSparkles as Sparkles,
+  TbBrain as LogoIcon,
   TbCode as Code2,
   TbBug as Bug,
   TbCurrencyDollar as DollarSign,
@@ -39,19 +39,19 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   ];
 
   const handleSelectModule = (id) => {
-    setPhase(id);
     setMobileMenuOpen(false);
+    setPhase(id);
   };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && mobileMenuOpen) {
+      if (e.key === 'Escape') {
         setMobileMenuOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mobileMenuOpen]);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0B0D13]/85 backdrop-blur-2xl transition-all text-slate-100">
@@ -61,11 +61,12 @@ export default function AppNavbar({ currentActive = 'landing' }) {
           onClick={() => handleSelectModule('landing')}
           className="flex items-center gap-3 cursor-pointer select-none group text-left border-none bg-transparent"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500/15 border border-teal-500/30 text-teal-400 shadow-lg shadow-teal-500/15 group-hover:scale-105 group-hover:bg-teal-500/20 group-hover:border-teal-400/50 transition-all">
-            <Sparkles className="w-5 h-5" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500/20 via-emerald-500/15 to-cyan-500/20 border border-teal-500/40 text-teal-400 shadow-lg shadow-teal-500/20 group-hover:scale-105 group-hover:border-teal-400 transition-all">
+            <LogoIcon className="w-5 h-5" />
           </div>
-          <span className="font-bold tracking-tight text-white text-sm sm:text-base">
-            AI Interview Evaluator
+          <span className="font-extrabold tracking-tight text-white text-sm sm:text-base flex items-center gap-1.5">
+            <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">AI</span>
+            <span>Interview Evaluator</span>
           </span>
         </button>
 

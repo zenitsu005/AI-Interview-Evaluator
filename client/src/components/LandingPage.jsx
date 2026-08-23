@@ -213,8 +213,8 @@ export default function LandingPage({ onNavigate }) {
           
           <div className="space-y-2.5 sm:col-span-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-slate-950">
-                <Sparkles className="w-4 h-4" />
+              <div className="w-7 h-7 rounded-lg bg-teal-500/20 border border-teal-500/40 flex items-center justify-center text-teal-400">
+                <Brain className="w-4 h-4" />
               </div>
               <span className="font-extrabold text-white text-sm">AI Interview Evaluator</span>
             </div>

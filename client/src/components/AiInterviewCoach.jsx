@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { sendCoachMessage } from '../services/api';
 import voiceAssistant from '../services/voiceAssistant';
 import {
-  IconSparkles as Sparkles,
-  IconSend as Send,
-  IconVolume as Volume2,
-  IconVolumeOff as VolumeX,
-  IconRobot as Bot,
-} from '@tabler/icons-react';
+  TbSparkles as Sparkles,
+  TbSend as Send,
+  TbVolume as Volume2,
+  TbVolumeOff as VolumeX,
+  TbRobot as Bot,
+} from 'react-icons/tb';
 
 const QUICK_PROMPTS = [
   'Turn my weakest answer into a Top 1% response',

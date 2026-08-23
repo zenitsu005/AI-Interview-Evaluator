@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
-  IconLock as Lock,
-  IconUser as User,
-  IconMail as Mail,
-  IconX as X,
-  IconSparkles as Sparkles,
-  IconArrowRight as ArrowRight,
-  IconAlertTriangle as AlertTriangle,
-  IconCircleCheck as CheckCircle2,
-} from '@tabler/icons-react';
+  TbLock as Lock,
+  TbUser as User,
+  TbMail as Mail,
+  TbX as X,
+  TbSparkles as Sparkles,
+  TbArrowRight as ArrowRight,
+  TbAlertTriangle as AlertTriangle,
+  TbCircleCheck as CheckCircle2,
+} from 'react-icons/tb';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 

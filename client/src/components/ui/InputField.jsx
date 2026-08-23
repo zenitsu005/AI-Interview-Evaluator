@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconAlertCircle as AlertCircle } from '@tabler/icons-react';
+import { TbAlertCircle as AlertCircle } from 'react-icons/tb';
 
 export default function InputField({
   label,

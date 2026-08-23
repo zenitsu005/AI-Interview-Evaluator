@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  IconTrophy as Trophy,
-  IconStar as Star,
-  IconCircleCheck as CheckCircle2,
-  IconArrowRight as ArrowRight,
-  IconSparkles as Sparkles,
-} from '@tabler/icons-react';
+  TbTrophy as Trophy,
+  TbStar as Star,
+  TbCircleCheck as CheckCircle2,
+  TbArrowRight as ArrowRight,
+  TbSparkles as Sparkles,
+} from 'react-icons/tb';
 
 const playArcadeVictoryChime = () => {
   try {

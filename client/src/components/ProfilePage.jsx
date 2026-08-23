@@ -5,24 +5,24 @@ import ShareReportCardModal from './ShareReportCardModal';
 import AnalyticsTrendSection from './AnalyticsTrendSection';
 import AppNavbar from './AppNavbar';
 import {
-  IconUser as User,
-  IconEdit as Edit3,
-  IconLogout as LogOut,
-  IconTrophy as Trophy,
-  IconBolt as Zap,
-  IconBrain as Brain,
-  IconCode as Code2,
-  IconUsers as Users,
-  IconSparkles as Sparkles,
-  IconShare as Share2,
-  IconFileText as FileText,
-  IconArrowRight as ArrowRight,
-  IconCircleCheck as CheckCircle2,
-  IconX as X,
-  IconChevronRight as ChevronRight,
-  IconTrendingUp as TrendingUp,
-  IconAward as Award,
-} from '@tabler/icons-react';
+  TbUser as User,
+  TbEdit as Edit3,
+  TbLogout as LogOut,
+  TbTrophy as Trophy,
+  TbBolt as Zap,
+  TbBrain as Brain,
+  TbCode as Code2,
+  TbUsers as Users,
+  TbSparkles as Sparkles,
+  TbShare as Share2,
+  TbFileText as FileText,
+  TbArrowRight as ArrowRight,
+  TbCircleCheck as CheckCircle2,
+  TbX as X,
+  TbChevronRight as ChevronRight,
+  TbTrendingUp as TrendingUp,
+  TbAward as Award,
+} from 'react-icons/tb';
 
 export default function ProfilePage() {
   const { user, history: authHistory, logout, updateUserProfile } = useAuth();

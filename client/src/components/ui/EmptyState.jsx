@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from './Button';
-import { IconInbox as Inbox } from '@tabler/icons-react';
+import { TbInbox as Inbox } from 'react-icons/tb';
 
 export default function EmptyState({
   icon = null,

@@ -3,15 +3,15 @@ import { useInterview } from '../context/InterviewContext';
 import { generateBugHunterDrills } from '../services/api';
 import AppNavbar from './AppNavbar';
 import {
-  IconBug as Bug,
-  IconArrowsShuffle as Shuffle,
-  IconSparkles as Sparkles,
-  IconShieldExclamation as ShieldAlert,
-  IconShieldCheck as ShieldCheck,
-  IconCheck as Check,
-  IconX as X,
-  IconArrowRight as ArrowRight,
-} from '@tabler/icons-react';
+  TbBug as Bug,
+  TbArrowsShuffle as Shuffle,
+  TbSparkles as Sparkles,
+  TbShieldExclamation as ShieldAlert,
+  TbShieldCheck as ShieldCheck,
+  TbCheck as Check,
+  TbX as X,
+  TbArrowRight as ArrowRight,
+} from 'react-icons/tb';
 
 const DEFAULT_BUG_DRILLS = [
   {

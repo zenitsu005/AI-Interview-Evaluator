@@ -3,17 +3,17 @@ import { useInterview } from '../context/InterviewContext';
 import { getRapidFireQuestions } from '../services/api';
 import AppNavbar from './AppNavbar';
 import {
-  IconBolt as Zap,
-  IconArrowsShuffle as Shuffle,
-  IconSparkles as Sparkles,
-  IconRotateClockwise2 as RotateCcw,
-  IconFlame as Flame,
-  IconTrophy as Trophy,
-  IconCheck as Check,
-  IconX as X,
-  IconArrowRight as ArrowRight,
-  IconShieldCheck as ShieldCheck,
-} from '@tabler/icons-react';
+  TbBolt as Zap,
+  TbArrowsShuffle as Shuffle,
+  TbSparkles as Sparkles,
+  TbRotateClockwise2 as RotateCcw,
+  TbFlame as Flame,
+  TbTrophy as Trophy,
+  TbCheck as Check,
+  TbX as X,
+  TbArrowRight as ArrowRight,
+  TbShieldCheck as ShieldCheck,
+} from 'react-icons/tb';
 
 const QUESTION_BANK = [
   {

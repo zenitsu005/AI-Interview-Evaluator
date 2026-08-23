@@ -2,22 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
 import {
-  IconHeartbeat as HeartPulse,
-  IconActivity as Activity,
-  IconMicrophone as Mic,
-  IconFlame as Flame,
-  IconSparkles as Sparkles,
-  IconCircleCheck as CheckCircle2,
-  IconVideo as Video,
-  IconPlayerPlay as Play,
-  IconArrowRight as ArrowRight,
-  IconRotateClockwise2 as RotateCcw,
-  IconBolt as Zap,
-  IconCheck as Check,
-  IconVolume as Volume2,
-  IconMoodSmile as Smile,
-  IconShieldCheck as ShieldCheck,
-} from '@tabler/icons-react';
+  TbHeartbeat as HeartPulse,
+  TbActivity as Activity,
+  TbMicrophone as Mic,
+  TbFlame as Flame,
+  TbSparkles as Sparkles,
+  TbCircleCheck as CheckCircle2,
+  TbVideo as Video,
+  TbPlayerPlay as Play,
+  TbArrowRight as ArrowRight,
+  TbRotateClockwise2 as RotateCcw,
+  TbBolt as Zap,
+  TbCheck as Check,
+  TbVolume as Volume2,
+  TbMoodSmile as Smile,
+  TbShieldCheck as ShieldCheck,
+} from 'react-icons/tb';
 
 // Web Audio API Calming Tones and Fanfare
 const playCalmTone = (freq = 432, duration = 2.5) => {

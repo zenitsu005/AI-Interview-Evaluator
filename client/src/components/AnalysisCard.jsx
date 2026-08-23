@@ -1,17 +1,17 @@
 import React from 'react';
 import { useInterview } from '../context/InterviewContext';
 import {
-  IconBrain,
-  IconCode,
-  IconUsers,
-  IconVideo,
-  IconFileText,
-  IconAlertCircle,
-  IconLoader2,
-  IconArrowRight,
-  IconSparkles,
-  IconAdjustments,
-} from '@tabler/icons-react';
+  TbBrain as IconBrain,
+  TbCode as IconCode,
+  TbUsers as IconUsers,
+  TbVideo as IconVideo,
+  TbFileText as IconFileText,
+  TbAlertCircle as IconAlertCircle,
+  TbLoader2 as IconLoader2,
+  TbArrowRight as IconArrowRight,
+  TbSparkles as IconSparkles,
+  TbAdjustments as IconAdjustments,
+} from 'react-icons/tb';
 
 const SkillPill = ({ label }) => (
   <span className="bg-slate-50 border border-slate-200 text-slate-700 text-xs px-3 py-1 rounded-lg font-medium shadow-xs">

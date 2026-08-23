@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconLoader2 } from '@tabler/icons-react';
+import { TbLoader2 } from 'react-icons/tb';
 
 export default function Button({
   children,

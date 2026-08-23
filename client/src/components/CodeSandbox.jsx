@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import {
-  IconCode as Code2,
-  IconPlayerPlay as Play,
-  IconCircleCheck as CheckCircle2,
-  IconRotateClockwise2 as RotateCcw,
-  IconTrash as Trash2,
-  IconTerminal2 as Terminal,
-  IconActivity as Activity,
-  IconSparkles as Sparkles,
-  IconCheck as Check,
-} from '@tabler/icons-react';
+  TbCode as Code2,
+  TbPlayerPlay as Play,
+  TbCircleCheck as CheckCircle2,
+  TbRotateClockwise2 as RotateCcw,
+  TbTrash as Trash2,
+  TbTerminal2 as Terminal,
+  TbActivity as Activity,
+  TbSparkles as Sparkles,
+  TbCheck as Check,
+} from 'react-icons/tb';
 
 const STARTER_CODES = {
   python: `# Technical Sandbox (Python 3.10)
