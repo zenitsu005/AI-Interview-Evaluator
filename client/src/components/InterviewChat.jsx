@@ -1,10 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useInterview } from '../context/InterviewContext';
+import {
+  IconBrain,
+  IconCode,
+  IconUsers,
+  IconLoader2,
+  IconAlertCircle,
+  IconSend,
+} from '@tabler/icons-react';
 
 const ROUND_CONFIG = {
-  aptitude: { label: 'Aptitude & Logic', color: 'bg-blue-50 text-blue-700 border-blue-200', emoji: '🧠' },
-  technical: { label: 'Technical', color: 'bg-purple-50 text-purple-700 border-purple-200', emoji: '💻' },
-  hr: { label: 'HR Round', color: 'bg-emerald-50 text-emerald-700 border-emerald-200', emoji: '👥' },
+  aptitude: { label: 'Aptitude & Logic', color: 'bg-blue-50 text-blue-700 border-blue-200', icon: IconBrain },
+  technical: { label: 'Technical', color: 'bg-purple-50 text-purple-700 border-purple-200', icon: IconCode },
+  hr: { label: 'HR Round', color: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: IconUsers },
 };
 
 export default function InterviewChat() {
@@ -176,8 +184,9 @@ export default function InterviewChat() {
               <div className="bg-white border border-slate-200 rounded-2xl p-5 flex-1 shadow-sm">
                 <div className="flex items-center gap-2 mb-2">
                   {roundCfg && (
-                    <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold border ${roundCfg.color}`}>
-                      {roundCfg.emoji} {roundCfg.label} — Q{questionIndexInRound}/{currentRound.total}
+                    <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold border flex items-center gap-1.5 ${roundCfg.color}`}>
+                      {roundCfg.icon && React.createElement(roundCfg.icon, { className: 'w-3.5 h-3.5' })}
+                      <span>{roundCfg.label} — Q{questionIndexInRound}/{currentRound.total}</span>
                     </span>
                   )}
                   {currentQuestion.type && (
@@ -198,10 +207,7 @@ export default function InterviewChat() {
                 AI
               </div>
               <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4 text-teal-600" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                </svg>
+                <IconLoader2 className="animate-spin h-4 w-4 text-teal-600" />
                 <span className="text-xs text-slate-500 font-mono">
                   {phase === 'evaluating' ? 'Generating comprehensive scorecard...' : 'Preparing next question...'}
                 </span>
@@ -218,8 +224,9 @@ export default function InterviewChat() {
         <div className="border-t border-slate-200 bg-white p-4 sticky bottom-0 shadow-md">
           <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-2">
             {error && (
-              <p className="text-xs text-rose-700 bg-rose-50 p-2.5 rounded-lg border border-rose-200">
-                ❌ {error}
+              <p className="text-xs text-rose-700 bg-rose-50 p-2.5 rounded-lg border border-rose-200 flex items-center gap-1.5">
+                <IconAlertCircle className="w-3.5 h-3.5 text-rose-600 flex-shrink-0" />
+                <span>{error}</span>
               </p>
             )}
 

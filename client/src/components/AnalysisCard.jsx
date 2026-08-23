@@ -1,5 +1,17 @@
 import React from 'react';
 import { useInterview } from '../context/InterviewContext';
+import {
+  IconBrain,
+  IconCode,
+  IconUsers,
+  IconVideo,
+  IconFileText,
+  IconAlertCircle,
+  IconLoader2,
+  IconArrowRight,
+  IconSparkles,
+  IconAdjustments,
+} from '@tabler/icons-react';
 
 const SkillPill = ({ label }) => (
   <span className="bg-slate-50 border border-slate-200 text-slate-700 text-xs px-3 py-1 rounded-lg font-medium shadow-xs">
@@ -120,7 +132,10 @@ export default function AnalysisCard() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-blue-700 text-xs">🧠 Round 1: Aptitude</span>
+                <span className="font-bold text-blue-700 text-xs flex items-center gap-1.5">
+                  <IconBrain className="w-4 h-4 text-blue-600" />
+                  <span>Round 1: Aptitude</span>
+                </span>
                 <span className="text-[10px] text-slate-500 font-mono">5 Questions</span>
               </div>
               <p className="text-[11px] text-slate-600 leading-snug">
@@ -130,7 +145,10 @@ export default function AnalysisCard() {
 
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-purple-700 text-xs">💻 Round 2: Technical</span>
+                <span className="font-bold text-purple-700 text-xs flex items-center gap-1.5">
+                  <IconCode className="w-4 h-4 text-purple-600" />
+                  <span>Round 2: Technical</span>
+                </span>
                 <span className="text-[10px] text-slate-500 font-mono">5 Questions</span>
               </div>
               <p className="text-[11px] text-slate-600 leading-snug">
@@ -140,7 +158,10 @@ export default function AnalysisCard() {
 
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-emerald-700 text-xs">🤝 Round 3: HR & Fit</span>
+                <span className="font-bold text-emerald-700 text-xs flex items-center gap-1.5">
+                  <IconUsers className="w-4 h-4 text-emerald-600" />
+                  <span>Round 3: HR Round</span>
+                </span>
                 <span className="text-[10px] text-slate-500 font-mono">5 Questions</span>
               </div>
               <p className="text-[11px] text-slate-600 leading-snug">
@@ -153,7 +174,8 @@ export default function AnalysisCard() {
         {/* ── Mode Selector ── */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h2 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
-            <span>🎬</span> Choose Your Interview Mode
+            <IconAdjustments className="w-4 h-4 text-teal-600" />
+            <span>Choose Your Interview Mode</span>
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Video Mode */}
@@ -167,7 +189,9 @@ export default function AnalysisCard() {
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-3xl">🎥</span>
+                <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center">
+                  <IconVideo className="w-5 h-5" />
+                </div>
                 {interviewMode === 'video' && (
                   <span className="text-[10px] font-bold text-teal-800 bg-teal-100 px-2 py-0.5 rounded-full">
                     RECOMMENDED
@@ -190,7 +214,9 @@ export default function AnalysisCard() {
                   : 'border-slate-200 bg-slate-50 hover:bg-slate-100'
               }`}
             >
-              <div className="text-3xl mb-2">📝</div>
+              <div className="w-10 h-10 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center mb-2">
+                <IconFileText className="w-5 h-5" />
+              </div>
               <p className="font-bold text-slate-900 text-sm">Text Chat Mode</p>
               <p className="text-slate-500 text-xs mt-1 leading-relaxed">
                 Chat interface with timed answers for quick technical and aptitude practice.
@@ -201,7 +227,7 @@ export default function AnalysisCard() {
 
         {error && (
           <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 text-rose-700 text-xs flex items-center gap-2">
-            <span>❌</span>
+            <IconAlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -214,14 +240,11 @@ export default function AnalysisCard() {
         >
           {isLoading ? (
             <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-              </svg>
+              <IconLoader2 className="animate-spin h-4 w-4 text-white" />
               Preparing Adaptive Questions...
             </span>
           ) : (
-            `🚀 Begin ${interviewMode === 'video' ? 'Video' : 'Text'} Interview →`
+            `Begin ${interviewMode === 'video' ? 'Video' : 'Text'} Interview →`
           )}
         </button>
       </main>

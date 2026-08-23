@@ -1,6 +1,23 @@
 import React, { useState, useRef } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
+import {
+  IconFileText,
+  IconCheck,
+  IconAlertCircle,
+  IconLoader2,
+  IconUpload,
+  IconFilePlus,
+  IconWorld,
+  IconBrain,
+  IconBriefcase,
+  IconRocket,
+  IconBrandGoogle,
+  IconBrandAmazon,
+  IconCircleCheck,
+  IconX,
+  IconEdit,
+} from '@tabler/icons-react';
 
 const QUICK_ROLES = [
   'Data Analyst',
@@ -16,30 +33,30 @@ const QUICK_ROLES = [
 const DIFFICULTY_LEVELS = [
   {
     id: 'Beginner',
-    label: '🟢 Beginner / Fresher',
+    label: 'Beginner / Fresher',
     sub: '0-1 yrs exp • Foundational concepts & gentle pacing',
   },
   {
     id: 'Intermediate',
-    label: '🟡 Intermediate',
+    label: 'Intermediate',
     sub: '2-4 yrs exp • Real-world scenarios & standard industry bar',
   },
   {
     id: 'Experienced',
-    label: '🔴 Experienced / Senior',
+    label: 'Experienced / Senior',
     sub: '5+ yrs exp • System design, trade-offs & architectural depth',
   },
 ];
 
 const COMPANY_TRACKS = [
-  { id: 'General', label: '🌐 Standard Industry Bar', sub: 'Balanced technical & HR round questions' },
-  { id: 'Google', label: '🔴 Google Track', sub: 'Algorithmic efficiency, time complexity & Googlyness' },
-  { id: 'Amazon', label: '🟠 Amazon Bar-Raiser', sub: '16 Leadership Principles, STAR drills & AWS scaling' },
-  { id: 'McKinsey', label: '💼 McKinsey / Consulting', sub: 'Case studies, market sizing & quantitative logic' },
-  { id: 'Stripe', label: '🚀 Stripe / Fintech', sub: 'High-precision API design, concurrency & transactions' },
-  { id: 'Meta', label: '🔵 Meta Track', sub: 'Product architecture, real-time feeds & fast debugging' },
-  { id: 'Mentor', label: '🌟 Supportive Mentor', sub: 'Coaching style with encouraging tone & subtle hints' },
-  { id: 'Founder', label: '⚡ Startup Founder', sub: 'Fast-paced, pragmatic trade-offs & rapid execution' },
+  { id: 'General', label: 'Standard Industry Bar', sub: 'Balanced technical & HR round questions', icon: IconWorld },
+  { id: 'Google', label: 'Google Track', sub: 'Algorithmic efficiency, time complexity & Googlyness', icon: IconBrandGoogle },
+  { id: 'Amazon', label: 'Amazon Bar-Raiser', sub: '16 Leadership Principles, STAR drills & AWS scaling', icon: IconBrandAmazon },
+  { id: 'McKinsey', label: 'McKinsey / Consulting', sub: 'Case studies, market sizing & quantitative logic', icon: IconBriefcase },
+  { id: 'Stripe', label: 'Stripe / Fintech', sub: 'High-precision API design, concurrency & transactions', icon: IconRocket },
+  { id: 'Meta', label: 'Meta Track', sub: 'Product architecture, real-time feeds & fast debugging', icon: IconBrain },
+  { id: 'Mentor', label: 'Supportive Mentor', sub: 'Coaching style with encouraging tone & subtle hints' },
+  { id: 'Founder', label: 'Startup Founder', sub: 'Fast-paced, pragmatic trade-offs & rapid execution' },
 ];
 
 export default function ResumeSetup() {
@@ -335,8 +352,9 @@ export default function ResumeSetup() {
           <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-teal-700">
-                  📄 Resume / Experience <span className="text-[10px] text-slate-500 font-normal normal-case">(Optional)</span>
+                <label className="text-xs font-bold uppercase tracking-wider text-teal-700 flex items-center gap-1.5">
+                  <IconFileText className="w-3.5 h-3.5" />
+                  <span>Resume / Experience</span> <span className="text-[10px] text-slate-500 font-normal normal-case">(Optional)</span>
                 </label>
                 <p className="text-[11px] text-slate-500 mt-0.5">Leave blank to use a standard curriculum for this role, or provide your resume.</p>
               </div>
@@ -346,24 +364,26 @@ export default function ResumeSetup() {
                 <button
                   type="button"
                   onClick={() => setInputMode('paste')}
-                  className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                  className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
                     inputMode === 'paste'
                       ? 'bg-teal-600 text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  📝 Paste Text
+                  <IconEdit className="w-3.5 h-3.5" />
+                  <span>Paste Text</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setInputMode('upload')}
-                  className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                  className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
                     inputMode === 'upload'
                       ? 'bg-teal-600 text-white shadow-sm'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  📁 Upload File
+                  <IconUpload className="w-3.5 h-3.5" />
+                  <span>Upload File</span>
                 </button>
               </div>
             </div>
@@ -381,13 +401,17 @@ export default function ResumeSetup() {
                       handleSubmit();
                     }
                   }}
-                  placeholder="Optional: Paste your resume text, skills, past experience, or projects here (or leave blank to auto-generate)..."
-                  rows={5}
-                  className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-xs font-mono text-slate-900 focus:outline-none leading-relaxed shadow-sm"
+                  placeholder="Paste your resume text here (experience, skills, projects, education)..."
+                  rows={6}
+                  className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-xs font-mono text-slate-900 focus:outline-none shadow-sm"
                 />
-                <div className="flex justify-between items-center mt-2 text-[11px] text-slate-500">
-                  <span>Optional — leave blank if you want a general interview</span>
+                <div className="flex justify-between items-center mt-1 text-[11px] text-slate-400 font-mono">
                   <span>{resumeText.trim().length} characters</span>
+                  {resumeText.trim().length > 50 && (
+                    <span className="text-emerald-600 font-bold flex items-center gap-1">
+                      <IconCheck className="w-3 h-3" /> Resume text loaded
+                    </span>
+                  )}
                 </div>
               </div>
             )}
@@ -397,6 +421,10 @@ export default function ResumeSetup() {
               <div>
                 <div
                   onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
+                  onDragEnter={(e) => {
                     e.preventDefault();
                     setDragOver(false);
                   }}
@@ -423,7 +451,7 @@ export default function ResumeSetup() {
 
                   {file ? (
                     <div className="flex flex-col items-center gap-2">
-                      <span className="text-3xl">✅</span>
+                      <IconCircleCheck className="w-8 h-8 text-emerald-500" />
                       <p className="font-semibold text-slate-800 text-sm">{file.name}</p>
                       <p className="text-xs text-slate-500 font-mono">
                         {(file.size / 1024).toFixed(1)} KB • Click to change file
@@ -431,7 +459,7 @@ export default function ResumeSetup() {
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-2">
-                      <span className="text-3xl opacity-70">📄</span>
+                      <IconFilePlus className="w-8 h-8 text-slate-400" />
                       <p className="text-sm font-semibold text-slate-700">
                         Drag and drop your resume file here
                       </p>
@@ -445,7 +473,7 @@ export default function ResumeSetup() {
 
           {error && (
             <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 text-rose-700 text-xs flex items-center gap-2">
-              <span>❌</span>
+              <IconAlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -458,10 +486,7 @@ export default function ResumeSetup() {
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                </svg>
+                <IconLoader2 className="animate-spin h-4 w-4 text-white" />
                 AI Calibrating {selectedCompany} Track & 15 Questions...
               </span>
             ) : (
