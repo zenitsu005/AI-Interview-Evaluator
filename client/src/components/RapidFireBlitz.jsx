@@ -107,6 +107,17 @@ const QUESTION_BANK = [
   },
 ];
 
+const BLITZ_ROLES = [
+  'Full Stack Software Engineer',
+  'Frontend Developer (React / JS)',
+  'Backend Developer (Node / Python)',
+  'Data Structures & Algorithms',
+  'System Design & Distributed Scale',
+  'DevOps & Cloud Infrastructure',
+  'AI / Machine Learning Engineer',
+  'Data Analyst / SQL Specialist',
+];
+
 const shuffleQuestionOptions = (qList) => {
   return qList.map((q) => {
     const correctText = q.options[q.correctIndex || 0];
@@ -121,9 +132,14 @@ const shuffleQuestionOptions = (qList) => {
 };
 
 export default function RapidFireBlitz() {
-  const { targetRole, resumeAnalysis, setPhase } = useInterview();
+  const { targetRole: contextRole, resumeAnalysis, setPhase } = useInterview();
 
-  // Initialize with 6 randomized questions from pool with shuffled options
+  // Role Configuration State
+  const [isConfiguring, setIsConfiguring] = useState(true);
+  const [selectedRole, setSelectedRole] = useState(contextRole || 'Full Stack Software Engineer');
+  const [customRoleInput, setCustomRoleInput] = useState('');
+
+  // Initialize with questions
   const [questions, setQuestions] = useState(() => {
     const pool = [...QUESTION_BANK].sort(() => Math.random() - 0.5);
     return shuffleQuestionOptions(pool.slice(0, 6));
@@ -140,12 +156,13 @@ export default function RapidFireBlitz() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Dynamic AI Question Generator via Gemini
-  const fetchAiQuestions = async () => {
+  const fetchAiQuestions = async (roleToUse) => {
+    const role = roleToUse || selectedRole || 'Full Stack Software Engineer';
     setIsLoading(true);
     try {
       const res = await getRapidFireQuestions({
-        targetRole: targetRole || 'Software Engineer',
-        domain: resumeAnalysis?.domain || 'Software Engineering',
+        targetRole: role,
+        domain: role,
       });
       if (res?.questions && res.questions.length >= 4) {
         const randomized = shuffleQuestionOptions(res.questions);
@@ -182,14 +199,17 @@ export default function RapidFireBlitz() {
     setGameOver(false);
   };
 
-  // Fetch fresh questions on mount
-  useEffect(() => {
-    fetchAiQuestions();
-  }, [targetRole]);
+  // Start Blitz Session with chosen role
+  const handleStartBlitz = (role) => {
+    const finalRole = (role || customRoleInput.trim() || selectedRole).trim();
+    setSelectedRole(finalRole);
+    setIsConfiguring(false);
+    fetchAiQuestions(finalRole);
+  };
 
   // 60-Second Timer
   useEffect(() => {
-    if (gameOver) return;
+    if (isConfiguring || gameOver) return;
     const timer = setInterval(() => {
       setTimeLeft((t) => {
         if (t <= 1) {
@@ -201,7 +221,7 @@ export default function RapidFireBlitz() {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [gameOver]);
+  }, [isConfiguring, gameOver]);
 
   const currentQ = questions[currentIndex] || questions[0];
 
@@ -239,35 +259,122 @@ export default function RapidFireBlitz() {
 
       {/* Main Container */}
       <main className="max-w-3xl mx-auto w-full p-4 sm:p-6 space-y-5 flex-1 flex flex-col justify-center text-left">
-        {/* Top Controls Bar */}
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div>
-            <h1 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
-              <Zap className="w-5 h-5 text-amber-400" />
-              <span>60-Second Rapid-Fire Blitz</span>
-            </h1>
-            <p className="text-xs text-slate-400 font-mono">Warmup Drill for <strong className="text-teal-400">{targetRole || 'Software Engineer'}</strong></p>
+        
+        {/* ── 1. SETUP / ROLE SELECTION SCREEN ── */}
+        {isConfiguring ? (
+          <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl animate-fade-in">
+            <div className="text-center space-y-2 max-w-xl mx-auto">
+              <div className="w-14 h-14 rounded-2xl bg-amber-950/60 border border-amber-500/40 flex items-center justify-center text-amber-400 mx-auto shadow-lg shadow-amber-500/20">
+                <Zap className="w-7 h-7" />
+              </div>
+              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                60-Second Rapid-Fire Blitz
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-400">
+                Select your engineering domain or enter a target role to generate fast-paced, high-speed technical drills.
+              </p>
+            </div>
+
+            {/* Quick Role Selection Chips */}
+            <div className="space-y-2.5">
+              <label className="block text-xs font-semibold text-slate-300">Select Engineering Role:</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {BLITZ_ROLES.map((r) => (
+                  <button
+                    key={r}
+                    type="button"
+                    onClick={() => {
+                      setSelectedRole(r);
+                      setCustomRoleInput('');
+                    }}
+                    className={`p-3 rounded-xl border text-left text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${
+                      selectedRole === r && !customRoleInput.trim()
+                        ? 'bg-teal-500/15 border-teal-400 text-teal-300 shadow-sm'
+                        : 'bg-[#0D111A] border-white/10 text-slate-300 hover:border-white/20 hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    <span>{r}</span>
+                    {selectedRole === r && !customRoleInput.trim() && (
+                      <Check className="w-4 h-4 text-teal-400" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Role Input */}
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-slate-300">Or Enter Custom Job Role:</label>
+              <input
+                type="text"
+                value={customRoleInput}
+                onChange={(e) => {
+                  setCustomRoleInput(e.target.value);
+                  if (e.target.value.trim()) setSelectedRole(e.target.value.trim());
+                }}
+                placeholder="e.g. Mobile iOS Engineer, Embedded Systems, Cybersecurity..."
+                className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none"
+              />
+            </div>
+
+            {/* Start Blitz Button */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => handleStartBlitz()}
+                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-400 hover:from-teal-400 hover:to-cyan-300 text-slate-950 font-extrabold text-sm shadow-[0_1px_rgba(255,255,255,0.3)_inset,0_8px_24px_rgba(20,184,166,0.35)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>Launch 60s Blitz for {customRoleInput.trim() || selectedRole}</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleShufflePool}
-              className="text-xs bg-[#171E2D] hover:bg-[#1E273A] text-slate-300 border border-white/10 px-3.5 py-1.5 rounded-xl transition-all font-semibold shadow-sm cursor-pointer flex items-center gap-1.5"
-            >
-              <Shuffle className="w-3.5 h-3.5" />
-              <span>Shuffle Pool</span>
-            </button>
-            <button
-              type="button"
-              onClick={fetchAiQuestions}
-              disabled={isLoading}
-              className="text-xs bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-bold px-4 py-1.5 rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-            >
-              <Sparkles className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-              <span>{isLoading ? 'Loading...' : 'New AI Questions'}</span>
-            </button>
-          </div>
-        </div>
+        ) : (
+          /* ── 2. ACTIVE BLITZ QUIZ SCREEN ── */
+          <>
+            {/* Top Controls Bar */}
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h1 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-amber-400" />
+                  <span>60-Second Rapid-Fire Blitz</span>
+                </h1>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <p className="text-xs text-slate-400 font-mono">
+                    Drill for: <strong className="text-teal-400">{selectedRole}</strong>
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsConfiguring(true);
+                      setGameOver(false);
+                    }}
+                    className="text-[11px] text-teal-400 hover:underline cursor-pointer font-semibold"
+                  >
+                    (Change Role)
+                  </button>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleShufflePool}
+                  className="text-xs bg-[#171E2D] hover:bg-[#1E273A] text-slate-300 border border-white/10 px-3.5 py-1.5 rounded-xl transition-all font-semibold shadow-sm cursor-pointer flex items-center gap-1.5"
+                >
+                  <Shuffle className="w-3.5 h-3.5" />
+                  <span>Shuffle</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => fetchAiQuestions(selectedRole)}
+                  disabled={isLoading}
+                  className="text-xs bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-bold px-4 py-1.5 rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  <Sparkles className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+                  <span>{isLoading ? 'Loading...' : 'New Questions'}</span>
+                </button>
+              </div>
+            </div>
         {!gameOver ? (
           <div className="space-y-6 animate-fade-in">
             {/* Status Bar */}
@@ -385,6 +492,8 @@ export default function RapidFireBlitz() {
               </button>
             </div>
           </div>
+        )}
+          </>
         )}
       </main>
 
