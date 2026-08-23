@@ -1043,9 +1043,7 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
         </div>
       </main>
 
-      <footer className="py-6 border-t border-white/10 bg-[#0E121B] text-center text-xs text-slate-500">
-        <p>© {new Date().getFullYear()} AI Interview Evaluator • ATS Resume Engine</p>
-      </footer>
+      <footer className="py-4 border-t border-white/10 bg-[#0E121B] text-center" />
     </div>
   );
 }
