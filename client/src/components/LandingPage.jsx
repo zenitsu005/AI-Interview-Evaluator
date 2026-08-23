@@ -122,16 +122,13 @@ export default function LandingPage({ onNavigate }) {
                     <div className="inline-flex p-3 rounded-2xl bg-teal-500/10 border border-teal-500/25 text-teal-300 shadow-[0_0_20px_rgba(20,184,166,0.15)] group-hover:scale-105 group-hover:bg-teal-500/20 group-hover:border-teal-400/40 transition-all duration-300">
                       <Brain className="w-8 h-8" />
                     </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-teal-300 bg-teal-500/10 border border-teal-500/25 px-2.5 py-1 rounded-full">
-                      Multimodal 4-Round Loop
-                    </span>
                   </div>
                   
                   <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
                     Full Mock Interview Studio
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl text-pretty font-normal">
-                    Simulate all core rounds: Aptitude Logic, Technical Depth, System Architecture, and HR Round with live audio dialogue.
+                    Simulate all 3 core rounds: Aptitude & Logic, Technical Depth, and HR Round with live audio dialogue.
                   </p>
                 </div>
 
