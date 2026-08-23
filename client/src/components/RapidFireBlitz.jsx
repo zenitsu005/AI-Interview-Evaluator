@@ -476,19 +476,24 @@ export default function RapidFireBlitz() {
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
-                onClick={fetchAiQuestions}
-                className="py-3 px-6 text-xs font-semibold w-full sm:w-auto flex items-center justify-center gap-2 bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-200 rounded-xl shadow-sm cursor-pointer"
+                type="button"
+                onClick={() => fetchAiQuestions(selectedRole)}
+                disabled={isLoading}
+                className="py-3.5 px-8 text-xs font-extrabold bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-400 hover:from-teal-400 hover:to-cyan-300 text-slate-950 rounded-xl shadow-lg shadow-teal-500/20 w-full sm:w-auto cursor-pointer flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
               >
-                <RotateCcw className="w-3.5 h-3.5 text-teal-400" />
-                <span>Refresh Questions</span>
+                <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                <span>{isLoading ? 'Loading Questions...' : 'Do Again'}</span>
               </button>
 
               <button
-                onClick={() => setPhase('setup')}
-                className="py-3 px-8 text-xs font-bold bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 rounded-xl shadow-lg shadow-teal-500/20 w-full sm:w-auto cursor-pointer flex items-center justify-center gap-1.5"
+                type="button"
+                onClick={() => {
+                  setIsConfiguring(true);
+                  setGameOver(false);
+                }}
+                className="py-3.5 px-6 text-xs font-semibold bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-200 rounded-xl shadow-sm w-full sm:w-auto cursor-pointer flex items-center justify-center gap-2 transition-all"
               >
-                <span>Jump to Full AI Interview</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Change Role</span>
               </button>
             </div>
           </div>
