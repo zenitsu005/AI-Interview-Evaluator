@@ -172,6 +172,13 @@ export default function ResumeOptimizer() {
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
+  // Status and result states
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [atsResult, setAtsResult] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [isStartingInterview, setIsStartingInterview] = useState(false);
+
   // Real-Time Resume Strength Calculation based on actual user input or AI audit result
   const calculateResumeStrength = () => {
     if (atsResult?.atsScore) return atsResult.atsScore;
