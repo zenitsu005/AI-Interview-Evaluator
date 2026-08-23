@@ -36,7 +36,14 @@ export default function LandingPage({ onNavigate }) {
         <section className="relative mx-auto max-w-4xl px-0 text-center flex flex-col items-center space-y-7 pt-4">
           
           {/* Subtle Ambient Backlight Glow */}
-          <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-96 h-44 bg-teal-500/15 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-96 h-48 bg-teal-500/15 rounded-full blur-[100px] pointer-events-none" />
+
+          {/* Micro-Pill Announcement */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-slate-300 text-xs font-medium backdrop-blur-xl shadow-inner group cursor-default">
+            <span className="flex h-2 w-2 rounded-full bg-teal-400 animate-pulse"></span>
+            <span className="text-slate-300">Multimodal AI Interview Simulation Suite</span>
+            <span className="text-teal-400 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 bg-teal-500/10 rounded border border-teal-500/20">Live</span>
+          </div>
 
           {/* Headline with Professional Gradient */}
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.14]">
@@ -56,7 +63,7 @@ export default function LandingPage({ onNavigate }) {
               <button
                 type="button"
                 onClick={() => nav('setup')}
-                className="py-3.5 px-8 rounded-xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 hover:from-teal-400 hover:via-emerald-400 hover:to-cyan-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-teal-500/25 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
+                className="py-3.5 px-8 rounded-xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 hover:from-teal-400 hover:via-emerald-400 hover:to-cyan-400 text-slate-950 font-extrabold text-sm shadow-[0_1px_rgba(255,255,255,0.3)_inset,0_8px_24px_rgba(20,184,166,0.35)] hover:shadow-[0_1px_rgba(255,255,255,0.45)_inset,0_12px_32px_rgba(20,184,166,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center gap-2"
               >
                 <span>Start a mock interview</span>
                 <ArrowRight className="w-4 h-4" />
@@ -65,7 +72,7 @@ export default function LandingPage({ onNavigate }) {
               <button
                 type="button"
                 onClick={handleExploreModules}
-                className="py-3.5 px-6 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-200 hover:text-white font-semibold text-sm transition-all active:scale-98 cursor-pointer flex items-center gap-2 shadow-sm"
+                className="py-3.5 px-6 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-200 hover:text-white font-semibold text-sm transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-2 shadow-sm"
               >
                 <span>Explore practice modules</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -78,7 +85,7 @@ export default function LandingPage({ onNavigate }) {
         <section id="practice-modules" className="space-y-6 pt-4 scroll-mt-24">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-              <span className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+              <span className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shadow-[0_0_12px_rgba(20,184,166,0.15)]">
                 <Layers className="w-6 h-6" />
               </span>
               <span>Targeted Practice Studios</span>
@@ -89,17 +96,22 @@ export default function LandingPage({ onNavigate }) {
             
             {/* Full Mock Studio */}
             <div className="md:col-span-8">
-              <Card
-                variant="interactive"
+              <div
                 onClick={() => nav('setup')}
-                className="h-full flex flex-col justify-between bg-gradient-to-br from-[#131823] via-[#171E2D] to-[#10141D] border-white/10 hover:border-teal-400/50 p-6 sm:p-8 shadow-2xl relative overflow-hidden group"
+                className="h-full flex flex-col justify-between bg-gradient-to-br from-[#121724] via-[#161D2B] to-[#0E131E] border border-white/[0.08] hover:border-teal-400/50 p-6 sm:p-8 rounded-2xl shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset,0_10px_30px_rgba(0,0,0,0.5)] relative overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-[1.01]"
               >
-                <div className="absolute top-0 right-0 w-72 h-72 bg-teal-500/15 rounded-full blur-3xl pointer-events-none group-hover:bg-teal-500/25 transition-all duration-300" />
+                <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/15 rounded-full blur-3xl pointer-events-none group-hover:bg-teal-500/25 transition-all duration-500" />
 
                 <div className="space-y-4 relative z-10">
-                  <div className="inline-flex p-3 rounded-2xl bg-teal-500/10 border border-teal-500/30 text-teal-300 shadow-inner group-hover:scale-105 transition-transform">
-                    <Brain className="w-8 h-8" />
+                  <div className="flex items-center justify-between">
+                    <div className="inline-flex p-3 rounded-2xl bg-teal-500/10 border border-teal-500/25 text-teal-300 shadow-[0_0_20px_rgba(20,184,166,0.15)] group-hover:scale-105 group-hover:bg-teal-500/20 group-hover:border-teal-400/40 transition-all duration-300">
+                      <Brain className="w-8 h-8" />
+                    </div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-teal-300 bg-teal-500/10 border border-teal-500/25 px-2.5 py-1 rounded-full">
+                      Multimodal 4-Round Loop
+                    </span>
                   </div>
+                  
                   <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
                     Full Mock Interview Studio
                   </h3>
@@ -112,21 +124,29 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('setup')}
-                    className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-extrabold text-xs shadow-md hover:shadow-teal-500/25 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
+                    className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-extrabold text-xs shadow-[0_1px_rgba(255,255,255,0.3)_inset,0_4px_16px_rgba(20,184,166,0.3)] hover:shadow-[0_1px_rgba(255,255,255,0.4)_inset,0_6px_24px_rgba(20,184,166,0.45)] transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-2"
                   >
                     <span>Start Full Mock Interview</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
-              </Card>
+              </div>
             </div>
 
             {/* DSA Studio */}
             <div className="md:col-span-4">
-              <Card variant="interactive" onClick={() => nav('dsa')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-teal-400/40 shadow-xl group">
+              <div
+                onClick={() => nav('dsa')}
+                className="h-full flex flex-col justify-between p-6 bg-[#121724] border border-white/[0.08] hover:border-teal-400/40 rounded-2xl shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset,0_8px_24px_rgba(0,0,0,0.4)] group cursor-pointer transition-all duration-300 hover:scale-[1.01]"
+              >
                 <div className="space-y-3.5">
-                  <div className="inline-flex p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/25 text-teal-400 group-hover:scale-105 transition-transform">
-                    <Code2 className="w-6 h-6" />
+                  <div className="flex items-center justify-between">
+                    <div className="inline-flex p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/25 text-teal-400 shadow-[0_0_12px_rgba(20,184,166,0.15)] group-hover:scale-105 group-hover:bg-teal-500/20 group-hover:border-teal-400/40 transition-all duration-300">
+                      <Code2 className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-teal-300 bg-teal-500/10 border border-teal-500/25 px-2 py-0.5 rounded-md">
+                      4 Languages
+                    </span>
                   </div>
                   <h3 className="text-base font-bold text-white tracking-tight">
                     DSA Practice Studio
@@ -139,21 +159,29 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('dsa')}
-                    className="py-2 px-4 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-200 font-semibold text-xs transition-all active:scale-98 cursor-pointer flex items-center gap-1.5"
+                    className="py-2 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-200 font-semibold text-xs transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-1.5"
                   >
                     <span>Practice DSA</span>
                     <ChevronRight className="w-3.5 h-3.5 text-teal-400" />
                   </button>
                 </div>
-              </Card>
+              </div>
             </div>
 
             {/* Bug Hunter Studio */}
             <div className="md:col-span-6">
-              <Card variant="interactive" onClick={() => nav('bug-hunter')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-cyan-400/40 shadow-xl group">
+              <div
+                onClick={() => nav('bug-hunter')}
+                className="h-full flex flex-col justify-between p-6 bg-[#121724] border border-white/[0.08] hover:border-cyan-400/40 rounded-2xl shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset,0_8px_24px_rgba(0,0,0,0.4)] group cursor-pointer transition-all duration-300 hover:scale-[1.01]"
+              >
                 <div className="space-y-3.5">
-                  <div className="inline-flex p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 group-hover:scale-105 transition-transform">
-                    <Bug className="w-6 h-6" />
+                  <div className="flex items-center justify-between">
+                    <div className="inline-flex p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.15)] group-hover:scale-105 group-hover:bg-cyan-500/20 group-hover:border-cyan-400/40 transition-all duration-300">
+                      <Bug className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border border-cyan-500/25 px-2 py-0.5 rounded-md">
+                      Logic & Concurrency
+                    </span>
                   </div>
                   <h3 className="text-base font-bold text-white tracking-tight">
                     Bug Hunter Studio
@@ -166,21 +194,29 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('bug-hunter')}
-                    className="py-2 px-4 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-200 font-semibold text-xs transition-all active:scale-98 cursor-pointer flex items-center gap-1.5"
+                    className="py-2 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-200 font-semibold text-xs transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-1.5"
                   >
                     <span>Debug Code</span>
                     <ChevronRight className="w-3.5 h-3.5 text-cyan-400" />
                   </button>
                 </div>
-              </Card>
+              </div>
             </div>
 
             {/* 60s Rapid Blitz */}
             <div className="md:col-span-6">
-              <Card variant="interactive" onClick={() => nav('blitz')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-amber-400/40 shadow-xl group">
+              <div
+                onClick={() => nav('blitz')}
+                className="h-full flex flex-col justify-between p-6 bg-[#121724] border border-white/[0.08] hover:border-amber-400/40 rounded-2xl shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset,0_8px_24px_rgba(0,0,0,0.4)] group cursor-pointer transition-all duration-300 hover:scale-[1.01]"
+              >
                 <div className="space-y-3.5">
-                  <div className="inline-flex p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 group-hover:scale-105 transition-transform">
-                    <Zap className="w-6 h-6" />
+                  <div className="flex items-center justify-between">
+                    <div className="inline-flex p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.15)] group-hover:scale-105 group-hover:bg-amber-500/20 group-hover:border-amber-400/40 transition-all duration-300">
+                      <Zap className="w-6 h-6" />
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-md">
+                      60-Second Timers
+                    </span>
                   </div>
                   <h3 className="text-base font-bold text-white tracking-tight">
                     60s Rapid Blitz
@@ -193,13 +229,13 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('blitz')}
-                    className="py-2 px-4 rounded-xl bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-200 font-semibold text-xs transition-all active:scale-98 cursor-pointer flex items-center gap-1.5"
+                    className="py-2 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-200 font-semibold text-xs transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-1.5"
                   >
                     <span>Start Rapid Blitz</span>
                     <ChevronRight className="w-3.5 h-3.5 text-amber-400" />
                   </button>
                 </div>
-              </Card>
+              </div>
             </div>
 
           </div>
