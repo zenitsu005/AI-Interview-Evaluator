@@ -172,15 +172,15 @@ export default function ResumeOptimizer() {
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Status state
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [atsResult, setAtsResult] = useState(null);
-  const [copied, setCopied] = useState(false);
-  const [isStartingInterview, setIsStartingInterview] = useState(false);
-
-  // Real-Time Resume Strength Calculation based on actual user input
+  // Real-Time Resume Strength Calculation based on actual user input or AI audit result
   const calculateResumeStrength = () => {
+    if (atsResult?.atsScore) return atsResult.atsScore;
+    if (activeMode === 'upload' && (file || resumeText.trim())) {
+      let score = 50;
+      if (resumeText.length > 200) score += 20;
+      if (resumeText.length > 500) score += 20;
+      return Math.min(score, 90);
+    }
     let score = 0;
     if (formData.fullName.trim()) score += 15;
     if (formData.email.trim() || formData.phone.trim()) score += 15;
@@ -217,6 +217,22 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
     `.trim();
   };
 
+  const handleFileSelect = async (selectedFile) => {
+    setFile(selectedFile);
+    setError(null);
+    try {
+      setIsLoading(true);
+      const uploadRes = await uploadResume(selectedFile);
+      if (uploadRes?.resumeText) {
+        setResumeText(uploadRes.resumeText);
+      }
+    } catch (err) {
+      console.warn('Silent file extract notice:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleAnalyzeAndOptimize = async () => {
     if (!targetRole.trim()) {
       setError('Please select or specify your target job role.');
@@ -230,7 +246,7 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
     try {
       let textToSend = '';
       if (activeMode === 'upload') {
-        if (file) {
+        if (file && !resumeText.trim()) {
           const uploadRes = await uploadResume(file);
           textToSend = uploadRes.resumeText;
           setResumeText(textToSend);
@@ -241,10 +257,16 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
         textToSend = compileFormDataToText();
       }
 
-      if (!textToSend.trim()) {
+      if (!textToSend.trim() && !file) {
         setError('Please enter your resume details or upload a file to analyze.');
         setIsLoading(false);
         return;
+      }
+
+      if (file && !textToSend.trim()) {
+        const uploadRes = await uploadResume(file);
+        textToSend = uploadRes.resumeText;
+        setResumeText(textToSend);
       }
 
       const res = await optimizeResume({
@@ -267,10 +289,21 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
     setIsStartingInterview(true);
     setError(null);
     try {
-      const textToUse = compileFormDataToText();
+      let textToUse = '';
+      if (activeMode === 'upload') {
+        if (file && !resumeText.trim()) {
+          const uploadRes = await uploadResume(file);
+          textToUse = uploadRes.resumeText;
+          setResumeText(textToUse);
+        } else {
+          textToUse = resumeText;
+        }
+      } else {
+        textToUse = compileFormDataToText();
+      }
 
       if (setGlobalTargetRole) setGlobalTargetRole(targetRole.trim());
-      await handleResumeSubmit(textToUse, null, targetRole.trim(), 'Intermediate');
+      await handleResumeSubmit(textToUse, file, targetRole.trim(), 'Intermediate');
     } catch (err) {
       setError(err.message || 'Failed to start interview.');
       setIsStartingInterview(false);
@@ -282,7 +315,7 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
   };
 
   const copyAsMarkdown = () => {
-    const md = compileFormDataToText();
+    const md = activeMode === 'upload' && resumeText ? resumeText : compileFormDataToText();
     navigator.clipboard.writeText(md);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -783,7 +816,7 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
                   onDrop={(e) => {
                     e.preventDefault();
                     setDragOver(false);
-                    if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+                    if (e.dataTransfer.files[0]) handleFileSelect(e.dataTransfer.files[0]);
                   }}
                   onClick={() => fileInputRef.current?.click()}
                   className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
@@ -794,7 +827,7 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
                     ref={fileInputRef}
                     type="file"
                     accept=".pdf,.docx,.txt"
-                    onChange={(e) => { if (e.target.files[0]) setFile(e.target.files[0]); }}
+                    onChange={(e) => { if (e.target.files[0]) handleFileSelect(e.target.files[0]); }}
                     className="hidden"
                   />
                   <Upload className="w-8 h-8 text-teal-400 mx-auto mb-2" />
@@ -817,16 +850,34 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
               </div>
             )}
 
-            {/* Launch AI Interview Direct CTA */}
-            <div className="pt-2">
+            {/* Error Banner */}
+            {error && (
+              <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {/* Primary Action Buttons: Improve ATS Score & Launch Mock Interview */}
+            <div className="pt-2 space-y-2.5">
+              <button
+                type="button"
+                onClick={handleAnalyzeAndOptimize}
+                disabled={isLoading}
+                className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-400 hover:from-teal-400 hover:via-emerald-400 hover:to-cyan-300 text-slate-950 font-extrabold text-sm shadow-[0_1px_rgba(255,255,255,0.3)_inset,0_6px_20px_rgba(20,184,166,0.35)] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <Sparkles className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                <span>{isLoading ? 'Analyzing & Improving ATS Score...' : 'Improve ATS Score & Optimize Resume'}</span>
+              </button>
+
               <button
                 type="button"
                 onClick={handleStartInterviewWithThisResume}
-                disabled={isStartingInterview}
-                className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-[0_1px_rgba(255,255,255,0.3)_inset,0_6px_20px_rgba(20,184,166,0.3)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                disabled={isStartingInterview || isLoading}
+                className="w-full py-2.5 px-5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-300 hover:text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
-                <span>Practice AI Mock Interview with this Resume</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>{isStartingInterview ? 'Starting Interview...' : 'Practice AI Mock Interview with this Resume'}</span>
+                <ArrowRight className="w-3.5 h-3.5 text-teal-400" />
               </button>
             </div>
 
