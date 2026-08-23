@@ -80,30 +80,54 @@ export default function LandingPage({ onNavigate }) {
 
       <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-24 flex-1 space-y-24 text-left relative z-10">
         
-        {/* ── HERO SECTION ── */}
+        {/* ── HERO SECTION WITH ANIMATED BACKDROP ── */}
         <section className="relative mx-auto max-w-4xl px-0 text-center flex flex-col items-center space-y-6 pt-2">
           
+          {/* ── ANIMATED GEOMETRIC RADAR & ORBITAL GRID ── */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[480px] pointer-events-none -z-10 flex items-center justify-center opacity-60">
+            {/* Concentric Rotating Ring 1 */}
+            <div className="absolute w-[680px] h-[360px] rounded-[100%] border border-teal-500/15 animate-radar-slow [border-dasharray:6_6]" />
+            {/* Concentric Rotating Ring 2 */}
+            <div className="absolute w-[500px] h-[260px] rounded-[100%] border border-cyan-500/15 animate-radar-slow [animation-duration:60s] [animation-direction:reverse]" />
+            {/* Inner Focal Orbit */}
+            <div className="absolute w-[320px] h-[160px] rounded-[100%] border border-amber-500/15 animate-pulse-slow" />
+            {/* Crosshair Accent Lines */}
+            <div className="absolute w-[780px] h-[1px] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
+            <div className="absolute h-[380px] w-[1px] bg-gradient-to-b from-transparent via-white/[0.07] to-transparent" />
+          </div>
+
+          {/* ── ROTATING MULTI-COLOR AURORA LIGHT MESH ── */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[320px] bg-gradient-to-tr from-teal-500/25 via-cyan-400/20 via-amber-500/15 to-transparent rounded-full blur-[100px] animate-aurora pointer-events-none -z-10" />
+
+          {/* ── FLOATING AI CONSTELLATION NODES ── */}
+          <div className="absolute -top-6 left-12 w-2.5 h-2.5 rounded-full bg-teal-400/80 shadow-[0_0_12px_rgba(45,212,191,0.8)] animate-float-1 pointer-events-none hidden sm:block" />
+          <div className="absolute top-10 -right-8 w-2 h-2 rounded-full bg-amber-400/80 shadow-[0_0_10px_rgba(251,191,36,0.8)] animate-float-2 pointer-events-none hidden sm:block" />
+          <div className="absolute -bottom-4 left-1/4 w-1.5 h-1.5 rounded-full bg-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.8)] animate-float-1 pointer-events-none hidden sm:block" />
+          <div className="absolute bottom-12 right-1/4 w-2 h-2 rounded-full bg-emerald-400/80 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-float-2 pointer-events-none hidden sm:block" />
+
           {/* Clerk-Style Micro-Pill Announcement */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-slate-300 text-xs font-medium backdrop-blur-xl shadow-inner group cursor-default">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-slate-300 text-xs font-medium backdrop-blur-xl shadow-inner group cursor-default relative overflow-hidden">
             <span className="flex h-2 w-2 rounded-full bg-teal-400 animate-pulse"></span>
             <span className="text-slate-300 font-medium">Multimodal AI Interview Simulation Suite</span>
             <span className="text-teal-400 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 bg-teal-500/10 rounded border border-teal-500/20">Live</span>
+            {/* Shimmer laser sweep */}
+            <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-teal-400/60 to-transparent animate-laser" />
           </div>
 
           {/* Headline with Professional Gradient */}
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.12]">
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.12] relative z-10">
             Fail safely in simulation.{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-300 to-yellow-400 font-extrabold block sm:inline">
               Ace the actual loop.
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed text-pretty font-normal">
+          <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed text-pretty font-normal relative z-10">
             Practice high-stakes technical, coding, and behavioral interview loops with realistic AI voice debriefs. Get calibrated, objective feedback before your actual interview.
           </p>
 
           {/* CTAs */}
-          <div className="pt-2">
+          <div className="pt-2 relative z-10">
             <div className="flex flex-wrap items-center justify-center gap-4">
               <button
                 type="button"
