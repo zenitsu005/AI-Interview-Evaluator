@@ -845,8 +845,8 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
               </div>
             )}
 
-            {/* Primary Action Buttons: Improve ATS Score & Launch Mock Interview */}
-            <div className="pt-2 space-y-2.5">
+            {/* Primary Action Button: Improve ATS Score */}
+            <div className="pt-2">
               <button
                 type="button"
                 onClick={handleAnalyzeAndOptimize}
@@ -855,16 +855,6 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
               >
                 <Sparkles className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
                 <span>{isLoading ? 'Analyzing & Improving ATS Score...' : 'Improve ATS Score & Optimize Resume'}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleStartInterviewWithThisResume}
-                disabled={isStartingInterview || isLoading}
-                className="w-full py-2.5 px-5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-300 hover:text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                <span>{isStartingInterview ? 'Starting Interview...' : 'Practice AI Mock Interview with this Resume'}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-teal-400" />
               </button>
             </div>
 
