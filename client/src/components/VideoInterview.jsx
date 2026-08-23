@@ -563,11 +563,11 @@ export default function VideoInterview() {
             {(meetingLayout === 'dual' || meetingLayout === 'candidate-only') && (
               <div className="bg-[#131823] p-0 overflow-hidden relative border border-white/10 aspect-video flex items-center justify-center shadow-xl rounded-2xl">
                 {virtualMode ? (
-                  <div className="flex flex-col items-center justify-center text-center p-4 space-y-2 bg-[#131823] w-full h-full">
-                    <div className="w-12 h-12 rounded-2xl bg-[#171E2D] border border-white/10 flex items-center justify-center text-teal-400">
-                      <Users className="w-6 h-6" />
+                  <div className="flex flex-col items-center justify-center text-center p-4 pt-7 space-y-1.5 bg-[#131823] w-full h-full">
+                    <div className="w-11 h-11 rounded-2xl bg-[#171E2D] border border-white/10 flex items-center justify-center text-teal-400 shadow-md">
+                      <Users className="w-5 h-5" />
                     </div>
-                    <p className="text-xs text-white font-bold">Virtual Candidate Mode Active</p>
+                    <p className="text-xs text-white font-bold tracking-tight">Virtual Candidate Mode Active</p>
                     <p className="text-[10px] text-slate-400">Speech telemetry and audio response active</p>
                   </div>
                 ) : (
@@ -617,16 +617,19 @@ export default function VideoInterview() {
                   </div>
                 )}
 
-                {/* Candidate Feed Overlays */}
-                <div className="absolute top-2 left-2 flex items-center gap-1.5 flex-wrap">
-                  <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider bg-black/80 backdrop-blur-md text-rose-400 border border-rose-500/30">
+                {/* Candidate Feed Overlays (Separate top-left and top-right positioning to eliminate overlap) */}
+                <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
+                  <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-wider bg-black/85 backdrop-blur-md text-rose-400 border border-rose-500/30 shadow-md">
                     <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
                     YOU
                   </span>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/80 backdrop-blur-md text-emerald-400 border border-emerald-500/30 font-mono">
+                </div>
+
+                <div className="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 pointer-events-none">
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-emerald-400 border border-emerald-500/30 font-mono shadow-md">
                     Composure: {composureScore}%
                   </span>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/80 backdrop-blur-md text-teal-300 border border-teal-500/30 font-mono">
+                  <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-teal-300 border border-teal-500/30 font-mono shadow-md">
                     Steadiness: {vocalSteadiness}%
                   </span>
                 </div>
