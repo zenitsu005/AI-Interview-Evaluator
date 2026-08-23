@@ -102,21 +102,7 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-extrabold text-white">{user?.name || 'Candidate'}</h1>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditName(user?.name || '');
-                    setEditEmail(user?.email || '');
-                    setIsEditingProfile(true);
-                  }}
-                  className="text-[11px] text-teal-400 hover:text-teal-300 font-mono px-2.5 py-0.5 rounded-lg border border-teal-500/30 bg-teal-950/40 hover:bg-teal-950/80 transition-all cursor-pointer flex items-center gap-1"
-                >
-                  <Edit3 className="w-3 h-3" />
-                  <span>Edit</span>
-                </button>
-              </div>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">{user?.name || 'Candidate'}</h1>
               <p className="text-xs text-slate-400 font-mono mt-1">{user?.email || 'guest@candidate.com'}</p>
               <p className="text-[11px] text-slate-500 mt-1">
                 Member since {user?.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '2026'}
