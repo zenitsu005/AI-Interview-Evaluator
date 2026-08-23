@@ -3,15 +3,15 @@ import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
 import Card from './ui/Card';
 import {
-  IconSparkles as Sparkles,
-  IconArrowRight as ArrowRight,
-  IconCode as Code2,
-  IconBug as Bug,
-  IconBolt as Zap,
-  IconBrain as Brain,
-  IconStack2 as Layers,
-  IconChevronRight as ChevronRight,
-} from '@tabler/icons-react';
+  TbSparkles as Sparkles,
+  TbArrowRight as ArrowRight,
+  TbTerminal2 as Code2,
+  TbBug as Bug,
+  TbBolt as Zap,
+  TbBrain as Brain,
+  TbStack2 as Layers,
+  TbChevronRight as ChevronRight,
+} from 'react-icons/tb';
 
 export default function LandingPage({ onNavigate }) {
   const { setPhase } = useInterview();
@@ -96,7 +96,7 @@ export default function LandingPage({ onNavigate }) {
 
                 <div className="space-y-3 relative z-10">
                   <div className="w-12 h-12 rounded-2xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400 shadow-md">
-                    <Brain className="w-6 h-6" />
+                    <Brain className="w-7 h-7" />
                   </div>
                   <h3 className="text-xl sm:text-2xl font-extrabold text-white">
                     Full Mock Interview Studio
@@ -123,8 +123,8 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-4">
               <Card variant="interactive" onClick={() => nav('dsa')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-teal-400/40 shadow-xl">
                 <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400">
-                    <Code2 className="w-5 h-5" />
+                  <div className="w-11 h-11 rounded-xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400">
+                    <Code2 className="w-6 h-6" />
                   </div>
                   <h3 className="text-base font-bold text-white">
                     DSA Practice Studio
@@ -150,8 +150,8 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-6">
               <Card variant="interactive" onClick={() => nav('bug-hunter')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-cyan-400/40 shadow-xl">
                 <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-cyan-950/80 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                    <Bug className="w-5 h-5" />
+                  <div className="w-11 h-11 rounded-xl bg-cyan-950/80 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                    <Bug className="w-6 h-6" />
                   </div>
                   <h3 className="text-base font-bold text-white">
                     Bug Hunter Studio
@@ -177,8 +177,8 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-6">
               <Card variant="interactive" onClick={() => nav('blitz')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-amber-400/40 shadow-xl">
                 <div className="space-y-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-950/80 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                    <Zap className="w-5 h-5" />
+                  <div className="w-11 h-11 rounded-xl bg-amber-950/80 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                    <Zap className="w-6 h-6" />
                   </div>
                   <h3 className="text-base font-bold text-white">
                     60s Rapid Blitz

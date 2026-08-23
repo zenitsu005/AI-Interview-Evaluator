@@ -2,22 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
 import {
-  IconCheck as Check,
-  IconArrowRight as ArrowRight,
-  IconArrowLeft as ArrowLeft,
-  IconMicrophone as Mic,
-  IconFileText as FileText,
-  IconAdjustments as Sliders,
-  IconCpu as Cpu,
-  IconClock as Clock,
-  IconSparkles as Sparkles,
-  IconCircleCheck as CheckCircle2,
-  IconAlertTriangle as AlertTriangle,
-  IconStack2 as Layers,
-  IconUserCheck as UserCheck,
-  IconShield as Shield,
-  IconBrain as Brain,
-} from '@tabler/icons-react';
+  TbCheck as Check,
+  TbArrowRight as ArrowRight,
+  TbArrowLeft as ArrowLeft,
+  TbMicrophone as Mic,
+  TbFileText as FileText,
+  TbAdjustments as Sliders,
+  TbCpu as Cpu,
+  TbClock as Clock,
+  TbSparkles as Sparkles,
+  TbCircleCheck as CheckCircle2,
+  TbAlertTriangle as AlertTriangle,
+  TbStack2 as Layers,
+  TbUserCheck as UserCheck,
+  TbShield as Shield,
+  TbBrain as Brain,
+} from 'react-icons/tb';
 
 const ROLES = [
   {

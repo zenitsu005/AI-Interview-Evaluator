@@ -4,22 +4,22 @@ import { useAuth } from '../context/AuthContext';
 import DropdownMenu from './ui/DropdownMenu';
 import Button from './ui/Button';
 import {
-  IconSparkles as Sparkles,
-  IconCode as Code2,
-  IconBug as Bug,
-  IconCurrencyDollar as DollarSign,
-  IconFileText as FileText,
-  IconBolt as Zap,
-  IconHeartbeat as HeartPulse,
-  IconChartBar as BarChart3,
-  IconUser as User,
-  IconLogout as LogOut,
-  IconLogin as LogIn,
-  IconMenu2 as Menu,
-  IconX as X,
-  IconChevronRight as ChevronRight,
-  IconShieldCheck as ShieldCheck,
-} from '@tabler/icons-react';
+  TbSparkles as Sparkles,
+  TbCode as Code2,
+  TbBug as Bug,
+  TbCurrencyDollar as DollarSign,
+  TbFileText as FileText,
+  TbBolt as Zap,
+  TbHeartbeat as HeartPulse,
+  TbChartBar as BarChart3,
+  TbUser as User,
+  TbLogout as LogOut,
+  TbLogin as LogIn,
+  TbMenu2 as Menu,
+  TbX as X,
+  TbChevronRight as ChevronRight,
+  TbShieldCheck as ShieldCheck,
+} from 'react-icons/tb';
 
 export default function AppNavbar({ currentActive = 'landing' }) {
   const { setPhase } = useInterview();
