@@ -102,7 +102,6 @@ export const AuthProvider = ({ children }) => {
         ...(prev || {}),
         name: name !== undefined ? name : prev?.name,
         email: email !== undefined ? email : prev?.email,
-        picture: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email || prev?.email || 'User')}`,
       };
       localStorage.setItem('mockai_user', JSON.stringify(updated));
       return updated;

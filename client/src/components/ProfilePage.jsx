@@ -91,11 +91,11 @@ export default function ProfilePage() {
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 p-0.5 shadow-xl shadow-teal-500/20 flex-shrink-0">
               <div className="w-full h-full bg-[#0D111A] rounded-2xl flex items-center justify-center overflow-hidden">
-                {user?.picture ? (
+                {user?.picture && !user.picture.includes('dicebear') && (user.picture.startsWith('https://lh3.googleusercontent.com') || user.picture.startsWith('http')) ? (
                   <img src={user.picture} alt={user.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-2xl font-black text-teal-400 font-mono">
-                    {user?.name ? user.name[0].toUpperCase() : 'U'}
+                  <span className="text-2xl sm:text-3xl font-black bg-gradient-to-br from-teal-300 via-emerald-300 to-cyan-400 bg-clip-text text-transparent font-mono select-none">
+                    {user?.name ? user.name[0].toUpperCase() : 'A'}
                   </span>
                 )}
               </div>
