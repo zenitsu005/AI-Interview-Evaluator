@@ -69,7 +69,7 @@ export default function LandingPage({ onNavigate }) {
           </h1>
 
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed text-pretty font-normal relative z-10">
-            Practice high-stakes technical, coding, and behavioral interview loops with realistic AI voice debriefs. Get calibrated, objective feedback before your actual interview.
+            Practice high-stakes domain, technical, and behavioral interview loops across Commerce, Computer Applications, Management, Engineering, and Finance with realistic AI voice debriefs.
           </p>
 
           {/* CTAs */}

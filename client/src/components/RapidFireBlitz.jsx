@@ -108,14 +108,16 @@ const QUESTION_BANK = [
 ];
 
 const BLITZ_ROLES = [
+  'Finance & Accounting (B.Com / CA / CFA)',
+  'Business Analytics & Data (BCA / BBA / MBA)',
   'Full Stack Software Engineer',
-  'Frontend Developer (React / JS)',
-  'Backend Developer (Node / Python)',
+  'Frontend & Web Developer (React / JS)',
+  'Backend Developer (Node / Python / Java)',
+  'Digital Marketing & Growth Strategy',
+  'Human Resources & Talent Management',
+  'Operations & Supply Chain Management',
   'Data Structures & Algorithms',
-  'System Design & Distributed Scale',
   'DevOps & Cloud Infrastructure',
-  'AI / Machine Learning Engineer',
-  'Data Analyst / SQL Specialist',
 ];
 
 const shuffleQuestionOptions = (qList) => {
@@ -271,13 +273,13 @@ export default function RapidFireBlitz() {
                 60-Second Rapid-Fire Blitz
               </h1>
               <p className="text-xs sm:text-sm text-slate-400">
-                Select your engineering domain or enter a target role to generate fast-paced, high-speed technical drills.
+                Select your field or enter any target role across Commerce, Computer Applications, Management, Engineering, or Arts to generate customized high-speed drills.
               </p>
             </div>
 
             {/* Quick Role Selection Chips */}
             <div className="space-y-2.5">
-              <label className="block text-xs font-semibold text-slate-300">Select Engineering Role:</label>
+              <label className="block text-xs font-semibold text-slate-300">Select Career Field / Role:</label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {BLITZ_ROLES.map((r) => (
                   <button
@@ -304,7 +306,7 @@ export default function RapidFireBlitz() {
 
             {/* Custom Role Input */}
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-300">Or Enter Custom Job Role:</label>
+              <label className="block text-xs font-semibold text-slate-300">Or Enter Any Custom Job Role / Degree:</label>
               <input
                 type="text"
                 value={customRoleInput}
@@ -312,7 +314,7 @@ export default function RapidFireBlitz() {
                   setCustomRoleInput(e.target.value);
                   if (e.target.value.trim()) setSelectedRole(e.target.value.trim());
                 }}
-                placeholder="e.g. Mobile iOS Engineer, Embedded Systems, Cybersecurity..."
+                placeholder="e.g. Financial Analyst (B.Com), BCA Developer, HR Executive, Bank PO, Digital Marketer..."
                 className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none"
               />
             </div>

@@ -23,14 +23,16 @@ import {
 } from '@tabler/icons-react';
 
 const NEGOTIATION_ROLES = [
+  'Financial Analyst / Accountant (B.Com / CA)',
+  'Business Analyst / Strategy (BBA / MBA / BCA)',
   'Full Stack Software Engineer',
-  'Frontend Developer (React / Next.js)',
-  'Backend Engineer (Node / Python / Go)',
-  'AI / Machine Learning Engineer',
-  'Data Scientist / Analytics Lead',
-  'DevOps & Cloud Infrastructure',
-  'Engineering Manager / Lead',
+  'Frontend & Web Developer (BCA / B.Tech)',
+  'Backend Engineer (Node / Python / Java)',
+  'Digital Marketing & Growth Manager',
+  'HR Manager / Talent Acquisition Partner',
+  'Operations & Supply Chain Lead',
   'Product Manager',
+  'Data Scientist / AI Engineer',
 ];
 
 const INDIAN_COMP_BANDS = [
@@ -437,7 +439,7 @@ export default function SalaryNegotiator() {
                   setCustomRoleInput(e.target.value);
                   if (e.target.value.trim()) setSelectedRole(e.target.value.trim());
                 }}
-                placeholder="Or enter custom role (e.g. Flutter Mobile Lead, Security Architect)..."
+                placeholder="Or enter custom role (e.g. Chartered Accountant, Sales Lead, Bank PO, HR Specialist, QA Lead)..."
                 className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none mt-1"
               />
             </div>

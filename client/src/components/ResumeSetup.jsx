@@ -20,14 +20,16 @@ import {
 } from '@tabler/icons-react';
 
 const QUICK_ROLES = [
-  'Data Analyst',
-  'Junior Data Scientist',
+  'Financial Analyst / Accountant (B.Com / CA)',
+  'Business Analyst & Data (BCA / BBA / MBA)',
   'Full Stack Software Engineer',
-  'AI / Machine Learning Engineer',
-  'Frontend Developer (React)',
-  'Backend Developer (Node/Python)',
-  'Cloud / DevOps Engineer',
+  'Frontend & Web Developer',
+  'Backend Developer (Node/Python/Java)',
+  'Digital Marketing & Growth Lead',
+  'Human Resources & Talent Acquisition',
+  'Operations & Supply Chain Lead',
   'Product Manager',
+  'Cloud / DevOps Engineer',
 ];
 
 const DIFFICULTY_LEVELS = [
@@ -213,7 +215,7 @@ export default function ResumeSetup() {
               value={targetRole}
               onChange={(e) => setTargetRole(e.target.value)}
               onKeyDown={handleTargetRoleKeyDown}
-              placeholder="e.g. Junior Data Scientist, Full Stack Developer, AI Engineer..."
+              placeholder="e.g. Financial Analyst (B.Com), BCA Developer, HR Specialist, Business Analyst, Full Stack Engineer..."
               className="w-full bg-slate-50 border border-slate-200 focus:border-teal-500 rounded-xl p-3 text-sm text-slate-900 focus:outline-none shadow-sm"
               required
             />

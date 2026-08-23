@@ -195,7 +195,7 @@ export function TermsPage({ onNavigate }) {
           <section className="space-y-2">
             <h2 className="text-base font-bold text-white">1. Practice & Educational Purpose</h2>
             <p className="text-slate-400">
-              AI Interview Evaluator is an educational tool designed to help candidate software engineers practice technical interview rounds. It does not warrant employment, job offers, or specific hiring outcomes with any third-party employer.
+              AI Interview Evaluator is an educational tool designed to help candidates and students across all disciplines (including B.Com, BCA, BBA, MBA, Engineering, Arts, and Sciences) practice job interviews and build readiness. It does not warrant employment, job offers, or specific hiring outcomes with any third-party employer.
             </p>
           </section>
 
@@ -224,28 +224,18 @@ export function SecurityPage({ onNavigate }) {
       <main className="max-w-4xl mx-auto w-full px-6 py-12 space-y-8 text-left flex-1">
         <div className="space-y-3 border-b border-white/10 pb-8">
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-            Security Architecture & Code Sandboxing
+            Security & Sandbox Policy
           </h1>
+          <p className="text-sm text-slate-400 leading-relaxed text-pretty">
+            How we protect your interview audio, code snippets, and candidate profile data.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-300">
-          <div className="bg-[#131823] border border-white/10 p-6 rounded-3xl space-y-2 shadow-2xl">
-            <h2 className="text-sm font-bold text-white flex items-center gap-1.5">
-              <ShieldCheck className="w-4 h-4 text-teal-400" />
-              <span>Isolated Sandbox Execution</span>
-            </h2>
-            <p className="text-slate-400 leading-relaxed">
-              Code submitted in the DSA and Bug Hunter studios runs inside strict isolated execution environments with CPU timeouts, memory caps, and no internal network access.
-            </p>
-          </div>
-
-          <div className="bg-[#131823] border border-white/10 p-6 rounded-3xl space-y-2 shadow-2xl">
-            <h2 className="text-sm font-bold text-white flex items-center gap-1.5">
-              <Lock className="w-4 h-4 text-teal-400" />
-              <span>Encrypted Transit</span>
-            </h2>
-            <p className="text-slate-400 leading-relaxed">
-              All communications between your browser and our evaluation servers are encrypted using TLS 1.3 encryption.
+        <div className="space-y-6 text-xs sm:text-sm text-slate-300 leading-relaxed">
+          <div className="bg-[#131823] border border-white/10 p-6 rounded-3xl space-y-3 shadow-2xl">
+            <h2 className="text-base font-bold text-white">Browser-Isolated Code Execution</h2>
+            <p className="text-slate-400">
+              Code submitted during DSA live studios executes in a sandboxed, ephemeral web runtime with strict memory limits and no access to local device networks or storage.
             </p>
           </div>
         </div>
@@ -270,7 +260,7 @@ export function AccessibilityPage({ onNavigate }) {
             Accessibility Statement
           </h1>
           <p className="text-sm text-slate-400 leading-relaxed text-pretty">
-            We are dedicated to ensuring that AI Interview Evaluator is accessible to engineers of all abilities, adhering to WCAG 2.2 Level AA guidelines.
+            We are dedicated to ensuring that AI Interview Evaluator is accessible to candidates of all backgrounds, abilities, and academic fields, adhering to WCAG 2.2 Level AA guidelines.
           </p>
         </div>
 
