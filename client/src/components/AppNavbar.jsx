@@ -27,15 +27,45 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const featureItems = [
-    { id: 'dsa', label: 'DSA Live Studio', icon: Code2 },
-    { id: 'bug-hunter', label: 'Bug Hunting Labs', icon: Bug },
-    { id: 'negotiate', label: 'Salary Negotiation', icon: DollarSign },
+    {
+      id: 'dsa',
+      label: 'DSA Live Studio',
+      desc: 'Multi-language sandbox & test runner',
+      icon: Code2,
+    },
+    {
+      id: 'bug-hunter',
+      label: 'Bug Hunting Labs',
+      desc: 'Debug logic & concurrency issues',
+      icon: Bug,
+    },
+    {
+      id: 'blitz',
+      label: '60-Second Rapid Blitz',
+      desc: 'Fast-paced spontaneous response drills',
+      icon: Zap,
+    },
   ];
 
   const prepToolItems = [
-    { id: 'resume-builder', label: 'ATS Resume Scorer', icon: FileText },
-    { id: 'blitz', label: '60-Second Rapid Blitz', icon: Zap },
-    { id: 'anxiety-prep', label: 'Confidence & Pacing Lab', icon: HeartPulse },
+    {
+      id: 'resume-builder',
+      label: 'ATS Resume Scorer',
+      desc: 'Live A4 preview & keyword ATS audit',
+      icon: FileText,
+    },
+    {
+      id: 'negotiate',
+      label: 'Salary Negotiation',
+      desc: 'AI counter-offer coaching & market parity',
+      icon: DollarSign,
+    },
+    {
+      id: 'anxiety-prep',
+      label: 'Confidence & Pacing Lab',
+      desc: 'Box breathing & vocal grounding drills',
+      icon: HeartPulse,
+    },
   ];
 
   const handleSelectModule = (id) => {
