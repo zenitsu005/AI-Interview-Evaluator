@@ -394,16 +394,6 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
               <Printer className="w-3.5 h-3.5 text-slate-400" />
               <span>Print / PDF</span>
             </button>
-
-            <button
-              type="button"
-              onClick={handleAnalyzeAndOptimize}
-              disabled={isLoading}
-              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-xs shadow-md hover:shadow-teal-500/30 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{isLoading ? 'Optimizing...' : 'AI ATS Audit'}</span>
-            </button>
           </div>
 
         </div>
