@@ -457,7 +457,7 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
                 }`}
               >
                 <Upload className="w-3.5 h-3.5 text-teal-400" />
-                <span>Upload / Paste Resume</span>
+                <span>Upload Resume</span>
               </button>
             </div>
 
@@ -808,8 +808,8 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
 
               </div>
             ) : (
-              /* Raw Text & PDF Upload View */
-              <div className="p-6 rounded-2xl bg-[#0E131F]/90 border border-white/[0.08] space-y-5 shadow-sm">
+              /* PDF / DOCX Upload View */
+              <div className="p-6 rounded-2xl bg-[#0E131F]/90 border border-white/[0.08] space-y-4 shadow-sm">
                 <div
                   onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                   onDragLeave={() => setDragOver(false)}
@@ -819,8 +819,8 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
                     if (e.dataTransfer.files[0]) handleFileSelect(e.dataTransfer.files[0]);
                   }}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
-                    dragOver ? 'border-teal-400 bg-teal-500/10' : 'border-white/15 bg-white/[0.02] hover:border-teal-500/40'
+                  className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all ${
+                    dragOver ? 'border-teal-400 bg-teal-500/10' : 'border-white/15 bg-white/[0.02] hover:border-teal-500/40 hover:bg-white/[0.04]'
                   }`}
                 >
                   <input
@@ -830,22 +830,19 @@ ${formData.education.filter(ed => ed.degree || ed.institution).map(ed => `${ed.d
                     onChange={(e) => { if (e.target.files[0]) handleFileSelect(e.target.files[0]); }}
                     className="hidden"
                   />
-                  <Upload className="w-8 h-8 text-teal-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-white">
+                  <div className="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/25 flex items-center justify-center text-teal-400 mx-auto mb-3 shadow-[0_0_15px_rgba(20,184,166,0.15)]">
+                    <Upload className="w-6 h-6" />
+                  </div>
+                  <p className="text-sm font-bold text-white">
                     {file ? file.name : 'Upload PDF, DOCX, or TXT Resume'}
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-1">Drag and drop file here, or browse local disk</p>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-slate-400">Or Paste Raw Resume Text:</label>
-                  <textarea
-                    rows={8}
-                    value={resumeText}
-                    onChange={(e) => setResumeText(e.target.value)}
-                    placeholder="Paste text of your current resume here..."
-                    className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none font-mono"
-                  />
+                  <p className="text-xs text-slate-400 mt-1.5">Drag and drop file here, or browse local disk</p>
+                  {file && (
+                    <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300 text-[11px] font-semibold">
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Ready for ATS analysis</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
