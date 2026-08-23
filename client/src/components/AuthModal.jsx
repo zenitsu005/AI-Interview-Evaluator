@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Lock, User, Mail, X, Sparkles, ArrowRight, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import {
+  IconLock as Lock,
+  IconUser as User,
+  IconMail as Mail,
+  IconX as X,
+  IconSparkles as Sparkles,
+  IconArrowRight as ArrowRight,
+  IconAlertTriangle as AlertTriangle,
+  IconCircleCheck as CheckCircle2,
+} from '@tabler/icons-react';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 

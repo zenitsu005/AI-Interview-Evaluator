@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from './Button';
-import { Inbox } from 'lucide-react';
+import { IconInbox as Inbox } from '@tabler/icons-react';
 
 export default function EmptyState({
   icon = null,

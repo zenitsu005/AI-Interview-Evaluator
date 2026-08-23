@@ -4,22 +4,22 @@ import { useAuth } from '../context/AuthContext';
 import DropdownMenu from './ui/DropdownMenu';
 import Button from './ui/Button';
 import {
-  Sparkles,
-  Code2,
-  Bug,
-  DollarSign,
-  FileText,
-  Zap,
-  HeartPulse,
-  BarChart3,
-  User,
-  LogOut,
-  LogIn,
-  Menu,
-  X,
-  ChevronRight,
-  ShieldCheck,
-} from 'lucide-react';
+  IconSparkles as Sparkles,
+  IconCode as Code2,
+  IconBug as Bug,
+  IconCurrencyDollar as DollarSign,
+  IconFileText as FileText,
+  IconBolt as Zap,
+  IconHeartbeat as HeartPulse,
+  IconChartBar as BarChart3,
+  IconUser as User,
+  IconLogout as LogOut,
+  IconLogin as LogIn,
+  IconMenu2 as Menu,
+  IconX as X,
+  IconChevronRight as ChevronRight,
+  IconShieldCheck as ShieldCheck,
+} from '@tabler/icons-react';
 
 export default function AppNavbar({ currentActive = 'landing' }) {
   const { setPhase } = useInterview();

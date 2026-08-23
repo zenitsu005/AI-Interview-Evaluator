@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle } from 'lucide-react';
+import { IconAlertCircle as AlertCircle } from '@tabler/icons-react';
 
 export default function InputField({
   label,

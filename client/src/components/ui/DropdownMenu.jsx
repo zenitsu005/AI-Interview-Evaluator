@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { IconChevronDown as ChevronDown } from '@tabler/icons-react';
 
 export default function DropdownMenu({ label, items, onItemSelect }) {
   const [isOpen, setIsOpen] = useState(false);

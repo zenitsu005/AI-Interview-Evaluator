@@ -5,24 +5,24 @@ import ShareReportCardModal from './ShareReportCardModal';
 import AnalyticsTrendSection from './AnalyticsTrendSection';
 import AppNavbar from './AppNavbar';
 import {
-  User,
-  Edit3,
-  LogOut,
-  Trophy,
-  Zap,
-  Brain,
-  Code2,
-  Users,
-  Sparkles,
-  Share2,
-  FileText,
-  ArrowRight,
-  CheckCircle2,
-  X,
-  ChevronRight,
-  TrendingUp,
-  Award,
-} from 'lucide-react';
+  IconUser as User,
+  IconEdit as Edit3,
+  IconLogout as LogOut,
+  IconTrophy as Trophy,
+  IconBolt as Zap,
+  IconBrain as Brain,
+  IconCode as Code2,
+  IconUsers as Users,
+  IconSparkles as Sparkles,
+  IconShare as Share2,
+  IconFileText as FileText,
+  IconArrowRight as ArrowRight,
+  IconCircleCheck as CheckCircle2,
+  IconX as X,
+  IconChevronRight as ChevronRight,
+  IconTrendingUp as TrendingUp,
+  IconAward as Award,
+} from '@tabler/icons-react';
 
 export default function ProfilePage() {
   const { user, history: authHistory, logout, updateUserProfile } = useAuth();

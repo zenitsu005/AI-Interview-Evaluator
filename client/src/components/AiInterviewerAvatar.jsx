@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { RotateCcw, MessageSquare, Sparkles } from 'lucide-react';
+import {
+  IconRotateClockwise2 as RotateCcw,
+  IconMessageDots as MessageSquare,
+  IconSparkles as Sparkles,
+} from '@tabler/icons-react';
 
 export default function AiInterviewerAvatar({
   isSpeaking = false,

@@ -3,21 +3,21 @@ import AppNavbar from './AppNavbar';
 import { useAuth } from '../context/AuthContext';
 import { useInterview } from '../context/InterviewContext';
 import {
-  Sparkles,
-  ShieldCheck,
-  FileText,
-  CheckCircle2,
-  Lock,
-  Trash2,
-  HelpCircle,
-  Send,
-  TrendingUp,
-  ArrowRight,
-  ChevronRight,
-  Info,
-  AlertTriangle,
-  BarChart3,
-} from 'lucide-react';
+  IconSparkles as Sparkles,
+  IconShieldCheck as ShieldCheck,
+  IconFileText as FileText,
+  IconCircleCheck as CheckCircle2,
+  IconLock as Lock,
+  IconTrash as Trash2,
+  IconHelpCircle as HelpCircle,
+  IconSend as Send,
+  IconTrendingUp as TrendingUp,
+  IconArrowRight as ArrowRight,
+  IconChevronRight as ChevronRight,
+  IconInfoCircle as Info,
+  IconAlertTriangle as AlertTriangle,
+  IconChartBar as BarChart3,
+} from '@tabler/icons-react';
 
 // ─────────────────────────────────────────────────────────────
 // 1. HOW IT WORKS PAGE

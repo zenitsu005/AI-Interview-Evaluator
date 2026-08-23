@@ -1,5 +1,16 @@
 import React, { useRef, useState } from 'react';
-import { Share2, Download, Copy, Check, ShieldCheck, Sparkles, Brain, Code2, Users, Activity } from 'lucide-react';
+import {
+  IconShare as Share2,
+  IconDownload as Download,
+  IconCopy as Copy,
+  IconCheck as Check,
+  IconShieldCheck as ShieldCheck,
+  IconSparkles as Sparkles,
+  IconBrain as Brain,
+  IconCode as Code2,
+  IconUsers as Users,
+  IconActivity as Activity,
+} from '@tabler/icons-react';
 
 export default function ShareReportCardModal({
   isOpen,

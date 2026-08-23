@@ -3,15 +3,15 @@ import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
 import Card from './ui/Card';
 import {
-  Sparkles,
-  ArrowRight,
-  Code2,
-  Bug,
-  Zap,
-  Brain,
-  Layers,
-  ChevronRight,
-} from 'lucide-react';
+  IconSparkles as Sparkles,
+  IconArrowRight as ArrowRight,
+  IconCode as Code2,
+  IconBug as Bug,
+  IconBolt as Zap,
+  IconBrain as Brain,
+  IconStack2 as Layers,
+  IconChevronRight as ChevronRight,
+} from '@tabler/icons-react';
 
 export default function LandingPage({ onNavigate }) {
   const { setPhase } = useInterview();

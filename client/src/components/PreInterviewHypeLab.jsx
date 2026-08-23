@@ -2,22 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
 import {
-  HeartPulse,
-  Activity,
-  Mic,
-  Flame,
-  Sparkles,
-  CheckCircle2,
-  Video,
-  Play,
-  ArrowRight,
-  RotateCcw,
-  Zap,
-  Check,
-  Volume2,
-  Smile,
-  ShieldCheck,
-} from 'lucide-react';
+  IconHeartbeat as HeartPulse,
+  IconActivity as Activity,
+  IconMicrophone as Mic,
+  IconFlame as Flame,
+  IconSparkles as Sparkles,
+  IconCircleCheck as CheckCircle2,
+  IconVideo as Video,
+  IconPlayerPlay as Play,
+  IconArrowRight as ArrowRight,
+  IconRotateClockwise2 as RotateCcw,
+  IconBolt as Zap,
+  IconCheck as Check,
+  IconVolume as Volume2,
+  IconMoodSmile as Smile,
+  IconShieldCheck as ShieldCheck,
+} from '@tabler/icons-react';
 
 // Web Audio API Calming Tones and Fanfare
 const playCalmTone = (freq = 432, duration = 2.5) => {

@@ -3,17 +3,17 @@ import { useInterview } from '../context/InterviewContext';
 import { getRapidFireQuestions } from '../services/api';
 import AppNavbar from './AppNavbar';
 import {
-  Zap,
-  Shuffle,
-  Sparkles,
-  RotateCcw,
-  Flame,
-  Trophy,
-  Check,
-  X,
-  ArrowRight,
-  ShieldCheck,
-} from 'lucide-react';
+  IconBolt as Zap,
+  IconArrowsShuffle as Shuffle,
+  IconSparkles as Sparkles,
+  IconRotateClockwise2 as RotateCcw,
+  IconFlame as Flame,
+  IconTrophy as Trophy,
+  IconCheck as Check,
+  IconX as X,
+  IconArrowRight as ArrowRight,
+  IconShieldCheck as ShieldCheck,
+} from '@tabler/icons-react';
 
 const QUESTION_BANK = [
   {

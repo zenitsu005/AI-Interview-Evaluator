@@ -3,19 +3,19 @@ import { useInterview } from '../context/InterviewContext';
 import { optimizeResume, uploadResume } from '../services/api';
 import AppNavbar from './AppNavbar';
 import {
-  FileText,
-  Upload,
-  Sparkles,
-  CheckCircle2,
-  Copy,
-  Printer,
-  ArrowRight,
-  AlertTriangle,
-  Check,
-  Layers,
-  Briefcase,
-  FileCheck,
-} from 'lucide-react';
+  IconFileText as FileText,
+  IconUpload as Upload,
+  IconSparkles as Sparkles,
+  IconCircleCheck as CheckCircle2,
+  IconCopy as Copy,
+  IconPrinter as Printer,
+  IconArrowRight as ArrowRight,
+  IconAlertTriangle as AlertTriangle,
+  IconCheck as Check,
+  IconStack2 as Layers,
+  IconBriefcase as Briefcase,
+  IconFileCheck as FileCheck,
+} from '@tabler/icons-react';
 
 const QUICK_ROLES = [
   'Data Analyst',

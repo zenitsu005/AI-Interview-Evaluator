@@ -4,19 +4,19 @@ import { generateDsaProblem } from '../services/api';
 import AppNavbar from './AppNavbar';
 import DopamineCelebrationModal from './DopamineCelebrationModal';
 import {
-  Code2,
-  Play,
-  Sparkles,
-  RotateCcw,
-  Trash2,
-  Copy,
-  Check,
-  CheckCircle2,
-  AlertTriangle,
-  Lightbulb,
-  ArrowRight,
-  Zap,
-} from 'lucide-react';
+  IconCode as Code2,
+  IconPlayerPlay as Play,
+  IconSparkles as Sparkles,
+  IconRotateClockwise2 as RotateCcw,
+  IconTrash as Trash2,
+  IconCopy as Copy,
+  IconCheck as Check,
+  IconCircleCheck as CheckCircle2,
+  IconAlertTriangle as AlertTriangle,
+  IconBulb as Lightbulb,
+  IconArrowRight as ArrowRight,
+  IconBolt as Zap,
+} from '@tabler/icons-react';
 
 const DIFFICULTY_CONFIG = [
   {

@@ -4,19 +4,19 @@ import { sendSalaryNegotiation, transcribeAudio } from '../services/api';
 import voiceAssistant from '../services/voiceAssistant';
 import AppNavbar from './AppNavbar';
 import {
-  DollarSign,
-  Mic,
-  Square,
-  Send,
-  Sparkles,
-  RotateCcw,
-  User,
-  TrendingUp,
-  Coins,
-  Briefcase,
-  Volume2,
-  AlertTriangle,
-} from 'lucide-react';
+  IconCurrencyDollar as DollarSign,
+  IconMicrophone as Mic,
+  IconSquare as Square,
+  IconSend as Send,
+  IconSparkles as Sparkles,
+  IconRotateClockwise2 as RotateCcw,
+  IconUser as User,
+  IconTrendingUp as TrendingUp,
+  IconCoins as Coins,
+  IconBriefcase as Briefcase,
+  IconVolume as Volume2,
+  IconAlertTriangle as AlertTriangle,
+} from '@tabler/icons-react';
 
 const INDIAN_COMP_BANDS = [
   { level: 'SDE-1 / Junior (0-2 yrs)', base: 1400000, bonus: 10, equity: 500000, signing: 100000, ctcLabel: '₹17.4 LPA CTC' },

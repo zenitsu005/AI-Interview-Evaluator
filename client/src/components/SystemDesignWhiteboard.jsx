@@ -1,18 +1,18 @@
 import React, { useState, useRef } from 'react';
 import {
-  LayoutGrid,
-  RotateCcw,
-  Trash2,
-  Layers,
-  Cpu,
-  Database,
-  Server,
-  HardDrive,
-  Smartphone,
-  Scale,
-  Network,
-  Zap,
-} from 'lucide-react';
+  IconLayoutGrid as LayoutGrid,
+  IconRotateClockwise2 as RotateCcw,
+  IconTrash as Trash2,
+  IconStack2 as Layers,
+  IconCpu as Cpu,
+  IconDatabase as Database,
+  IconServer as Server,
+  IconDeviceFloppy as HardDrive,
+  IconDeviceMobile as Smartphone,
+  IconScale as Scale,
+  IconNetwork as Network,
+  IconBolt as Zap,
+} from '@tabler/icons-react';
 
 const ARCHITECTURE_BLOCKS = [
   { type: 'client', label: 'Client / Web App', icon: Smartphone, color: 'border-blue-500/40 bg-blue-950/60 text-blue-300' },

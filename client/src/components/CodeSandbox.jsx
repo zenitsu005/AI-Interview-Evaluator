@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Code2, Play, CheckCircle2, RotateCcw, Trash2, Terminal, Activity, Sparkles, Check } from 'lucide-react';
+import {
+  IconCode as Code2,
+  IconPlayerPlay as Play,
+  IconCircleCheck as CheckCircle2,
+  IconRotateClockwise2 as RotateCcw,
+  IconTrash as Trash2,
+  IconTerminal2 as Terminal,
+  IconActivity as Activity,
+  IconSparkles as Sparkles,
+  IconCheck as Check,
+} from '@tabler/icons-react';
 
 const STARTER_CODES = {
   python: `# Technical Sandbox (Python 3.10)

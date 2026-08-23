@@ -1,5 +1,15 @@
 import React from 'react';
-import { Compass, TrendingUp, BarChart3, Activity, Brain, Code2, Users, Radio, CheckCircle2 } from 'lucide-react';
+import {
+  IconCompass as Compass,
+  IconTrendingUp as TrendingUp,
+  IconChartBar as BarChart3,
+  IconActivity as Activity,
+  IconBrain as Brain,
+  IconCode as Code2,
+  IconUsers as Users,
+  IconRadio as Radio,
+  IconCircleCheck as CheckCircle2,
+} from '@tabler/icons-react';
 
 export default function AnalyticsTrendSection({ history = [], currentReport = null, targetRole = 'Software Engineer' }) {
   const safeHistory = Array.isArray(history) ? history : [];

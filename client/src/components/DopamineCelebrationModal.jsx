@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Trophy, Star, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react';
+import {
+  IconTrophy as Trophy,
+  IconStar as Star,
+  IconCircleCheck as CheckCircle2,
+  IconArrowRight as ArrowRight,
+  IconSparkles as Sparkles,
+} from '@tabler/icons-react';
 
 const playArcadeVictoryChime = () => {
   try {

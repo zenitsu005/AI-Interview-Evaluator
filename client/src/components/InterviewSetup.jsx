@@ -2,22 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
 import {
-  Check,
-  ArrowRight,
-  ArrowLeft,
-  Mic,
-  FileText,
-  Sliders,
-  Cpu,
-  Clock,
-  Sparkles,
-  CheckCircle2,
-  AlertTriangle,
-  Layers,
-  UserCheck,
-  Shield,
-  Brain,
-} from 'lucide-react';
+  IconCheck as Check,
+  IconArrowRight as ArrowRight,
+  IconArrowLeft as ArrowLeft,
+  IconMicrophone as Mic,
+  IconFileText as FileText,
+  IconAdjustments as Sliders,
+  IconCpu as Cpu,
+  IconClock as Clock,
+  IconSparkles as Sparkles,
+  IconCircleCheck as CheckCircle2,
+  IconAlertTriangle as AlertTriangle,
+  IconStack2 as Layers,
+  IconUserCheck as UserCheck,
+  IconShield as Shield,
+  IconBrain as Brain,
+} from '@tabler/icons-react';
 
 const ROLES = [
   {

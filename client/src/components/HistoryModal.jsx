@@ -1,7 +1,13 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useInterview } from '../context/InterviewContext';
-import { FileText, X, ChevronRight, Trophy, Clock } from 'lucide-react';
+import {
+  IconFileText as FileText,
+  IconX as X,
+  IconChevronRight as ChevronRight,
+  IconTrophy as Trophy,
+  IconClock as Clock,
+} from '@tabler/icons-react';
 
 export default function HistoryModal() {
   const { historyModalOpen, closeHistory, history } = useAuth();

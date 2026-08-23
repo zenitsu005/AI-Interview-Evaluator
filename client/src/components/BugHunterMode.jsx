@@ -3,15 +3,15 @@ import { useInterview } from '../context/InterviewContext';
 import { generateBugHunterDrills } from '../services/api';
 import AppNavbar from './AppNavbar';
 import {
-  Bug,
-  Shuffle,
-  Sparkles,
-  ShieldAlert,
-  ShieldCheck,
-  Check,
-  X,
-  ArrowRight,
-} from 'lucide-react';
+  IconBug as Bug,
+  IconArrowsShuffle as Shuffle,
+  IconSparkles as Sparkles,
+  IconShieldExclamation as ShieldAlert,
+  IconShieldCheck as ShieldCheck,
+  IconCheck as Check,
+  IconX as X,
+  IconArrowRight as ArrowRight,
+} from '@tabler/icons-react';
 
 const DEFAULT_BUG_DRILLS = [
   {

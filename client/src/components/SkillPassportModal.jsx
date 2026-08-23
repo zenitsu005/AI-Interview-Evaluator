@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, User, CheckCircle2, Sparkles, Brain, Code2, Users, Activity, Copy, Check } from 'lucide-react';
+import {
+  IconShieldCheck as ShieldCheck,
+  IconLock as Lock,
+  IconUser as User,
+  IconCircleCheck as CheckCircle2,
+  IconSparkles as Sparkles,
+  IconBrain as Brain,
+  IconCode as Code2,
+  IconUsers as Users,
+  IconActivity as Activity,
+  IconCopy as Copy,
+  IconCheck as Check,
+} from '@tabler/icons-react';
 
 export default function SkillPassportModal({ isOpen, onClose, report, user, targetRole = 'Software Engineer', companyTrack = 'Amazon', difficultyLevel = 'Intermediate' }) {
   const [isAnonymous, setIsAnonymous] = useState(true);
