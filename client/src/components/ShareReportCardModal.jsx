@@ -30,7 +30,7 @@ export default function ShareReportCardModal({
   const score = typeof rawScore === 'number' && !isNaN(rawScore) ? rawScore : (Number(rawScore) || 0);
   const elo = Math.round(400 + (score / 100) * 1400);
   const topPct = score > 0 ? Math.max(1, 100 - Math.round(score * 0.95)) : 100;
-  const candidateName = user?.name || 'Verified Candidate';
+  const candidateName = user?.name || 'Candidate';
   const roleName = targetRole || 'Software Engineer';
   const trackName = companyTrack || 'General';
 
@@ -168,7 +168,7 @@ export default function ShareReportCardModal({
             Share Your Interview Scorecard
           </h2>
           <p className="text-xs text-slate-400">
-            Download your high-resolution verified performance card or copy summary text for LinkedIn.
+            Download your high-resolution performance card or copy summary text for LinkedIn.
           </p>
         </div>
 
@@ -195,7 +195,7 @@ export default function ShareReportCardModal({
                 ? 'bg-amber-950 text-amber-300 border-amber-500/40'
                 : 'bg-rose-950 text-rose-300 border-rose-500/40'
             }`}>
-              {score >= 85 ? 'DISTINCTION PASS ✓' : score >= 70 ? 'VERIFIED PASS ✓' : score >= 40 ? 'CANDIDATE RECORD' : 'EVALUATION ATTEMPT'}
+              {score >= 85 ? 'DISTINCTION PASS ✓' : score >= 70 ? 'STRONG PASS ✓' : score >= 40 ? 'CANDIDATE RECORD' : 'EVALUATION ATTEMPT'}
             </span>
           </div>
 
@@ -235,8 +235,8 @@ export default function ShareReportCardModal({
           </div>
 
           <div className="pt-2 flex items-center justify-between text-xs text-slate-400 font-mono border-t border-white/5">
-            <span>Verified by AI Multimodal Evaluation Engine</span>
-            <span className="text-teal-400 font-bold">AUTHENTIC ✓</span>
+            <span>Evaluated by AI Multimodal Assessment Engine</span>
+            <span className="text-teal-400 font-bold">SCORED ✓</span>
           </div>
         </div>
 

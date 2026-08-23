@@ -26,7 +26,7 @@ export default function SkillPassportModal({ isOpen, onClose, report, user, targ
   const presenceScore = Number(report?.presenceScore) || 92;
 
   const passportId = `SKILL-PASS-${Math.abs(hashString((user?.email || 'cand') + targetRole + companyTrack)) % 90000 + 10000}-X9`;
-  const candidateDisplayName = isAnonymous ? `Verified Candidate #${passportId.slice(-4)}` : (user?.name || 'Verified Candidate');
+  const candidateDisplayName = isAnonymous ? `Candidate #${passportId.slice(-4)}` : (user?.name || 'Candidate');
 
   function hashString(str) {
     let hash = 0;
@@ -60,7 +60,7 @@ export default function SkillPassportModal({ isOpen, onClose, report, user, targ
               <ShieldCheck className="w-3.5 h-3.5 text-teal-400" /> PROOF-OF-SKILL PASSPORT
             </span>
             <h2 className="text-lg sm:text-xl font-extrabold text-white mt-1.5">
-              Verified Technical Skill Passport
+              Performance Skill Passport
             </h2>
           </div>
 
@@ -131,8 +131,8 @@ export default function SkillPassportModal({ isOpen, onClose, report, user, targ
           </div>
 
           <div className="pt-2 flex items-center justify-between text-[10px] text-slate-400 font-mono border-t border-white/5">
-            <span>Skill Verification Record</span>
-            <span className="text-teal-400 font-bold">STATUS: VERIFIED</span>
+            <span>Performance Evaluation Record</span>
+            <span className="text-teal-400 font-bold">STATUS: EVALUATED</span>
           </div>
         </div>
 
@@ -144,7 +144,7 @@ export default function SkillPassportModal({ isOpen, onClose, report, user, targ
             className="flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-bold text-xs shadow-md transition-all active:scale-98 cursor-pointer flex items-center justify-center gap-2"
           >
             {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            <span>{copied ? 'Verification URL Copied!' : 'Copy Shareable Passport Link'}</span>
+            <span>{copied ? 'Passport Link Copied!' : 'Copy Shareable Passport Link'}</span>
           </button>
         </div>
       </div>

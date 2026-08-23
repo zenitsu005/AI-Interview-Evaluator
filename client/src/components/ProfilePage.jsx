@@ -102,11 +102,8 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-extrabold text-white">{user?.name || 'Candidate'}</h1>
-                <span className="text-[10px] font-bold px-3 py-0.5 rounded-full bg-teal-950/80 border border-teal-500/30 text-teal-300 uppercase tracking-wider font-mono">
-                  Verified Candidate
-                </span>
                 <button
                   type="button"
                   onClick={() => {
