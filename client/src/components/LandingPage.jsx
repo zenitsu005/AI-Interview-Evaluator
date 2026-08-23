@@ -105,17 +105,8 @@ export default function LandingPage({ onNavigate }) {
           <div className="absolute -bottom-4 left-1/4 w-1.5 h-1.5 rounded-full bg-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.8)] animate-float-1 pointer-events-none hidden sm:block" />
           <div className="absolute bottom-12 right-1/4 w-2 h-2 rounded-full bg-emerald-400/80 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-float-2 pointer-events-none hidden sm:block" />
 
-          {/* Clerk-Style Micro-Pill Announcement */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-slate-300 text-xs font-medium backdrop-blur-xl shadow-inner group cursor-default relative overflow-hidden">
-            <span className="flex h-2 w-2 rounded-full bg-teal-400 animate-pulse"></span>
-            <span className="text-slate-300 font-medium">Multimodal AI Interview Simulation Suite</span>
-            <span className="text-teal-400 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 bg-teal-500/10 rounded border border-teal-500/20">Live</span>
-            {/* Shimmer laser sweep */}
-            <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-teal-400/60 to-transparent animate-laser" />
-          </div>
-
           {/* Headline with Professional Gradient */}
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.12] relative z-10">
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.12] relative z-10 pt-4">
             Fail safely in simulation.{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 font-extrabold block sm:inline drop-shadow-[0_0_24px_rgba(45,212,191,0.25)]">
               Ace the actual loop.

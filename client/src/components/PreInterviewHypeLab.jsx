@@ -297,12 +297,7 @@ export default function PreInterviewHypeLab() {
       <main className="max-w-3xl mx-auto px-4 py-8 w-full space-y-6 text-left">
         {/* Header & Disclaimer Banner */}
         <div className="space-y-2 border-b border-white/10 pb-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Interview Confidence Lab</h1>
-            <span className="text-[10px] font-mono font-bold text-teal-300 bg-teal-950/80 border border-teal-500/30 px-3 py-1 rounded-full">
-              Pacing & Anxiety Prep
-            </span>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">Interview Confidence Lab</h1>
           <p className="text-xs text-slate-400 leading-relaxed text-pretty">
             Guided practice for answer pacing, vocal resonance, and nervous system grounding. This lab provides educational coaching techniques.
           </p>

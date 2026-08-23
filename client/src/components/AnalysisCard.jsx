@@ -51,9 +51,6 @@ export default function AnalysisCard() {
       {/* ── Main Content ── */}
       <main className="max-w-3xl mx-auto w-full px-6 py-10 flex-1 space-y-6 text-left">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-3.5 py-1 rounded-full text-xs font-semibold mb-3 shadow-sm">
-            <span>✓</span> Resume Analyzed Successfully
-          </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
             Interview Profile Overview
           </h1>
