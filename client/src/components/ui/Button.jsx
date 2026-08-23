@@ -23,7 +23,7 @@ export default function Button({
 
   const variantStyles = {
     primary: 'bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 hover:from-teal-400 hover:via-emerald-400 hover:to-cyan-400 text-slate-950 shadow-lg shadow-teal-500/25 border border-teal-400/40',
-    gradient: 'bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 hover:from-amber-400 hover:via-orange-400 hover:to-yellow-400 text-slate-950 shadow-lg shadow-amber-500/20 border border-amber-400/40',
+    gradient: 'bg-gradient-to-r from-teal-400 via-cyan-400 to-emerald-400 hover:from-teal-300 hover:via-cyan-300 hover:to-emerald-300 text-slate-950 shadow-lg shadow-teal-500/20 border border-teal-400/40',
     secondary: 'bg-[#171E2D] hover:bg-[#1E273A] text-slate-200 hover:text-white border border-white/10 hover:border-white/20 shadow-md',
     ghost: 'bg-transparent hover:bg-white/5 text-slate-400 hover:text-white',
     danger: 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-950/50 border border-rose-500/40',
@@ -39,7 +39,7 @@ export default function Button({
     >
       {isLoading ? (
         <span className="inline-flex items-center gap-2">
-          <IconLoader2 className="animate-spin h-4 w-4 text-inherit" />
+          <TbLoader2 className="animate-spin h-4 w-4 text-inherit" />
           <span>Loading...</span>
         </span>
       ) : (

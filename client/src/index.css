@@ -78,8 +78,12 @@
   @apply bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400;
 }
 
+.gradient-text-cyan {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400;
+}
+
 .gradient-text-amber {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-300 to-yellow-400;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400;
 }
 
 .gradient-border-card {

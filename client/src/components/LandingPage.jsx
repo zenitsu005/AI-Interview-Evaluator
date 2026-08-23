@@ -117,7 +117,7 @@ export default function LandingPage({ onNavigate }) {
           {/* Headline with Professional Gradient */}
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.12] relative z-10">
             Fail safely in simulation.{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-300 to-yellow-400 font-extrabold block sm:inline">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 font-extrabold block sm:inline drop-shadow-[0_0_24px_rgba(45,212,191,0.25)]">
               Ace the actual loop.
             </span>
           </h1>
