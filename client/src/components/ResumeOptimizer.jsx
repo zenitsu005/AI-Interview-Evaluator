@@ -3,27 +3,40 @@ import { useInterview } from '../context/InterviewContext';
 import { optimizeResume, uploadResume } from '../services/api';
 import AppNavbar from './AppNavbar';
 import {
-  IconFileText as FileText,
-  IconUpload as Upload,
-  IconSparkles as Sparkles,
-  IconCircleCheck as CheckCircle2,
-  IconCopy as Copy,
-  IconPrinter as Printer,
-  IconArrowRight as ArrowRight,
-  IconAlertTriangle as AlertTriangle,
-  IconCheck as Check,
-  IconStack2 as Layers,
-  IconBriefcase as Briefcase,
-  IconFileCheck as FileCheck,
-} from '@tabler/icons-react';
+  TbFileText as FileText,
+  TbUpload as Upload,
+  TbSparkles as Sparkles,
+  TbCircleCheck as CheckCircle2,
+  TbCopy as Copy,
+  TbPrinter as Printer,
+  TbArrowRight as ArrowRight,
+  TbAlertTriangle as AlertTriangle,
+  TbCheck as Check,
+  TbStack2 as Layers,
+  TbBriefcase as Briefcase,
+  TbFileCheck as FileCheck,
+  TbUser as User,
+  TbMail as Mail,
+  TbPhone as Phone,
+  TbMapPin as MapPin,
+  TbBrandLinkedin as Linkedin,
+  TbBrandGithub as Github,
+  TbSchool as School,
+  TbCode as CodeIcon,
+  TbEye as Eye,
+  TbEdit as Edit3,
+  TbPlus as Plus,
+  TbTrash as Trash2,
+  TbRefresh as RefreshCw,
+  TbChevronDown as ChevronDown,
+} from 'react-icons/tb';
 
 const QUICK_ROLES = [
-  'Data Analyst',
-  'Junior Data Scientist',
   'Full Stack Software Engineer',
-  'AI / Machine Learning Engineer',
   'Frontend Developer (React)',
   'Backend Developer (Node/Python)',
+  'AI / Machine Learning Engineer',
+  'Data Analyst / Scientist',
   'Cloud / DevOps Engineer',
   'Product Manager',
 ];
@@ -31,67 +44,126 @@ const QUICK_ROLES = [
 export default function ResumeOptimizer() {
   const { setPhase, handleResumeSubmit, setTargetRole: setGlobalTargetRole } = useInterview();
 
-  const [inputTab, setInputTab] = useState('existing'); // 'existing' | 'form'
-  const [targetRole, setTargetRole] = useState('');
+  // Mode: 'builder' (Resume.io interactive form) | 'upload' (raw text / PDF)
+  const [activeMode, setActiveMode] = useState('builder');
+  const [targetRole, setTargetRole] = useState('Full Stack Software Engineer');
+  const [previewTemplate, setPreviewTemplate] = useState('classic'); // 'classic' | 'modern' | 'minimal'
+  const [mobilePane, setMobilePane] = useState('editor'); // 'editor' | 'preview'
+
+  // Structured Form Data for Real-Time Live Canvas
+  const [formData, setFormData] = useState({
+    fullName: 'Alex Morgan',
+    jobTitle: 'Full Stack Software Engineer',
+    email: 'alex.morgan@example.com',
+    phone: '+1 (555) 234-5678',
+    location: 'San Francisco, CA',
+    linkedin: 'linkedin.com/in/alexmorgan-dev',
+    github: 'github.com/alexmorgan',
+    summary: 'Results-driven Software Engineer with 3+ years of experience building high-throughput microservices, real-time web applications, and scalable distributed architectures. Passionate about system latency optimization, TypeScript, React, and cloud-native solutions.',
+    skills: 'TypeScript, React, Node.js, Python, PostgreSQL, Redis, Docker, AWS, GraphQL, RESTful APIs, Git, Jest',
+    experience: [
+      {
+        id: 1,
+        role: 'Senior Frontend Engineer',
+        company: 'CloudScale Technologies',
+        period: '2023 — Present',
+        location: 'San Francisco, CA',
+        bullets: [
+          'Architected responsive Next.js and Tailwind dashboards reducing first-contentful paint by 42% across 150k monthly active users.',
+          'Engineered real-time WebSocket state management pipeline reducing message serialization overhead by 35%.',
+          'Mentored 4 junior engineers on clean React architecture and automated end-to-end Cypress testing.'
+        ]
+      },
+      {
+        id: 2,
+        role: 'Full Stack Developer',
+        company: 'Nexus Digital Labs',
+        period: '2021 — 2023',
+        location: 'Austin, TX',
+        bullets: [
+          'Built 12+ RESTful microservices in Node.js and Express handling 2M daily API transactions with 99.98% uptime.',
+          'Optimized PostgreSQL index schemas and Redis cache invalidation strategies, dropping P95 latency from 240ms to 45ms.'
+        ]
+      }
+    ],
+    projects: [
+      {
+        id: 1,
+        title: 'AI Multimodal Evaluator',
+        technologies: 'React, Node.js, Web Audio API, Gemini 2.5',
+        description: 'Real-time interview simulator computing STAR rubrics, speech cadence pacing, and test sandbox execution.'
+      },
+      {
+        id: 2,
+        title: 'Distributed Distributed Cache Cluster',
+        technologies: 'C++20, Consistent Hashing, POSIX Sockets',
+        description: 'Lock-free distributed key-value store with consistent hashing replication and zero-copy deserialization.'
+      }
+    ],
+    education: [
+      {
+        id: 1,
+        degree: 'B.S. in Computer Science',
+        institution: 'University of California, Berkeley',
+        year: '2017 — 2021',
+        details: 'GPA: 3.85 / 4.0 • Focus on Distributed Systems & Algorithms'
+      }
+    ]
+  });
+
+  // Raw text / file upload state
   const [resumeText, setResumeText] = useState('');
   const [file, setFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Field Refs for Auto-Moving to Next Field on Enter
-  const targetRoleRef = useRef(null);
-  const resumeTextRef = useRef(null);
-  const fullNameRef = useRef(null);
-  const emailRef = useRef(null);
-  const skillsRef = useRef(null);
-  const experienceRef = useRef(null);
-  const projectsRef = useRef(null);
-
-  // Form Details State (for building from scratch)
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    location: '',
-    linkedin: '',
-    github: '',
-    summary: '',
-    skills: '',
-    experience: '',
-    projects: '',
-    education: '',
-  });
-
+  // Status state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [atsResult, setAtsResult] = useState(null);
   const [copied, setCopied] = useState(false);
   const [isStartingInterview, setIsStartingInterview] = useState(false);
 
-  // Auto-focus next field on Enter press
-  const handleFieldKeyDown = (e, nextRef, isLastField = false) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      if (isLastField) {
-        handleAnalyzeAndOptimize(e);
-      } else if (nextRef?.current) {
-        nextRef.current.focus();
-      }
-    }
+  // Resume Strength Calculation
+  const calculateResumeStrength = () => {
+    let score = 30;
+    if (formData.fullName && formData.email && formData.phone) score += 15;
+    if (formData.summary.length > 50) score += 15;
+    if (formData.skills.length > 20) score += 15;
+    if (formData.experience.length >= 2) score += 15;
+    if (formData.projects.length >= 1) score += 10;
+    return Math.min(score, 100);
   };
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragOver(false);
-    const dropped = e.dataTransfer.files[0];
-    if (dropped) setFile(dropped);
+  const strength = calculateResumeStrength();
+
+  // Helper to compile structured form into plaintext for ATS audit
+  const compileFormDataToText = () => {
+    return `
+Name: ${formData.fullName}
+Job Title: ${formData.jobTitle || targetRole}
+Contact: ${formData.email} | ${formData.phone} | ${formData.location} | ${formData.linkedin} | ${formData.github}
+
+PROFESSIONAL SUMMARY:
+${formData.summary}
+
+TECHNICAL SKILLS:
+${formData.skills}
+
+WORK EXPERIENCE:
+${formData.experience.map(e => `${e.role} at ${e.company} (${e.period}, ${e.location}):\n${e.bullets.map(b => `- ${b}`).join('\n')}`).join('\n\n')}
+
+PROJECTS:
+${formData.projects.map(p => `${p.title} [${p.technologies}]: ${p.description}`).join('\n')}
+
+EDUCATION:
+${formData.education.map(ed => `${ed.degree}, ${ed.institution} (${ed.year}) - ${ed.details}`).join('\n')}
+    `.trim();
   };
 
-  const handleAnalyzeAndOptimize = async (e) => {
-    e?.preventDefault();
+  const handleAnalyzeAndOptimize = async () => {
     if (!targetRole.trim()) {
-      setError('Please specify your target job role.');
-      targetRoleRef.current?.focus();
+      setError('Please select or specify your target job role.');
       return;
     }
 
@@ -100,20 +172,34 @@ export default function ResumeOptimizer() {
     setCopied(false);
 
     try {
-      let textToSend = resumeText;
-      if (inputTab === 'existing' && file) {
-        const uploadRes = await uploadResume(file);
-        textToSend = uploadRes.resumeText;
-        setResumeText(textToSend);
+      let textToSend = '';
+      if (activeMode === 'upload') {
+        if (file) {
+          const uploadRes = await uploadResume(file);
+          textToSend = uploadRes.resumeText;
+          setResumeText(textToSend);
+        } else {
+          textToSend = resumeText;
+        }
+      } else {
+        textToSend = compileFormDataToText();
+      }
+
+      if (!textToSend.trim()) {
+        setError('Please provide your resume content to analyze.');
+        setIsLoading(false);
+        return;
       }
 
       const res = await optimizeResume({
-        resumeText: inputTab === 'existing' ? textToSend : '',
+        resumeText: textToSend,
         targetRole: targetRole.trim(),
-        userDetails: inputTab === 'form' ? formData : {},
+        userDetails: activeMode === 'builder' ? formData : {},
       });
 
       setAtsResult(res);
+      // Auto-switch to preview on mobile when results ready
+      setMobilePane('preview');
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Failed to analyze and optimize resume.');
     } finally {
@@ -121,520 +207,496 @@ export default function ResumeOptimizer() {
     }
   };
 
-  const handleStartInterviewWithOptimized = async () => {
-    if (!atsResult?.optimizedResume) return;
+  const handleStartInterviewWithThisResume = async () => {
     setIsStartingInterview(true);
     setError(null);
     try {
-      const resume = atsResult.optimizedResume;
-      const constructedText = `
-Name: ${resume.fullName || 'Candidate'}
-Target Role: ${targetRole}
-Professional Summary: ${resume.professionalSummary || ''}
-Technical Skills: ${(resume.skills?.technicalSkills || []).join(', ')}
-Tools: ${(resume.skills?.frameworksAndTools || []).join(', ')}
-Experience: ${(resume.experience || []).map((e) => `${e.role || ''} at ${e.company || ''}: ${(e.bullets || []).join(' ')}`).join('\n')}
-Projects: ${(resume.projects || []).map((p) => `${p.title || ''}: ${p.description || ''}`).join('\n')}
-Education: ${(resume.education || []).map((ed) => `${ed.degree || ''} ${ed.institution || ''}`).join('\n')}
-      `.trim();
+      const textToUse = atsResult?.optimizedResume
+        ? compileFormDataToText()
+        : compileFormDataToText();
 
-      await handleResumeSubmit(constructedText, null, targetRole.trim(), 'Intermediate');
+      if (setGlobalTargetRole) setGlobalTargetRole(targetRole.trim());
+      await handleResumeSubmit(textToUse, null, targetRole.trim(), 'Intermediate');
     } catch (err) {
       setError(err.message || 'Failed to start interview.');
       setIsStartingInterview(false);
     }
   };
 
-  const copyAsMarkdown = () => {
-    if (!atsResult?.optimizedResume) return;
-    const r = atsResult.optimizedResume;
-    const md = `
-# ${r.fullName}
-${r.contactInfo?.email} | ${r.contactInfo?.phone} | ${r.contactInfo?.location} | ${r.contactInfo?.linkedin} | ${r.contactInfo?.github}
-
-## Professional Summary
-${r.professionalSummary}
-
-## Core Competencies & Skills
-- **Technical Skills**: ${(r.skills?.technicalSkills || []).join(', ')}
-- **Tools & Frameworks**: ${(r.skills?.frameworksAndTools || []).join(', ')}
-- **Methodologies**: ${(r.skills?.methodologies || []).join(', ')}
-
-## Professional Experience
-${(r.experience || [])
-  .map(
-    (exp) => `
-### ${exp.role} — ${exp.company}
-*${exp.duration} | ${exp.location}*
-${(exp.bullets || []).map((b) => `- ${b}`).join('\n')}
-`
-  )
-  .join('\n')}
-
-## Key Projects
-${(r.projects || [])
-  .map(
-    (p) => `
-- **${p.title}** (${(p.technologies || []).join(', ')}): ${p.description}
-`
-  )
-  .join('\n')}
-
-## Education & Certifications
-${(r.education || []).map((ed) => `- **${ed.degree}**, ${ed.institution} (${ed.year}) ${ed.details ? `— ${ed.details}` : ''}`).join('\n')}
-${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
-    `.trim();
-
-    navigator.clipboard.writeText(md);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+  const handlePrint = () => {
+    window.print();
   };
 
-  const getScoreColor = (score) => {
-    if (score >= 80) return 'text-green-400 border-green-700/60 bg-green-950/40';
-    if (score >= 50) return 'text-yellow-400 border-yellow-700/60 bg-yellow-950/40';
-    return 'text-red-400 border-red-700/60 bg-red-950/40';
+  const copyAsMarkdown = () => {
+    const md = compileFormDataToText();
+    navigator.clipboard.writeText(md);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] text-slate-100 flex flex-col justify-between select-none font-sans">
-      {/* Universal Top Bar */}
+    <div className="min-h-screen bg-[#0B0D13] text-slate-100 flex flex-col justify-between select-none font-sans relative">
       <AppNavbar currentActive="resume-builder" />
 
-      {/* Main Content */}
-      <main className="max-w-5xl mx-auto w-full px-4 py-8 space-y-8 flex-1 text-left">
-        {/* Header Hero */}
-        <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-teal-950/80 border border-teal-500/30 text-teal-300 px-3.5 py-1 rounded-full text-xs font-semibold mb-1 shadow-md">
-            <Sparkles className="w-3.5 h-3.5 text-teal-400" />
-            <span>Free ATS Audit & High-Impact Resume Rewrite</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
-            Optimize Your Resume for 90+ ATS Score
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
-            Press <kbd className="px-2 py-0.5 rounded bg-[#171E2D] border border-white/10 text-teal-300 font-mono text-[10px]">Enter ↵</kbd> in any field to move directly to the next input.
-          </p>
-        </div>
+      {/* ── TOP RESUME.IO STYLE DASHBOARD BAR ── */}
+      <section className="sticky top-20 z-40 bg-[#0E131F]/90 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-8 py-3 shadow-md">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+          
+          {/* Target Role Selector & Resume Strength */}
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-2 bg-white/[0.04] border border-white/10 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200">
+              <Briefcase className="w-3.5 h-3.5 text-teal-400" />
+              <span>Targeting:</span>
+              <select
+                value={targetRole}
+                onChange={(e) => setTargetRole(e.target.value)}
+                className="bg-transparent text-teal-300 font-bold focus:outline-none cursor-pointer text-xs"
+              >
+                {QUICK_ROLES.map(r => (
+                  <option key={r} value={r} className="bg-[#121724] text-white">{r}</option>
+                ))}
+              </select>
+            </div>
 
-        {/* Input Form Card */}
-        <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
-          {/* Target Role Input */}
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-teal-400 mb-2 font-mono flex items-center gap-1.5">
-              <Briefcase className="w-3.5 h-3.5" /> Target Job Role to Optimize Against
-            </label>
-            <input
-              ref={targetRoleRef}
-              type="text"
-              value={targetRole}
-              onChange={(e) => setTargetRole(e.target.value)}
-              onKeyDown={(e) =>
-                handleFieldKeyDown(
-                  e,
-                  inputTab === 'existing' ? resumeTextRef : fullNameRef
-                )
-              }
-              placeholder="e.g. Full Stack Developer, Data Analyst, Machine Learning Engineer..."
-              className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-2xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none mb-3 shadow-inner"
-              required
-            />
-            {/* Quick Suggestions */}
-            <div className="flex flex-wrap gap-1.5">
-              {QUICK_ROLES.map((role) => (
-                <button
-                  key={role}
-                  type="button"
-                  onClick={() => {
-                    setTargetRole(role);
-                    if (inputTab === 'existing') resumeTextRef.current?.focus();
-                    else fullNameRef.current?.focus();
-                  }}
-                  className={`text-xs px-3 py-1.5 rounded-xl border transition-all cursor-pointer ${
-                    targetRole === role
-                      ? 'bg-teal-500 text-slate-950 border-teal-400 font-bold shadow-md'
-                      : 'bg-[#171E2D] text-slate-300 border-white/10 hover:bg-[#1E273A] hover:text-white'
-                  }`}
-                >
-                  {role}
-                </button>
-              ))}
+            {/* Live Strength Meter */}
+            <div className="hidden md:flex items-center gap-2 text-xs">
+              <span className="text-slate-400">ATS Strength:</span>
+              <div className="w-24 bg-white/[0.08] h-2 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full transition-all duration-500"
+                  style={{ width: `${strength}%` }}
+                />
+              </div>
+              <span className="font-bold text-teal-300 font-mono">{strength}%</span>
             </div>
           </div>
 
-          {/* Mode Switcher Tabs */}
-          <div className="flex bg-[#0D111A] p-1 rounded-xl border border-white/10">
+          {/* Template & Action Controls */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Mobile Tab Switcher */}
+            <div className="lg:hidden flex bg-white/[0.05] p-0.5 rounded-xl border border-white/10 text-xs">
+              <button
+                onClick={() => setMobilePane('editor')}
+                className={`px-3 py-1 rounded-lg font-semibold ${mobilePane === 'editor' ? 'bg-teal-500/20 text-teal-300' : 'text-slate-400'}`}
+              >
+                Editor
+              </button>
+              <button
+                onClick={() => setMobilePane('preview')}
+                className={`px-3 py-1 rounded-lg font-semibold ${mobilePane === 'preview' ? 'bg-teal-500/20 text-teal-300' : 'text-slate-400'}`}
+              >
+                Preview
+              </button>
+            </div>
+
             <button
               type="button"
-              onClick={() => setInputTab('existing')}
-              className={`flex-1 text-xs py-2 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                inputTab === 'existing'
-                  ? 'bg-teal-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
+              onClick={copyAsMarkdown}
+              className="px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-slate-200 transition-all flex items-center gap-1.5 cursor-pointer"
             >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Upload / Paste Existing Resume</span>
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
+              <span>{copied ? 'Copied' : 'Copy'}</span>
             </button>
+
             <button
               type="button"
-              onClick={() => setInputTab('form')}
-              className={`flex-1 text-xs py-2 rounded-lg font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                inputTab === 'form'
-                  ? 'bg-teal-500 text-slate-950 shadow-sm'
-                  : 'text-slate-400 hover:text-white'
-              }`}
+              onClick={handlePrint}
+              className="px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-slate-200 transition-all flex items-center gap-1.5 cursor-pointer"
             >
-              <Layers className="w-3.5 h-3.5" />
-              <span>Enter Details from Scratch</span>
+              <Printer className="w-3.5 h-3.5 text-slate-400" />
+              <span>Print / PDF</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleAnalyzeAndOptimize}
+              disabled={isLoading}
+              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-xs shadow-md hover:shadow-teal-500/30 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{isLoading ? 'Optimizing...' : 'AI ATS Audit'}</span>
             </button>
           </div>
 
-          {/* Mode 1: Existing Resume (Paste or Upload) */}
-          {inputTab === 'existing' && (
-            <div className="space-y-4">
-              <div>
+        </div>
+      </section>
+
+      {/* ── MAIN DUAL-PANE SPLIT WORKSPACE ── */}
+      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex-1 text-left">
+        {error && (
+          <div className="mb-6 p-4 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* ── LEFT PANE: RESUME.IO FORM BUILDER ── */}
+          <div className={`lg:col-span-6 space-y-6 ${mobilePane === 'preview' ? 'hidden lg:block' : 'block'}`}>
+            
+            {/* Mode Switcher Pills */}
+            <div className="flex items-center justify-between bg-[#121724] border border-white/[0.08] p-1.5 rounded-2xl">
+              <button
+                type="button"
+                onClick={() => setActiveMode('builder')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  activeMode === 'builder'
+                    ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <Edit3 className="w-3.5 h-3.5 text-teal-400" />
+                <span>Structured Form Builder</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveMode('upload')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  activeMode === 'upload'
+                    ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <Upload className="w-3.5 h-3.5 text-teal-400" />
+                <span>Upload / Paste Resume</span>
+              </button>
+            </div>
+
+            {activeMode === 'builder' ? (
+              <div className="space-y-5">
+                
+                {/* 👤 Personal Details */}
+                <div className="p-5 rounded-2xl bg-[#0E131F]/90 border border-white/[0.08] space-y-4 shadow-sm">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-2">
+                    <User className="w-4 h-4" /> Personal Details
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div>
+                      <label className="block text-slate-400 mb-1 font-medium">Full Name</label>
+                      <input
+                        type="text"
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-400 mb-1 font-medium">Professional Title</label>
+                      <input
+                        type="text"
+                        value={formData.jobTitle}
+                        onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                        className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-400 mb-1 font-medium">Email Address</label>
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-400 mb-1 font-medium">Phone Number</label>
+                      <input
+                        type="text"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-400 mb-1 font-medium">Location</label>
+                      <input
+                        type="text"
+                        value={formData.location}
+                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-slate-400 mb-1 font-medium">LinkedIn / Portfolio</label>
+                      <input
+                        type="text"
+                        value={formData.linkedin}
+                        onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                        className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-2.5 text-white placeholder-slate-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 📝 Professional Summary */}
+                <div className="p-5 rounded-2xl bg-[#0E131F]/90 border border-white/[0.08] space-y-3 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-2">
+                      <FileText className="w-4 h-4" /> Professional Summary
+                    </h3>
+                    <span className="text-[10px] text-slate-400">High-Impact STAR keywords</span>
+                  </div>
+                  <textarea
+                    rows={3}
+                    value={formData.summary}
+                    onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
+                    placeholder="Briefly state your core expertise, key achievements, and technical specializations..."
+                    className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none leading-relaxed"
+                  />
+                </div>
+
+                {/* 🛠️ Core Skills & Tools */}
+                <div className="p-5 rounded-2xl bg-[#0E131F]/90 border border-white/[0.08] space-y-3 shadow-sm">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-2">
+                    <CodeIcon className="w-4 h-4" /> Skills & Technologies (Comma Separated)
+                  </h3>
+                  <textarea
+                    rows={2}
+                    value={formData.skills}
+                    onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                    placeholder="e.g. React, TypeScript, Python, Docker, PostgreSQL, AWS, Microservices..."
+                    className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none font-mono"
+                  />
+                </div>
+
+                {/* 💼 Employment History */}
+                <div className="p-5 rounded-2xl bg-[#0E131F]/90 border border-white/[0.08] space-y-4 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-2">
+                      <Briefcase className="w-4 h-4" /> Employment History
+                    </h3>
+                  </div>
+
+                  {formData.experience.map((exp, idx) => (
+                    <div key={exp.id || idx} className="p-4 rounded-xl bg-[#121724] border border-white/[0.06] space-y-2.5 text-xs">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          value={exp.role}
+                          onChange={(e) => {
+                            const updated = [...formData.experience];
+                            updated[idx].role = e.target.value;
+                            setFormData({ ...formData, experience: updated });
+                          }}
+                          placeholder="Job Title"
+                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-white font-semibold"
+                        />
+                        <input
+                          type="text"
+                          value={exp.company}
+                          onChange={(e) => {
+                            const updated = [...formData.experience];
+                            updated[idx].company = e.target.value;
+                            setFormData({ ...formData, experience: updated });
+                          }}
+                          placeholder="Company Name"
+                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-white"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          value={exp.period}
+                          onChange={(e) => {
+                            const updated = [...formData.experience];
+                            updated[idx].period = e.target.value;
+                            setFormData({ ...formData, experience: updated });
+                          }}
+                          placeholder="Duration (e.g. 2022 — Present)"
+                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300"
+                        />
+                        <input
+                          type="text"
+                          value={exp.location}
+                          onChange={(e) => {
+                            const updated = [...formData.experience];
+                            updated[idx].location = e.target.value;
+                            setFormData({ ...formData, experience: updated });
+                          }}
+                          placeholder="Location (e.g. Remote / NYC)"
+                          className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300"
+                        />
+                      </div>
+                      <textarea
+                        rows={3}
+                        value={exp.bullets.join('\n')}
+                        onChange={(e) => {
+                          const updated = [...formData.experience];
+                          updated[idx].bullets = e.target.value.split('\n');
+                          setFormData({ ...formData, experience: updated });
+                        }}
+                        placeholder="Bullet points (one per line with quantified metrics e.g. 'Reduced latency by 30%')..."
+                        className="w-full bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300 font-mono text-[11px] leading-relaxed"
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* 🚀 Projects & Education */}
+                <div className="p-5 rounded-2xl bg-[#0E131F]/90 border border-white/[0.08] space-y-4 shadow-sm">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-teal-400 flex items-center gap-2">
+                    <School className="w-4 h-4" /> Education & Projects
+                  </h3>
+                  {formData.education.map((ed, idx) => (
+                    <div key={ed.id || idx} className="p-3 rounded-xl bg-[#121724] border border-white/[0.06] grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      <input
+                        type="text"
+                        value={ed.degree}
+                        onChange={(e) => {
+                          const updated = [...formData.education];
+                          updated[idx].degree = e.target.value;
+                          setFormData({ ...formData, education: updated });
+                        }}
+                        placeholder="Degree / Certificate"
+                        className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-white font-semibold"
+                      />
+                      <input
+                        type="text"
+                        value={ed.institution}
+                        onChange={(e) => {
+                          const updated = [...formData.education];
+                          updated[idx].institution = e.target.value;
+                          setFormData({ ...formData, education: updated });
+                        }}
+                        placeholder="Institution / University"
+                        className="bg-[#090C12] border border-white/10 rounded-lg p-2 text-slate-300"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              /* Raw Text & PDF Upload View */
+              <div className="p-6 rounded-2xl bg-[#0E131F]/90 border border-white/[0.08] space-y-5 shadow-sm">
                 <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setDragOver(true);
-                  }}
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                   onDragLeave={() => setDragOver(false)}
-                  onDrop={handleDrop}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setDragOver(false);
+                    if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]);
+                  }}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-3xl p-6 text-center cursor-pointer transition-all ${
-                    dragOver
-                      ? 'border-teal-400 bg-teal-950/40'
-                      : file
-                      ? 'border-emerald-400 bg-emerald-950/30'
-                      : 'border-white/10 bg-[#0D111A] hover:bg-[#171E2D]'
+                  className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${
+                    dragOver ? 'border-teal-400 bg-teal-500/10' : 'border-white/15 bg-white/[0.02] hover:border-teal-500/40'
                   }`}
                 >
                   <input
                     ref={fileInputRef}
                     type="file"
                     accept=".pdf,.docx,.txt"
+                    onChange={(e) => { if (e.target.files[0]) setFile(e.target.files[0]); }}
                     className="hidden"
-                    onChange={(e) => {
-                      if (e.target.files[0]) setFile(e.target.files[0]);
-                    }}
                   />
-                  {file ? (
-                    <div className="flex flex-col items-center gap-1.5">
-                      <CheckCircle2 className="w-8 h-8 text-emerald-400" />
-                      <p className="font-bold text-white text-xs">{file.name}</p>
-                      <p className="text-[11px] text-slate-400">Click to change file</p>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center gap-1.5">
-                      <Upload className="w-8 h-8 text-teal-400 opacity-80" />
-                      <p className="text-xs font-bold text-white">
-                        Upload your current PDF or DOCX resume (Optional)
-                      </p>
-                      <p className="text-[11px] text-slate-400">Or paste text below</p>
-                    </div>
-                  )}
+                  <Upload className="w-8 h-8 text-teal-400 mx-auto mb-2" />
+                  <p className="text-xs font-semibold text-white">
+                    {file ? file.name : 'Upload PDF, DOCX, or TXT Resume'}
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-1">Drag and drop file here, or browse local disk</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-slate-400">Or Paste Raw Resume Text:</label>
+                  <textarea
+                    rows={8}
+                    value={resumeText}
+                    onChange={(e) => setResumeText(e.target.value)}
+                    placeholder="Paste text of your current resume here..."
+                    className="w-full bg-[#121724] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none font-mono"
+                  />
                 </div>
               </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 font-mono">
-                  Or Paste Resume Content
-                </label>
-                <textarea
-                  ref={resumeTextRef}
-                  value={resumeText}
-                  onChange={(e) => setResumeText(e.target.value)}
-                  onKeyDown={(e) => handleFieldKeyDown(e, null, true)}
-                  placeholder="Paste your existing resume text, work experience, bullets, and skills here..."
-                  rows={6}
-                  className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-2xl p-4 text-xs font-mono text-slate-200 placeholder-slate-500 focus:outline-none leading-relaxed shadow-inner"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Mode 2: Details Form with Sequential Enter Navigation */}
-          {inputTab === 'form' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">
-                  Full Name
-                </label>
-                <input
-                  ref={fullNameRef}
-                  type="text"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  onKeyDown={(e) => handleFieldKeyDown(e, emailRef)}
-                  placeholder="e.g. Candidate Name"
-                  className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none shadow-inner"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">
-                  Email & Phone
-                </label>
-                <input
-                  ref={emailRef}
-                  type="text"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  onKeyDown={(e) => handleFieldKeyDown(e, skillsRef)}
-                  placeholder="candidate@domain.com | +1 555-0199"
-                  className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none shadow-inner"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">
-                  Core Skills & Technologies
-                </label>
-                <input
-                  ref={skillsRef}
-                  type="text"
-                  value={formData.skills}
-                  onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                  onKeyDown={(e) => handleFieldKeyDown(e, experienceRef)}
-                  placeholder="e.g. Python, SQL, React, AWS, Docker, Machine Learning"
-                  className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none shadow-inner"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">
-                  Work Experience (Past Roles & Tasks)
-                </label>
-                <textarea
-                  ref={experienceRef}
-                  value={formData.experience}
-                  onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-                  onKeyDown={(e) => handleFieldKeyDown(e, projectsRef)}
-                  placeholder="e.g. Junior Data Analyst at TechCorp: Built ETL pipelines in Python, created dashboards"
-                  rows={4}
-                  className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-500 focus:outline-none shadow-inner"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">
-                  Projects & Education
-                </label>
-                <textarea
-                  ref={projectsRef}
-                  value={formData.projects}
-                  onChange={(e) => setFormData({ ...formData, projects: e.target.value })}
-                  onKeyDown={(e) => handleFieldKeyDown(e, null, true)}
-                  placeholder="e.g. Customer Churn Prediction (Python, Scikit-learn). B.S. in Computer Science"
-                  rows={3}
-                  className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl p-3 text-xs font-mono text-slate-200 placeholder-slate-500 focus:outline-none shadow-inner"
-                />
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="bg-rose-950/40 border border-rose-500/30 rounded-2xl p-4 text-rose-300 text-xs flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {/* Action Button */}
-          <button
-            type="button"
-            onClick={handleAnalyzeAndOptimize}
-            disabled={isLoading || !targetRole.trim()}
-            className="w-full py-4 rounded-2xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-slate-950 shadow-xl shadow-teal-500/20 transition-all active:scale-98 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                </svg>
-                <span>Auditing ATS Compliance & Rewriting Bullets...</span>
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                <span>Audit ATS Score & Generate Optimized Resume (Press Enter ↵)</span>
-                <ArrowRight className="w-4 h-4" />
-              </span>
             )}
-          </button>
-        </div>
 
-        {/* ATS Results & Output Section */}
-        {atsResult && (
-          <div className="space-y-6 animate-fade-in">
-            {/* ATS Score Overview Grid */}
-            <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-6 border-b border-white/10">
-                <div className="flex items-center gap-5">
-                  <div className={`w-20 h-20 rounded-2xl border-2 flex flex-col items-center justify-center font-black ${
-                    atsResult.atsScore >= 80
-                      ? 'text-emerald-300 border-emerald-500/40 bg-emerald-950/60'
-                      : atsResult.atsScore >= 50
-                      ? 'text-amber-300 border-amber-500/40 bg-amber-950/60'
-                      : 'text-rose-300 border-rose-500/40 bg-rose-950/60'
-                  }`}>
-                    <span className="text-3xl font-mono">{atsResult.atsScore}</span>
-                    <span className="text-[9px] font-mono uppercase tracking-wider opacity-80">ATS Score</span>
-                  </div>
-
-                  <div>
-                    <h2 className="text-xl font-extrabold text-white">ATS Compatibility Audit</h2>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Target Role: <strong className="text-white">{targetRole}</strong> • Rating:{' '}
-                      <strong className="text-teal-400 font-mono">{atsResult.atsRating || 'Strong'}</strong>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={copyAsMarkdown}
-                    className="py-2.5 px-4 text-xs font-semibold flex items-center gap-1.5 bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-200 rounded-xl shadow-sm cursor-pointer"
-                  >
-                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copied ? 'Copied!' : 'Copy Resume'}</span>
-                  </button>
-                  <button
-                    onClick={() => window.print()}
-                    className="py-2.5 px-4 text-xs font-semibold flex items-center gap-1.5 bg-[#171E2D] hover:bg-[#1E273A] border border-white/10 text-slate-200 rounded-xl shadow-sm cursor-pointer"
-                  >
-                    <Printer className="w-3.5 h-3.5" />
-                    <span>Export PDF</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* 3 Metric Breakdown Bars */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-[#0D111A] p-4 rounded-2xl border border-white/5">
-                  <div className="flex justify-between items-center text-xs mb-2 font-mono">
-                    <span className="text-slate-400 font-bold uppercase text-[10px]">Keyword Match</span>
-                    <span className="font-bold text-white">{atsResult.keywordMatchScore || 85}/100</span>
-                  </div>
-                  <div className="h-2 bg-[#171E2D] rounded-full overflow-hidden border border-white/5">
-                    <div className="h-full bg-teal-400 rounded-full" style={{ width: `${atsResult.keywordMatchScore || 85}%` }} />
-                  </div>
-                </div>
-
-                <div className="bg-[#0D111A] p-4 rounded-2xl border border-white/5">
-                  <div className="flex justify-between items-center text-xs mb-2 font-mono">
-                    <span className="text-slate-400 font-bold uppercase text-[10px]">Action Verbs & Metrics</span>
-                    <span className="font-bold text-white">{atsResult.impactScore || 90}/100</span>
-                  </div>
-                  <div className="h-2 bg-[#171E2D] rounded-full overflow-hidden border border-white/5">
-                    <div className="h-full bg-cyan-400 rounded-full" style={{ width: `${atsResult.impactScore || 90}%` }} />
-                  </div>
-                </div>
-
-                <div className="bg-[#0D111A] p-4 rounded-2xl border border-white/5">
-                  <div className="flex justify-between items-center text-xs mb-2 font-mono">
-                    <span className="text-slate-400 font-bold uppercase text-[10px]">Formatting & Structure</span>
-                    <span className="font-bold text-white">{atsResult.formattingScore || 95}/100</span>
-                  </div>
-                  <div className="h-2 bg-[#171E2D] rounded-full overflow-hidden border border-white/5">
-                    <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${atsResult.formattingScore || 95}%` }} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Missing Keywords Pills */}
-              {atsResult.missingKeywords && atsResult.missingKeywords.length > 0 && (
-                <div className="pt-5 border-t border-white/10">
-                  <p className="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2.5 font-mono flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> High-Priority ATS Keywords Injected:
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {atsResult.missingKeywords.map((kw) => (
-                      <span
-                        key={kw}
-                        className="text-xs font-mono font-semibold px-3 py-1 rounded-xl bg-amber-950/80 border border-amber-500/30 text-amber-300 shadow-sm"
-                      >
-                        + {kw}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+            {/* Launch AI Interview Direct CTA */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={handleStartInterviewWithThisResume}
+                disabled={isStartingInterview}
+                className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm shadow-[0_1px_rgba(255,255,255,0.3)_inset,0_6px_20px_rgba(20,184,166,0.3)] hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <span>Practice AI Mock Interview with this Resume</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
 
-            {/* ATS Resume Preview */}
-            {atsResult.optimizedResume && (
-              <div className="bg-[#131823] border border-white/10 rounded-3xl p-8 sm:p-12 space-y-6 text-slate-300 font-sans shadow-2xl">
-                {/* Resume Header */}
-                <div className="text-center pb-5 border-b border-white/10">
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-wide uppercase">
-                    {atsResult.optimizedResume.fullName || 'Candidate Name'}
+          </div>
+
+          {/* ── RIGHT PANE: RESUME.IO CLASSIC DOCUMENT CANVAS PREVIEW ── */}
+          <div className={`lg:col-span-6 space-y-4 ${mobilePane === 'editor' ? 'hidden lg:block' : 'block'}`}>
+            
+            {/* Live Document Preview Card */}
+            <div className="rounded-2xl border border-white/[0.08] bg-[#0E131F]/90 backdrop-blur-2xl p-4 sm:p-6 shadow-2xl space-y-4">
+              
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-xs font-bold text-slate-200">Real-Time Classic Resume Canvas</span>
+                </div>
+                <span className="text-[11px] font-mono text-teal-400 uppercase tracking-wide">Template: Classic Ivory</span>
+              </div>
+
+              {/* Authentic White A4 Paper Canvas */}
+              <div className="bg-[#FAFBFD] text-slate-900 rounded-xl p-8 sm:p-10 shadow-xl min-h-[720px] font-sans text-left space-y-6 select-text">
+                
+                {/* Header Block */}
+                <div className="border-b border-slate-300 pb-4 space-y-1 text-center">
+                  <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 uppercase">
+                    {formData.fullName || 'YOUR NAME'}
                   </h1>
-                  <p className="text-xs text-slate-400 mt-2 space-x-2 font-mono">
-                    {atsResult.optimizedResume.contactInfo?.email && <span>{atsResult.optimizedResume.contactInfo.email}</span>}
-                    {atsResult.optimizedResume.contactInfo?.phone && (
-                      <>
-                        <span>•</span>
-                        <span>{atsResult.optimizedResume.contactInfo.phone}</span>
-                      </>
-                    )}
-                    {atsResult.optimizedResume.contactInfo?.location && (
-                      <>
-                        <span>•</span>
-                        <span>{atsResult.optimizedResume.contactInfo.location}</span>
-                      </>
-                    )}
+                  <p className="text-sm font-semibold text-teal-700 tracking-wide">
+                    {formData.jobTitle || targetRole}
                   </p>
-                  <p className="text-xs text-teal-400 mt-1 space-x-3 font-mono">
-                    {atsResult.optimizedResume.contactInfo?.linkedin && <span>{atsResult.optimizedResume.contactInfo.linkedin}</span>}
-                    {atsResult.optimizedResume.contactInfo?.github && <span>{atsResult.optimizedResume.contactInfo.github}</span>}
-                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] text-slate-600 pt-1">
+                    {formData.email && <span>{formData.email}</span>}
+                    {formData.phone && <span>• {formData.phone}</span>}
+                    {formData.location && <span>• {formData.location}</span>}
+                    {formData.linkedin && <span>• {formData.linkedin}</span>}
+                  </div>
                 </div>
 
                 {/* Professional Summary */}
-                <div className="space-y-2">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-teal-400 border-b border-white/10 pb-1 font-mono">
-                    Professional Summary
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    {atsResult.optimizedResume.professionalSummary}
-                  </p>
-                </div>
-
-                {/* Core Competencies */}
-                <div className="space-y-2">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-teal-400 border-b border-white/10 pb-1 font-mono">
-                    Core Competencies & Technical Skills
-                  </h2>
-                  <div className="text-xs text-slate-300 space-y-1 font-mono">
-                    <p>
-                      <strong className="text-white">Technical Skills:</strong>{' '}
-                      {(atsResult.optimizedResume.skills?.technicalSkills || []).join(', ')}
-                    </p>
-                    <p>
-                      <strong className="text-white">Tools & Frameworks:</strong>{' '}
-                      {(atsResult.optimizedResume.skills?.frameworksAndTools || []).join(', ')}
+                {formData.summary && (
+                  <div className="space-y-1.5">
+                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
+                      Professional Summary
+                    </h2>
+                    <p className="text-xs text-slate-700 leading-relaxed text-justify">
+                      {formData.summary}
                     </p>
                   </div>
-                </div>
+                )}
 
-                {/* Experience */}
-                {atsResult.optimizedResume.experience && atsResult.optimizedResume.experience.length > 0 && (
-                  <div className="space-y-4">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-teal-400 border-b border-white/10 pb-1 font-mono">
+                {/* Skills Section */}
+                {formData.skills && (
+                  <div className="space-y-1.5">
+                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
+                      Technical Skills & Competencies
+                    </h2>
+                    <p className="text-xs text-slate-700 leading-relaxed font-mono">
+                      {formData.skills}
+                    </p>
+                  </div>
+                )}
+
+                {/* Experience Section */}
+                {formData.experience.length > 0 && (
+                  <div className="space-y-3">
+                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
                       Professional Experience
                     </h2>
-                    {atsResult.optimizedResume.experience.map((exp, idx) => (
+                    {formData.experience.map((exp, idx) => (
                       <div key={idx} className="space-y-1">
-                        <div className="flex flex-col sm:flex-row justify-between text-xs sm:text-sm">
-                          <strong className="text-white font-bold">{exp.role} {exp.company ? `— ${exp.company}` : ''}</strong>
-                          {exp.duration && <span className="text-slate-400 font-mono text-xs">{exp.duration}</span>}
+                        <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                          <span>{exp.role} — <span className="font-semibold text-slate-700">{exp.company}</span></span>
+                          <span className="font-mono text-[11px] text-slate-600">{exp.period}</span>
                         </div>
-                        <ul className="list-disc list-inside text-xs text-slate-300 space-y-1 pt-1">
-                          {(exp.bullets || []).map((b, bIdx) => (
-                            <li key={bIdx} className="leading-relaxed">{b}</li>
+                        <p className="text-[11px] text-slate-500 italic">{exp.location}</p>
+                        <ul className="list-disc list-inside text-xs text-slate-700 space-y-1 pl-1">
+                          {exp.bullets.filter(b => b.trim()).map((bullet, bIdx) => (
+                            <li key={bIdx} className="leading-relaxed">{bullet}</li>
                           ))}
                         </ul>
                       </div>
@@ -642,76 +704,87 @@ ${(r.certifications || []).map((c) => `- ${c}`).join('\n')}
                   </div>
                 )}
 
-                {/* Projects */}
-                {atsResult.optimizedResume.projects && atsResult.optimizedResume.projects.length > 0 && (
-                  <div className="space-y-3">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-teal-400 border-b border-white/10 pb-1 font-mono">
-                      Technical Projects
-                    </h2>
-                    {atsResult.optimizedResume.projects.map((p, pIdx) => (
-                      <div key={pIdx} className="text-xs text-slate-300 space-y-0.5">
-                        <p>
-                          <strong className="text-white">{p.title}</strong>{' '}
-                          {p.technologies && p.technologies.length > 0 && (
-                            <span className="text-teal-400 font-mono">({p.technologies.join(', ')})</span>
-                          )}
-                          : {p.description}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Education */}
-                {atsResult.optimizedResume.education && atsResult.optimizedResume.education.length > 0 && (
+                {/* Projects Section */}
+                {formData.projects.length > 0 && (
                   <div className="space-y-2">
-                    <h2 className="text-xs font-bold uppercase tracking-wider text-teal-400 border-b border-white/10 pb-1 font-mono">
-                      Education & Certifications
+                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
+                      Key Technical Projects
                     </h2>
-                    {atsResult.optimizedResume.education.map((ed, edIdx) => (
-                      <div key={edIdx} className="flex justify-between text-xs text-slate-300">
-                        <span><strong className="text-white">{ed.degree}</strong>{ed.institution ? `, ${ed.institution}` : ''}</span>
-                        {ed.year && <span className="text-slate-400 font-mono">{ed.year}</span>}
+                    {formData.projects.map((proj, idx) => (
+                      <div key={idx} className="text-xs space-y-0.5">
+                        <div className="font-bold text-slate-900">
+                          {proj.title} <span className="font-mono text-[11px] text-teal-700">[{proj.technologies}]</span>
+                        </div>
+                        <p className="text-xs text-slate-700 leading-relaxed">{proj.description}</p>
                       </div>
-                    ))}
-                    {(atsResult.optimizedResume.certifications || []).map((c, cIdx) => (
-                      <p key={cIdx} className="text-xs text-slate-300">• {c}</p>
                     ))}
                   </div>
                 )}
 
-                {/* CTA */}
-                <div className="pt-6 border-t border-white/10 flex justify-center">
-                  <button
-                    onClick={handleStartInterviewWithOptimized}
-                    disabled={isStartingInterview}
-                    className="py-4 px-8 text-xs font-extrabold bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 text-slate-950 rounded-2xl shadow-xl shadow-teal-500/20 cursor-pointer disabled:opacity-50 flex items-center gap-2"
-                  >
-                    {isStartingInterview ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <svg className="animate-spin h-4 w-4 text-slate-950" viewBox="0 0 24 24" fill="none">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                        </svg>
-                        Preparing AI Interview Session...
-                      </span>
-                    ) : (
-                      <>
-                        <span>Practice AI Mock Interview with this Optimized Profile</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </button>
-                </div>
+                {/* Education Section */}
+                {formData.education.length > 0 && (
+                  <div className="space-y-2">
+                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-800 border-b border-slate-200 pb-1">
+                      Education & Credentials
+                    </h2>
+                    {formData.education.map((ed, idx) => (
+                      <div key={idx} className="flex justify-between items-baseline text-xs">
+                        <div>
+                          <span className="font-bold text-slate-900">{ed.degree}</span> — <span className="text-slate-700">{ed.institution}</span>
+                          {ed.details && <p className="text-[11px] text-slate-600">{ed.details}</p>}
+                        </div>
+                        <span className="font-mono text-[11px] text-slate-600 shrink-0">{ed.year}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
               </div>
-            )}
+
+              {/* ── ATS AI DIAGNOSTIC AUDIT RESULTS (IF TRIGGERED) ── */}
+              {atsResult && (
+                <div className="p-6 rounded-2xl bg-[#121724] border border-teal-500/30 space-y-4 text-xs animate-fade-in shadow-xl">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-teal-400" />
+                      <span className="font-bold text-white text-sm">ATS Score & Keyword Alignment</span>
+                    </div>
+                    <span className="px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 font-bold border border-teal-500/40 text-xs">
+                      {atsResult.atsScore || 92}/100 Match
+                    </span>
+                  </div>
+
+                  {/* Keyword Badges */}
+                  <div className="space-y-2">
+                    <p className="text-slate-400 font-medium">Matched Job Keywords:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(atsResult.matchedKeywords || ['React', 'TypeScript', 'Node.js', 'System Scalability', 'Microservices', 'REST APIs', 'PostgreSQL']).map((kw, i) => (
+                        <span key={i} className="px-2 py-0.5 rounded-md bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 font-mono text-[11px]">
+                          ✓ {kw}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {atsResult.recommendations && (
+                    <div className="space-y-1 text-slate-300">
+                      <p className="font-bold text-amber-400">AI Recommendations:</p>
+                      <p className="text-[11px] leading-relaxed">{atsResult.recommendations}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+            </div>
+
           </div>
-        )}
+
+        </div>
       </main>
 
-      <footer className="py-4 border-t border-white/10 bg-[#0E121B] text-center" />
+      <footer className="py-6 border-t border-white/10 bg-[#0E121B] text-center text-xs text-slate-500">
+        <p>© {new Date().getFullYear()} AI Interview Evaluator • ATS Resume Engine</p>
+      </footer>
     </div>
   );
 }
-
-
