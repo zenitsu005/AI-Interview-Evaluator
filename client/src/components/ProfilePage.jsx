@@ -22,6 +22,7 @@ import {
   TbChevronRight as ChevronRight,
   TbTrendingUp as TrendingUp,
   TbAward as Award,
+  TbLock as Lock,
 } from 'react-icons/tb';
 
 export default function ProfilePage() {
@@ -34,14 +35,13 @@ export default function ProfilePage() {
   // Edit Profile Modal State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editName, setEditName] = useState(user?.name || '');
-  const [editEmail, setEditEmail] = useState(user?.email || '');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   const handleSaveProfile = (e) => {
     e.preventDefault();
-    if (!editName.trim() || !editEmail.trim()) return;
+    if (!editName.trim()) return;
     if (updateUserProfile) {
-      updateUserProfile({ name: editName.trim(), email: editEmail.trim() });
+      updateUserProfile({ name: editName.trim() });
     }
     setSaveSuccess(true);
     setTimeout(() => {
@@ -352,13 +352,13 @@ export default function ProfilePage() {
 
             <div className="mb-6">
               <h2 className="text-xl font-extrabold text-white">Edit Profile Details</h2>
-              <p className="text-xs text-slate-400 mt-1">Update your display name and registered email address.</p>
+              <p className="text-xs text-slate-400 mt-1">Update your candidate display name.</p>
             </div>
 
             <form onSubmit={handleSaveProfile} className="space-y-4">
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">
-                  Full Name
+                  Full Name / Display Name
                 </label>
                 <input
                   type="text"
@@ -371,17 +371,24 @@ export default function ProfilePage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">
-                  Your Personal Email Address
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">
+                    Registered Account Email
+                  </label>
+                  <span className="text-[10px] font-mono text-slate-500 flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-slate-500" /> Account ID (Locked)
+                  </span>
+                </div>
                 <input
                   type="email"
-                  value={editEmail}
-                  onChange={(e) => setEditEmail(e.target.value)}
-                  placeholder="your.real.email@gmail.com"
-                  required
-                  className="w-full bg-[#0D111A] border border-white/10 focus:border-teal-400 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none shadow-inner"
+                  value={user?.email || 'guest@candidate.com'}
+                  disabled
+                  readOnly
+                  className="w-full bg-[#090C12] border border-white/5 rounded-xl px-3.5 py-2.5 text-xs text-slate-400 focus:outline-none cursor-not-allowed select-none opacity-80"
                 />
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Registered email is permanently bound to your login credentials and cannot be edited.
+                </p>
               </div>
 
               {saveSuccess && (
