@@ -77,8 +77,10 @@ export default function LandingPage({ onNavigate }) {
         {/* ── BENTO PRACTICE MODULE CARDS SECTION ── */}
         <section id="practice-modules" className="space-y-6 pt-4 scroll-mt-24">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2.5">
-              <Layers className="w-6 h-6 text-teal-400" />
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+              <span className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                <Layers className="w-6 h-6" />
+              </span>
               <span>Targeted Practice Studios</span>
             </h2>
           </div>
@@ -90,18 +92,18 @@ export default function LandingPage({ onNavigate }) {
               <Card
                 variant="interactive"
                 onClick={() => nav('setup')}
-                className="h-full flex flex-col justify-between bg-gradient-to-br from-[#131823] via-[#171E2D] to-[#10141D] border-white/10 hover:border-teal-400/40 p-6 sm:p-8 shadow-2xl relative overflow-hidden group"
+                className="h-full flex flex-col justify-between bg-gradient-to-br from-[#131823] via-[#171E2D] to-[#10141D] border-white/10 hover:border-teal-400/50 p-6 sm:p-8 shadow-2xl relative overflow-hidden group"
               >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-teal-500/20 transition-all" />
+                <div className="absolute top-0 right-0 w-72 h-72 bg-teal-500/15 rounded-full blur-3xl pointer-events-none group-hover:bg-teal-500/25 transition-all duration-300" />
 
-                <div className="space-y-3 relative z-10">
-                  <div className="w-12 h-12 rounded-2xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400 shadow-md">
-                    <Brain className="w-7 h-7" />
+                <div className="space-y-4 relative z-10">
+                  <div className="inline-flex p-3 rounded-2xl bg-teal-500/10 border border-teal-500/30 text-teal-300 shadow-inner group-hover:scale-105 transition-transform">
+                    <Brain className="w-8 h-8" />
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
                     Full Mock Interview Studio
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl text-pretty">
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl text-pretty font-normal">
                     Simulate all core rounds: Aptitude Logic, Technical Depth, System Architecture, and HR Round with live audio dialogue.
                   </p>
                 </div>
@@ -110,7 +112,7 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('setup')}
-                    className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-extrabold text-xs shadow-md transition-all active:scale-98 cursor-pointer flex items-center gap-2"
+                    className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-extrabold text-xs shadow-md hover:shadow-teal-500/25 transition-all active:scale-98 cursor-pointer flex items-center gap-2"
                   >
                     <span>Start Full Mock Interview</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -121,12 +123,12 @@ export default function LandingPage({ onNavigate }) {
 
             {/* DSA Studio */}
             <div className="md:col-span-4">
-              <Card variant="interactive" onClick={() => nav('dsa')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-teal-400/40 shadow-xl">
-                <div className="space-y-3">
-                  <div className="w-11 h-11 rounded-xl bg-teal-950/80 border border-teal-500/30 flex items-center justify-center text-teal-400">
+              <Card variant="interactive" onClick={() => nav('dsa')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-teal-400/40 shadow-xl group">
+                <div className="space-y-3.5">
+                  <div className="inline-flex p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/25 text-teal-400 group-hover:scale-105 transition-transform">
                     <Code2 className="w-6 h-6" />
                   </div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-white tracking-tight">
                     DSA Practice Studio
                   </h3>
                   <p className="text-xs text-slate-400 leading-relaxed text-pretty">
@@ -148,12 +150,12 @@ export default function LandingPage({ onNavigate }) {
 
             {/* Bug Hunter Studio */}
             <div className="md:col-span-6">
-              <Card variant="interactive" onClick={() => nav('bug-hunter')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-cyan-400/40 shadow-xl">
-                <div className="space-y-3">
-                  <div className="w-11 h-11 rounded-xl bg-cyan-950/80 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+              <Card variant="interactive" onClick={() => nav('bug-hunter')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-cyan-400/40 shadow-xl group">
+                <div className="space-y-3.5">
+                  <div className="inline-flex p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 group-hover:scale-105 transition-transform">
                     <Bug className="w-6 h-6" />
                   </div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-white tracking-tight">
                     Bug Hunter Studio
                   </h3>
                   <p className="text-xs text-slate-400 leading-relaxed text-pretty">
@@ -175,12 +177,12 @@ export default function LandingPage({ onNavigate }) {
 
             {/* 60s Rapid Blitz */}
             <div className="md:col-span-6">
-              <Card variant="interactive" onClick={() => nav('blitz')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-amber-400/40 shadow-xl">
-                <div className="space-y-3">
-                  <div className="w-11 h-11 rounded-xl bg-amber-950/80 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <Card variant="interactive" onClick={() => nav('blitz')} className="h-full flex flex-col justify-between p-6 bg-[#131823] border-white/10 hover:border-amber-400/40 shadow-xl group">
+                <div className="space-y-3.5">
+                  <div className="inline-flex p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 group-hover:scale-105 transition-transform">
                     <Zap className="w-6 h-6" />
                   </div>
-                  <h3 className="text-base font-bold text-white">
+                  <h3 className="text-base font-bold text-white tracking-tight">
                     60s Rapid Blitz
                   </h3>
                   <p className="text-xs text-slate-400 leading-relaxed text-pretty">

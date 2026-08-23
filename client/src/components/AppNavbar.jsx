@@ -56,13 +56,12 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#0B0D13]/85 backdrop-blur-2xl transition-all text-slate-100">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        {/* Brand Logo */}
         <button
           type="button"
           onClick={() => handleSelectModule('landing')}
           className="flex items-center gap-3 cursor-pointer select-none group text-left border-none bg-transparent"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 font-extrabold text-slate-950 text-xs shadow-lg shadow-teal-500/20 group-hover:scale-105 transition-transform">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500/15 border border-teal-500/30 text-teal-400 shadow-lg shadow-teal-500/15 group-hover:scale-105 group-hover:bg-teal-500/20 group-hover:border-teal-400/50 transition-all">
             <Sparkles className="w-5 h-5" />
           </div>
           <span className="font-bold tracking-tight text-white text-sm sm:text-base">
