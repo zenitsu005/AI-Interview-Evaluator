@@ -617,7 +617,7 @@ export default function VideoInterview() {
                   </div>
                 )}
 
-                {/* Candidate Feed Overlays (Separate top-left and top-right positioning to eliminate overlap) */}
+                {/* Candidate Feed Overlays (Top-Left YOU tag & Bottom Telemetry HUD to eliminate any collision) */}
                 <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
                   <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-wider bg-black/85 backdrop-blur-md text-rose-400 border border-rose-500/30 shadow-md">
                     <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
@@ -625,11 +625,11 @@ export default function VideoInterview() {
                   </span>
                 </div>
 
-                <div className="absolute top-2.5 right-2.5 z-20 flex items-center gap-1.5 pointer-events-none">
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 z-20 flex items-center justify-between pointer-events-none">
                   <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-emerald-400 border border-emerald-500/30 font-mono shadow-md">
                     Composure: {composureScore}%
                   </span>
-                  <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-teal-300 border border-teal-500/30 font-mono shadow-md">
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-teal-300 border border-teal-500/30 font-mono shadow-md">
                     Steadiness: {vocalSteadiness}%
                   </span>
                 </div>
