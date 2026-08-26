@@ -86,6 +86,7 @@ export default function VideoInterview() {
   const [soundscape, setSoundscape] = useState('none');
   const [showFillerFlash, setShowFillerFlash] = useState(false);
   const prevFillersCountRef = useRef(0);
+  const lastFrameDataRef = useRef(null);
 
   const [composureScore, setComposureScore] = useState(96);
   const [vocalSteadiness, setVocalSteadiness] = useState(94);
@@ -96,6 +97,119 @@ export default function VideoInterview() {
   const detectedFillers = (transcript.match(fillerWordsRegex) || []).length;
   const wordCount = transcript.trim() ? transcript.trim().split(/\s+/).length : 0;
   const estimatedWpm = recordingSeconds > 3 ? Math.round(wordCount / (recordingSeconds / 60)) : 0;
+
+  // Real-Time Computer Vision Posture & Composure Telemetry Loop
+  useEffect(() => {
+    if (virtualMode || !camReady) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 48;
+    const ctx = canvas.getContext('2d');
+
+    const checkMovement = () => {
+      const v = videoRef.current;
+      if (v && v.readyState >= 2 && v.videoWidth > 0) {
+        try {
+          ctx.drawImage(v, 0, 0, 64, 48);
+          const currentData = ctx.getImageData(0, 0, 64, 48).data;
+          if (lastFrameDataRef.current) {
+            let diff = 0;
+            const prevData = lastFrameDataRef.current;
+            for (let i = 0; i < currentData.length; i += 16) {
+              diff += Math.abs(currentData[i] - prevData[i]);
+            }
+            const avgDiff = diff / (currentData.length / 16);
+
+            let targetComposure = 96;
+            if (avgDiff > 28) {
+              // Rapid or excessive shaking / moving
+              targetComposure = Math.max(68, 96 - Math.round((avgDiff - 28) * 1.5));
+            } else if (avgDiff > 16) {
+              // Moderate head movement
+              targetComposure = Math.max(82, 96 - Math.round((avgDiff - 16) * 1.1));
+            } else if (avgDiff < 1) {
+              targetComposure = 92;
+            } else {
+              // Calm, composed, steady posture
+              targetComposure = Math.min(98, 93 + Math.round((16 - avgDiff) * 0.3));
+            }
+
+            if (detectedFillers > 0) {
+              targetComposure = Math.max(60, targetComposure - detectedFillers * 3);
+            }
+
+            setComposureScore((prev) => Math.round(prev * 0.8 + targetComposure * 0.2));
+          }
+          lastFrameDataRef.current = currentData;
+        } catch (e) {}
+      }
+    };
+
+    const interval = setInterval(checkMovement, 400);
+    return () => clearInterval(interval);
+  }, [camReady, virtualMode, detectedFillers]);
+
+  // Real-Time Audio Telemetry & Vocal Steadiness Loop
+  useEffect(() => {
+    if (!isRecording || !audioStreamRef.current) {
+      if (!isRecording && detectedFillers > 0) {
+        setVocalSteadiness((prev) => Math.max(70, 94 - detectedFillers * 4));
+      }
+      return;
+    }
+
+    let audioCtx = null;
+    let analyser = null;
+    let source = null;
+
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      source = audioCtx.createMediaStreamSource(audioStreamRef.current);
+      source.connect(analyser);
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      const checkAudio = () => {
+        analyser.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) {
+          sum += dataArray[i];
+        }
+        const avgVol = sum / dataArray.length;
+
+        let targetSteadiness = 94;
+        if (avgVol < 5) {
+          targetSteadiness = 90; // silence
+        } else if (avgVol >= 15 && avgVol <= 90) {
+          targetSteadiness = Math.min(98, 92 + Math.round((avgVol / 90) * 6));
+        } else if (avgVol > 90 && avgVol <= 140) {
+          targetSteadiness = 88;
+        } else if (avgVol > 140) {
+          targetSteadiness = Math.max(68, 85 - Math.round((avgVol - 140) * 0.3));
+        }
+
+        if (detectedFillers > 0) {
+          targetSteadiness = Math.max(60, targetSteadiness - detectedFillers * 4);
+        }
+        if (estimatedWpm > 180) {
+          targetSteadiness = Math.max(65, targetSteadiness - 8);
+        }
+
+        setVocalSteadiness((prev) => Math.round(prev * 0.75 + targetSteadiness * 0.25));
+      };
+
+      const interval = setInterval(checkAudio, 250);
+      return () => {
+        clearInterval(interval);
+        if (source) source.disconnect();
+        if (audioCtx && audioCtx.state !== 'closed') audioCtx.close();
+      };
+    } catch (e) {
+      console.warn('Audio analyser telemetry notice:', e);
+    }
+  }, [isRecording, detectedFillers, estimatedWpm]);
 
   useEffect(() => {
     if (detectedFillers > prevFillersCountRef.current) {
