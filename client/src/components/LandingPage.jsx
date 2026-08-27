@@ -78,7 +78,7 @@ export default function LandingPage({ onNavigate }) {
         </section>
 
         {/* ── BENTO PRACTICE MODULE CARDS SECTION (2x2 Balanced Grid) ── */}
-        <section id="practice-modules" className="space-y-6 pt-4 scroll-mt-24 w-full max-w-6xl mx-auto">
+        <section id="practice-modules" className="space-y-6 pt-4 mt-16 sm:mt-20 scroll-mt-24 w-full max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
               <span className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shadow-[0_0_12px_rgba(20,184,166,0.12)]">
@@ -108,7 +108,7 @@ export default function LandingPage({ onNavigate }) {
                 <h3 className="text-xl font-semibold text-white tracking-tight">
                   Full Mock Interview Studio
                 </h3>
-                <p className="text-sm leading-relaxed text-slate-400">
+                <p className="text-sm leading-relaxed text-slate-300 font-normal">
                   Simulate all 3 core rounds: Aptitude & Logic, Technical Depth, and HR Round with live audio dialogue.
                 </p>
               </div>
@@ -142,7 +142,7 @@ export default function LandingPage({ onNavigate }) {
                 <h3 className="text-xl font-semibold text-white tracking-tight">
                   DSA Practice Studio
                 </h3>
-                <p className="text-sm leading-relaxed text-slate-400">
+                <p className="text-sm leading-relaxed text-slate-300 font-normal">
                   Solve coding challenges in C++, Python 3, C, or Java with instant test case verification.
                 </p>
               </div>
@@ -176,7 +176,7 @@ export default function LandingPage({ onNavigate }) {
                 <h3 className="text-xl font-semibold text-white tracking-tight">
                   Bug Hunter Studio
                 </h3>
-                <p className="text-sm leading-relaxed text-slate-400">
+                <p className="text-sm leading-relaxed text-slate-300 font-normal">
                   Audit production code snippets for concurrency deadlocks, memory leaks, and subtle logic bugs.
                 </p>
               </div>
@@ -210,7 +210,7 @@ export default function LandingPage({ onNavigate }) {
                 <h3 className="text-xl font-semibold text-white tracking-tight">
                   60s Rapid Blitz
                 </h3>
-                <p className="text-sm leading-relaxed text-slate-400">
+                <p className="text-sm leading-relaxed text-slate-300 font-normal">
                   Answer fast-paced technical questions under strict 60-second timers to build spontaneous clarity.
                 </p>
               </div>
