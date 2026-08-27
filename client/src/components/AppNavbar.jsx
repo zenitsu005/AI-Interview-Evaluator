@@ -27,8 +27,12 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   const { user, isAuthenticated, logout, openAuth } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const rawName = user?.name ? user.name.split(' ')[0] : 'User';
-  const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+  const formatName = (name) => {
+    if (!name) return 'Akshay';
+    const first = name.trim().split(' ')[0];
+    return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
+  };
+  const displayName = formatName(user?.name);
 
   const featureItems = [
     {

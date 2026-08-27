@@ -108,7 +108,7 @@ export default function LandingPage({ onNavigate }) {
                 <h3 className="text-xl font-semibold text-white tracking-tight">
                   Full Mock Interview Studio
                 </h3>
-                <p className="text-sm leading-relaxed text-slate-300 font-normal">
+                <p className="text-sm leading-relaxed text-[#cbd5e1] font-normal">
                   Simulate all 3 core rounds: Aptitude & Logic, Technical Depth, and HR Round with live audio dialogue.
                 </p>
               </div>
@@ -142,7 +142,7 @@ export default function LandingPage({ onNavigate }) {
                 <h3 className="text-xl font-semibold text-white tracking-tight">
                   DSA Practice Studio
                 </h3>
-                <p className="text-sm leading-relaxed text-slate-300 font-normal">
+                <p className="text-sm leading-relaxed text-[#cbd5e1] font-normal">
                   Solve coding challenges in C++, Python 3, C, or Java with instant test case verification.
                 </p>
               </div>
@@ -176,7 +176,7 @@ export default function LandingPage({ onNavigate }) {
                 <h3 className="text-xl font-semibold text-white tracking-tight">
                   Bug Hunter Studio
                 </h3>
-                <p className="text-sm leading-relaxed text-slate-300 font-normal">
+                <p className="text-sm leading-relaxed text-[#cbd5e1] font-normal">
                   Audit production code snippets for concurrency deadlocks, memory leaks, and subtle logic bugs.
                 </p>
               </div>
@@ -210,7 +210,7 @@ export default function LandingPage({ onNavigate }) {
                 <h3 className="text-xl font-semibold text-white tracking-tight">
                   60s Rapid Blitz
                 </h3>
-                <p className="text-sm leading-relaxed text-slate-300 font-normal">
+                <p className="text-sm leading-relaxed text-[#cbd5e1] font-normal">
                   Answer fast-paced technical questions under strict 60-second timers to build spontaneous clarity.
                 </p>
               </div>
