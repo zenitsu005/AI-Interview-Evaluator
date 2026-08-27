@@ -199,6 +199,34 @@
   animation: laserSweep 4s ease-in-out infinite;
 }
 
+/* ── Hero Ambient Geometric Mesh Keyframes (Ultra-slow 25s-30s pulse & drift) ── */
+@keyframes heroMeshPulse {
+  0%, 100% { opacity: 0.11; transform: scale(1) translate3d(0, 0, 0); }
+  50% { opacity: 0.15; transform: scale(1.03) translate3d(0, -6px, 0); }
+}
+
+@keyframes heroDrift1 {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(12px, -15px, 0) rotate(1.5deg); }
+}
+
+@keyframes heroDrift2 {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50% { transform: translate3d(-14px, 12px, 0) rotate(-1.5deg); }
+}
+
+.animate-hero-mesh-pulse {
+  animation: heroMeshPulse 26s ease-in-out infinite;
+}
+
+.animate-hero-drift-1 {
+  animation: heroDrift1 28s ease-in-out infinite;
+}
+
+.animate-hero-drift-2 {
+  animation: heroDrift2 34s ease-in-out infinite;
+}
+
 /* Luxury Dark Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

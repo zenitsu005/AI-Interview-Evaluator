@@ -1,6 +1,7 @@
 import React from 'react';
 import { useInterview } from '../context/InterviewContext';
 import AppNavbar from './AppNavbar';
+import HeroBackgroundAnimation from './ui/HeroBackgroundAnimation';
 import {
   TbArrowRight as ArrowRight,
   TbTerminal2 as Code2,
@@ -37,6 +38,9 @@ export default function LandingPage({ onNavigate }) {
         {/* ── HERO SECTION WITH SOFT AMBIENT BACKDROP ── */}
         <section className="relative mx-auto max-w-4xl px-0 text-center flex flex-col items-center space-y-6 pt-2">
           
+          {/* Subtle, Premium Dark-Mode Ambient Network & Radial Aura Animation */}
+          <HeroBackgroundAnimation />
+
           {/* Headline with Tight Modern SaaS Letter-Spacing */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.06] relative z-10 pt-4 tracking-[-0.035em] sm:tracking-[-0.045em]">
             Fail safely in simulation.{" "}
