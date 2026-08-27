@@ -25,60 +25,37 @@ export default function LandingPage({ onNavigate }) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#0B0D13] text-slate-100 font-sans antialiased selection:bg-teal-500 selection:text-black select-none relative overflow-hidden">
+    <div className="min-h-screen flex flex-col justify-between bg-[#0A0D12] text-slate-100 font-sans antialiased selection:bg-teal-500 selection:text-black select-none relative overflow-hidden">
       
-      {/* Background Dot Texture & Ambient Atmospheric Light */}
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:28px_28px] pointer-events-none" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-teal-500/10 via-emerald-500/5 to-transparent rounded-full blur-[120px] pointer-events-none -z-10" />
+      {/* Subtle Background Dot Texture */}
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(#ffffff05_1px,transparent_1px)] [background-size:28px_28px] pointer-events-none" />
 
       <AppNavbar currentActive="landing" />
 
       <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-20 flex-1 space-y-16 text-left relative z-10">
         
-        {/* ── HERO SECTION WITH ANIMATED BACKDROP ── */}
+        {/* ── HERO SECTION WITH SOFT AMBIENT BACKDROP ── */}
         <section className="relative mx-auto max-w-4xl px-0 text-center flex flex-col items-center space-y-6 pt-2">
           
-          {/* ── ANIMATED GEOMETRIC RADAR & ORBITAL GRID ── */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[480px] pointer-events-none -z-10 flex items-center justify-center opacity-60">
-            {/* Concentric Rotating Ring 1 */}
-            <div className="absolute w-[680px] h-[360px] rounded-[100%] border border-teal-500/15 animate-radar-slow [border-dasharray:6_6]" />
-            {/* Concentric Rotating Ring 2 */}
-            <div className="absolute w-[500px] h-[260px] rounded-[100%] border border-cyan-500/15 animate-radar-slow [animation-duration:60s] [animation-direction:reverse]" />
-            {/* Inner Focal Orbit */}
-            <div className="absolute w-[320px] h-[160px] rounded-[100%] border border-amber-500/15 animate-pulse-slow" />
-            {/* Crosshair Accent Lines */}
-            <div className="absolute w-[780px] h-[1px] bg-gradient-to-r from-transparent via-white/[0.07] to-transparent" />
-            <div className="absolute h-[380px] w-[1px] bg-gradient-to-b from-transparent via-white/[0.07] to-transparent" />
-          </div>
-
-          {/* ── ROTATING MULTI-COLOR AURORA LIGHT MESH ── */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[320px] bg-gradient-to-tr from-teal-500/25 via-cyan-400/20 via-amber-500/15 to-transparent rounded-full blur-[100px] animate-aurora pointer-events-none -z-10" />
-
-          {/* ── FLOATING AI CONSTELLATION NODES ── */}
-          <div className="absolute -top-6 left-12 w-2.5 h-2.5 rounded-full bg-teal-400/80 shadow-[0_0_12px_rgba(45,212,191,0.8)] animate-float-1 pointer-events-none hidden sm:block" />
-          <div className="absolute top-10 -right-8 w-2 h-2 rounded-full bg-amber-400/80 shadow-[0_0_10px_rgba(251,191,36,0.8)] animate-float-2 pointer-events-none hidden sm:block" />
-          <div className="absolute -bottom-4 left-1/4 w-1.5 h-1.5 rounded-full bg-cyan-400/80 shadow-[0_0_8px_rgba(34,211,238,0.8)] animate-float-1 pointer-events-none hidden sm:block" />
-          <div className="absolute bottom-12 right-1/4 w-2 h-2 rounded-full bg-emerald-400/80 shadow-[0_0_10px_rgba(52,211,153,0.8)] animate-float-2 pointer-events-none hidden sm:block" />
-
-          {/* Headline with Professional Gradient */}
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl text-white leading-[1.12] relative z-10 pt-4">
+          {/* Headline with Distinctive Sans Typography & Tight Letter-Spacing */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.08] relative z-10 pt-4 tracking-[-0.035em] sm:tracking-[-0.04em]">
             Fail safely in simulation.{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 font-extrabold block sm:inline drop-shadow-[0_0_24px_rgba(45,212,191,0.25)]">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 font-black block sm:inline drop-shadow-[0_0_16px_rgba(45,212,191,0.15)]">
               Ace the actual loop.
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed text-pretty font-normal relative z-10">
+          <p className="text-base sm:text-lg text-slate-300/90 max-w-xl leading-relaxed text-pretty font-normal relative z-10 tracking-[-0.01em]">
             Practice realistic mock interviews for any role or background with instant AI voice feedback.
           </p>
 
-          {/* CTAs */}
+          {/* Tactile CTAs */}
           <div className="pt-2 relative z-10">
-            <div className="flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-3.5">
               <button
                 type="button"
                 onClick={() => nav('setup')}
-                className="py-3.5 px-8 rounded-xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 hover:from-teal-400 hover:via-emerald-400 hover:to-cyan-400 text-slate-950 font-extrabold text-sm shadow-[0_1px_rgba(255,255,255,0.3)_inset,0_8px_24px_rgba(20,184,166,0.35)] hover:shadow-[0_1px_rgba(255,255,255,0.45)_inset,0_12px_32px_rgba(20,184,166,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center gap-2"
+                className="py-3.5 px-7 rounded-xl bg-gradient-to-b from-teal-400 to-teal-500 hover:from-teal-300 hover:to-teal-400 text-slate-950 font-bold text-sm shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_10px_24px_-4px_rgba(13,148,136,0.4)] border border-teal-300/40 hover:scale-[1.01] active:scale-[0.98] transition-all duration-200 cursor-pointer flex items-center gap-2"
               >
                 <span>Start a mock interview</span>
                 <ArrowRight className="w-4 h-4" />
@@ -87,7 +64,7 @@ export default function LandingPage({ onNavigate }) {
               <button
                 type="button"
                 onClick={handleExploreModules}
-                className="py-3.5 px-6 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-200 hover:text-white font-semibold text-sm transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-2 shadow-sm"
+                className="py-3.5 px-6 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/15 text-slate-200 hover:text-white font-semibold text-sm transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-2 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]"
               >
                 <span>Explore practice modules</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -99,8 +76,8 @@ export default function LandingPage({ onNavigate }) {
         {/* ── BENTO PRACTICE MODULE CARDS SECTION ── */}
         <section id="practice-modules" className="space-y-6 pt-4 scroll-mt-24">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
-              <span className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shadow-[0_0_12px_rgba(20,184,166,0.15)]">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-[-0.03em] flex items-center gap-3">
+              <span className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shadow-[0_0_12px_rgba(20,184,166,0.12)]">
                 <Layers className="w-6 h-6" />
               </span>
               <span>Targeted Practice Studios</span>
@@ -113,21 +90,21 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-8">
               <div
                 onClick={() => nav('setup')}
-                className="h-full flex flex-col justify-between bg-gradient-to-br from-[#121724] via-[#161D2B] to-[#0E131E] border border-white/[0.08] hover:border-teal-400/50 p-6 sm:p-8 rounded-2xl shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset,0_10px_30px_rgba(0,0,0,0.5)] relative overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-[1.01]"
+                className="h-full flex flex-col justify-between bg-[#101522]/80 hover:bg-[#131B2C]/90 backdrop-blur-lg border border-white/[0.08] hover:border-teal-500/30 p-6 sm:p-8 rounded-2xl shadow-[0_1px_0_rgba(255,255,255,0.04)_inset,0_12px_32px_rgba(0,0,0,0.35)] relative overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-[1.005]"
               >
-                <div className="absolute top-0 right-0 w-80 h-80 bg-teal-500/15 rounded-full blur-3xl pointer-events-none group-hover:bg-teal-500/25 transition-all duration-500" />
+                <div className="absolute top-0 right-0 w-72 h-72 bg-teal-500/[0.06] rounded-full blur-3xl pointer-events-none group-hover:bg-teal-500/[0.1] transition-all duration-500" />
 
                 <div className="space-y-4 relative z-10">
                   <div className="flex items-center justify-between">
-                    <div className="inline-flex p-3 rounded-2xl bg-teal-500/10 border border-teal-500/25 text-teal-300 shadow-[0_0_20px_rgba(20,184,166,0.15)] group-hover:scale-105 group-hover:bg-teal-500/20 group-hover:border-teal-400/40 transition-all duration-300">
-                      <Brain className="w-8 h-8" />
+                    <div className="inline-flex p-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-300 shadow-sm group-hover:scale-105 transition-all duration-300">
+                      <Brain className="w-7 h-7" />
                     </div>
                   </div>
                   
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-[-0.025em]">
                     Full Mock Interview Studio
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl text-pretty font-normal">
+                  <p className="text-xs sm:text-sm text-slate-300/85 leading-relaxed max-w-xl text-pretty font-normal">
                     Simulate all 3 core rounds: Aptitude & Logic, Technical Depth, and HR Round with live audio dialogue.
                   </p>
                 </div>
@@ -136,7 +113,7 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('setup')}
-                    className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-400 text-slate-950 font-extrabold text-xs shadow-[0_1px_rgba(255,255,255,0.3)_inset,0_4px_16px_rgba(20,184,166,0.3)] hover:shadow-[0_1px_rgba(255,255,255,0.4)_inset,0_6px_24px_rgba(20,184,166,0.45)] transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-2"
+                    className="py-2.5 px-5 rounded-xl bg-gradient-to-b from-teal-400 to-teal-500 hover:from-teal-300 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_16px_-4px_rgba(13,148,136,0.35)] border border-teal-300/40 transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-2"
                   >
                     <span>Start Full Mock Interview</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -149,18 +126,18 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-4">
               <div
                 onClick={() => nav('dsa')}
-                className="h-full flex flex-col justify-between p-6 bg-[#121724] border border-white/[0.08] hover:border-teal-400/40 rounded-2xl shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset,0_8px_24px_rgba(0,0,0,0.4)] group cursor-pointer transition-all duration-300 hover:scale-[1.01]"
+                className="h-full flex flex-col justify-between p-6 bg-[#101522]/80 hover:bg-[#131B2C]/90 backdrop-blur-lg border border-white/[0.08] hover:border-teal-500/30 rounded-2xl shadow-[0_1px_0_rgba(255,255,255,0.04)_inset,0_12px_32px_rgba(0,0,0,0.35)] group cursor-pointer transition-all duration-300 hover:scale-[1.005]"
               >
                 <div className="space-y-3.5">
                   <div className="flex items-center justify-between">
-                    <div className="inline-flex p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/25 text-teal-400 shadow-[0_0_12px_rgba(20,184,166,0.15)] group-hover:scale-105 group-hover:bg-teal-500/20 group-hover:border-teal-400/40 transition-all duration-300">
-                      <Code2 className="w-6 h-6" />
+                    <div className="inline-flex p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 shadow-sm group-hover:scale-105 transition-all duration-300">
+                      <Code2 className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-teal-300 bg-teal-500/10 border border-teal-500/25 px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-teal-300 bg-teal-500/10 border border-teal-500/20 px-2 py-0.5 rounded-md font-mono">
                       4 Languages
                     </span>
                   </div>
-                  <h3 className="text-base font-bold text-white tracking-tight">
+                  <h3 className="text-base font-bold text-white tracking-[-0.02em]">
                     DSA Practice Studio
                   </h3>
                   <p className="text-xs text-slate-400 leading-relaxed text-pretty">
@@ -171,7 +148,7 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('dsa')}
-                    className="py-2 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-200 font-semibold text-xs transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-1.5"
+                    className="py-2 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/15 text-slate-200 font-semibold text-xs transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-1.5 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]"
                   >
                     <span>Practice DSA</span>
                     <ChevronRight className="w-3.5 h-3.5 text-teal-400" />
@@ -184,18 +161,18 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-6">
               <div
                 onClick={() => nav('bug-hunter')}
-                className="h-full flex flex-col justify-between p-6 bg-[#121724] border border-white/[0.08] hover:border-cyan-400/40 rounded-2xl shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset,0_8px_24px_rgba(0,0,0,0.4)] group cursor-pointer transition-all duration-300 hover:scale-[1.01]"
+                className="h-full flex flex-col justify-between p-6 bg-[#101522]/80 hover:bg-[#131B2C]/90 backdrop-blur-lg border border-white/[0.08] hover:border-cyan-500/30 rounded-2xl shadow-[0_1px_0_rgba(255,255,255,0.04)_inset,0_12px_32px_rgba(0,0,0,0.35)] group cursor-pointer transition-all duration-300 hover:scale-[1.005]"
               >
                 <div className="space-y-3.5">
                   <div className="flex items-center justify-between">
-                    <div className="inline-flex p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/25 text-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.15)] group-hover:scale-105 group-hover:bg-cyan-500/20 group-hover:border-cyan-400/40 transition-all duration-300">
-                      <Bug className="w-6 h-6" />
+                    <div className="inline-flex p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shadow-sm group-hover:scale-105 transition-all duration-300">
+                      <Bug className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border border-cyan-500/25 px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-md font-mono">
                       Logic & Concurrency
                     </span>
                   </div>
-                  <h3 className="text-base font-bold text-white tracking-tight">
+                  <h3 className="text-base font-bold text-white tracking-[-0.02em]">
                     Bug Hunter Studio
                   </h3>
                   <p className="text-xs text-slate-400 leading-relaxed text-pretty">
@@ -206,7 +183,7 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('bug-hunter')}
-                    className="py-2 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-200 font-semibold text-xs transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-1.5"
+                    className="py-2 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/15 text-slate-200 font-semibold text-xs transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-1.5 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]"
                   >
                     <span>Debug Code</span>
                     <ChevronRight className="w-3.5 h-3.5 text-cyan-400" />
@@ -219,18 +196,18 @@ export default function LandingPage({ onNavigate }) {
             <div className="md:col-span-6">
               <div
                 onClick={() => nav('blitz')}
-                className="h-full flex flex-col justify-between p-6 bg-[#121724] border border-white/[0.08] hover:border-amber-400/40 rounded-2xl shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset,0_8px_24px_rgba(0,0,0,0.4)] group cursor-pointer transition-all duration-300 hover:scale-[1.01]"
+                className="h-full flex flex-col justify-between p-6 bg-[#101522]/80 hover:bg-[#131B2C]/90 backdrop-blur-lg border border-white/[0.08] hover:border-amber-500/30 rounded-2xl shadow-[0_1px_0_rgba(255,255,255,0.04)_inset,0_12px_32px_rgba(0,0,0,0.35)] group cursor-pointer transition-all duration-300 hover:scale-[1.005]"
               >
                 <div className="space-y-3.5">
                   <div className="flex items-center justify-between">
-                    <div className="inline-flex p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.15)] group-hover:scale-105 group-hover:bg-amber-500/20 group-hover:border-amber-400/40 transition-all duration-300">
-                      <Zap className="w-6 h-6" />
+                    <div className="inline-flex p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 shadow-sm group-hover:scale-105 transition-all duration-300">
+                      <Zap className="w-5 h-5" />
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md font-mono">
                       60-Second Timers
                     </span>
                   </div>
-                  <h3 className="text-base font-bold text-white tracking-tight">
+                  <h3 className="text-base font-bold text-white tracking-[-0.02em]">
                     60s Rapid Blitz
                   </h3>
                   <p className="text-xs text-slate-400 leading-relaxed text-pretty">
@@ -241,7 +218,7 @@ export default function LandingPage({ onNavigate }) {
                   <button
                     type="button"
                     onClick={() => nav('blitz')}
-                    className="py-2 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-slate-200 font-semibold text-xs transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-1.5"
+                    className="py-2 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/15 text-slate-200 font-semibold text-xs transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-1.5 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]"
                   >
                     <span>Start Rapid Blitz</span>
                     <ChevronRight className="w-3.5 h-3.5 text-amber-400" />

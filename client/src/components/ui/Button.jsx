@@ -22,11 +22,11 @@ export default function Button({
   };
 
   const variantStyles = {
-    primary: 'bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500 hover:from-teal-400 hover:via-emerald-400 hover:to-cyan-400 text-slate-950 shadow-lg shadow-teal-500/25 border border-teal-400/40',
-    gradient: 'bg-gradient-to-r from-teal-400 via-cyan-400 to-emerald-400 hover:from-teal-300 hover:via-cyan-300 hover:to-emerald-300 text-slate-950 shadow-lg shadow-teal-500/20 border border-teal-400/40',
-    secondary: 'bg-[#171E2D] hover:bg-[#1E273A] text-slate-200 hover:text-white border border-white/10 hover:border-white/20 shadow-md',
-    ghost: 'bg-transparent hover:bg-white/5 text-slate-400 hover:text-white',
-    danger: 'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-950/50 border border-rose-500/40',
+    primary: 'bg-gradient-to-b from-teal-400 to-teal-500 hover:from-teal-300 hover:to-teal-400 text-slate-950 shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_10px_20px_-4px_rgba(13,148,136,0.35)] border border-teal-300/40',
+    gradient: 'bg-gradient-to-b from-teal-400 via-emerald-400 to-teal-500 hover:from-teal-300 hover:via-emerald-300 hover:to-teal-400 text-slate-950 shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_10px_20px_-4px_rgba(13,148,136,0.35)] border border-teal-300/40',
+    secondary: 'bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white border border-white/[0.08] hover:border-white/15 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]',
+    ghost: 'bg-transparent hover:bg-white/[0.05] text-slate-400 hover:text-white',
+    danger: 'bg-gradient-to-b from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white shadow-[0_1px_0_rgba(255,255,255,0.25)_inset,0_8px_16px_-4px_rgba(225,29,72,0.4)] border border-rose-400/30',
   };
 
   return (

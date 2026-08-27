@@ -37,7 +37,7 @@ const AppContent = () => {
     phase === 'text';
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] text-slate-100 relative overflow-x-hidden selection:bg-teal-500 selection:text-black">
+    <div className="min-h-screen bg-[#0A0D12] text-slate-100 relative overflow-x-hidden selection:bg-teal-500 selection:text-black">
       {/* Universal Ambient Animated Background (Radar Grid, Aurora Light & Constellation Particles) */}
       <AnimatedBackground />
 

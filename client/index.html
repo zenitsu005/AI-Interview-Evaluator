@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Interview Evaluator — Next-Gen Technical & Behavioral Interview Suite</title>
     <meta name="description" content="AI-powered high-stakes interview simulator with natural voice debriefs, Bar Raiser rubrics, DSA sandbox, and ATS calibration." />
-    <!-- Fonts -->
+    <!-- Fonts: Plus Jakarta Sans & Inter Display -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <!-- Tailwind CDN for Guaranteed CSS Utility Support -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -17,10 +17,12 @@
         theme: {
           extend: {
             fontFamily: {
-              sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-              editorial: ['"Instrument Serif"', 'serif']
+              sans: ['"Plus Jakarta Sans"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+              display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif']
             },
             colors: {
+              obsidian: '#0A0D12',
+              surface: '#101522',
               brand: {
                 50: '#f0fdfa',
                 100: '#ccfbf1',
@@ -40,7 +42,7 @@
       }
     </script>
   </head>
-  <body class="bg-[#0B0D13] text-slate-100 font-sans antialiased selection:bg-teal-500 selection:text-black">
+  <body class="bg-[#0A0D12] text-slate-100 font-sans antialiased selection:bg-teal-500 selection:text-black">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
