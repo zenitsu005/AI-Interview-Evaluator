@@ -227,6 +227,37 @@
   animation: heroDrift2 34s ease-in-out infinite;
 }
 
+/* ── 20s Ambient Slow-Moving Aurora & Light Beam Drift ── */
+@keyframes auroraBeam1 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate3d(45px, -30px, 0) scale(1.15);
+    opacity: 0.95;
+  }
+}
+
+@keyframes auroraBeam2 {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate3d(-40px, 35px, 0) scale(1.12);
+    opacity: 0.85;
+  }
+}
+
+.animate-aurora-beam-1 {
+  animation: auroraBeam1 20s ease-in-out infinite;
+}
+
+.animate-aurora-beam-2 {
+  animation: auroraBeam2 20s ease-in-out infinite reverse;
+}
+
 /* Luxury Dark Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

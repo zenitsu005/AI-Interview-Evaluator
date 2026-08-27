@@ -4,17 +4,35 @@ export default function HeroBackgroundAnimation() {
   return (
     <div
       aria-hidden="true"
-      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[600px] pointer-events-none -z-10 select-none opacity-15"
-      style={{
-        maskImage: 'radial-gradient(ellipse 65% 50% at 50% 36%, transparent 30%, black 85%)',
-        WebkitMaskImage: 'radial-gradient(ellipse 65% 50% at 50% 36%, transparent 30%, black 85%)',
-      }}
+      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1300px] h-[640px] pointer-events-none -z-10 select-none overflow-hidden"
     >
-      {/* ── 1. SOFT AMBIENT RADIAL AURA ── */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[360px] bg-gradient-to-tr from-teal-500/20 via-cyan-400/15 via-emerald-500/10 to-transparent rounded-full blur-[120px] animate-aurora" />
+      {/* ── 1. SUBTLE 24px x 24px DOT GRID PATTERN WITH RADIAL MASK ── */}
+      <div
+        className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:24px_24px]"
+        style={{
+          maskImage: 'radial-gradient(ellipse 60% 50% at 50% 40%, black 20%, transparent 80%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 60% 50% at 50% 40%, black 20%, transparent 80%)',
+        }}
+      />
 
-      {/* ── 2. AMBIENT BACKGROUND WATERMARK CONSTELLATION NETWORK ── */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      {/* ── 2. AMBIENT SLOW-MOVING AURORA / LIGHT BEAMS (20s loop, blur 120px) ── */}
+      {/* Deep Teal (#0f766e) glowing beam */}
+      <div className="absolute top-[25%] left-[28%] -translate-x-1/2 -translate-y-1/2 w-[620px] h-[340px] rounded-full bg-[#0f766e]/30 blur-[120px] animate-aurora-beam-1" />
+
+      {/* Midnight Slate (#1e293b) glowing beam */}
+      <div className="absolute top-[38%] right-[22%] translate-x-1/2 -translate-y-1/2 w-[580px] h-[360px] rounded-full bg-[#1e293b]/60 blur-[120px] animate-aurora-beam-2" />
+
+      {/* Soft central ambient cyan depth */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[260px] rounded-full bg-cyan-500/[0.08] blur-[100px] animate-aurora" />
+
+      {/* ── 3. AMBIENT BACKGROUND WATERMARK CONSTELLATION NETWORK (opacity: 0.15) ── */}
+      <div
+        className="absolute inset-0 flex items-center justify-center opacity-15"
+        style={{
+          maskImage: 'radial-gradient(ellipse 65% 50% at 50% 36%, transparent 30%, black 85%)',
+          WebkitMaskImage: 'radial-gradient(ellipse 65% 50% at 50% 36%, transparent 30%, black 85%)',
+        }}
+      >
         <svg
           viewBox="0 0 1000 600"
           className="w-full h-full object-contain overflow-visible"
