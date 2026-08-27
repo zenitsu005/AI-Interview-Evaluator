@@ -37,10 +37,10 @@ export default function LandingPage({ onNavigate }) {
         {/* ── HERO SECTION WITH SOFT AMBIENT BACKDROP ── */}
         <section className="relative mx-auto max-w-4xl px-0 text-center flex flex-col items-center space-y-6 pt-2">
           
-          {/* Headline with Distinctive Sans Typography & Tight Letter-Spacing */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.08] relative z-10 pt-4 tracking-[-0.035em] sm:tracking-[-0.04em]">
+          {/* Headline with Tight Modern SaaS Letter-Spacing */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.06] relative z-10 pt-4 tracking-[-0.035em] sm:tracking-[-0.045em]">
             Fail safely in simulation.{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 font-black block sm:inline drop-shadow-[0_0_16px_rgba(45,212,191,0.15)]">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 font-black block sm:inline drop-shadow-[0_0_16px_rgba(45,212,191,0.15)] tracking-[-0.035em] sm:tracking-[-0.045em]">
               Ace the actual loop.
             </span>
           </h1>
@@ -49,7 +49,7 @@ export default function LandingPage({ onNavigate }) {
             Practice realistic mock interviews for any role or background with instant AI voice feedback.
           </p>
 
-          {/* Tactile CTAs */}
+          {/* Tactile CTAs with Clear Primary Focal Point */}
           <div className="pt-2 relative z-10">
             <div className="flex flex-wrap items-center justify-center gap-3.5">
               <button
@@ -64,10 +64,10 @@ export default function LandingPage({ onNavigate }) {
               <button
                 type="button"
                 onClick={handleExploreModules}
-                className="py-3.5 px-6 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/15 text-slate-200 hover:text-white font-semibold text-sm transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-2 shadow-[0_1px_0_rgba(255,255,255,0.05)_inset]"
+                className="py-3.5 px-6 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.06] hover:border-white/[0.12] text-slate-300 hover:text-white font-medium text-sm transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-2"
               >
                 <span>Explore practice modules</span>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+                <ChevronRight className="w-4 h-4 text-slate-500" />
               </button>
             </div>
           </div>
