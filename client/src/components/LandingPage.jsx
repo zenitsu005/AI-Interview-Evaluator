@@ -138,9 +138,18 @@ function StudioCard({ studio, onNavigate }) {
   );
 }
 
+function SectionDivider() {
+  return (
+    <div className="relative w-full max-w-6xl mx-auto my-6 sm:my-10 flex items-center justify-center pointer-events-none select-none">
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+      <div className="absolute w-72 h-4 bg-teal-500/[0.05] rounded-full blur-xl pointer-events-none" />
+    </div>
+  );
+}
+
 function StudioGrid({ studios, onNavigate }) {
   return (
-    <section id="practice-modules" className="space-y-6 pt-4 mt-16 sm:mt-20 scroll-mt-24 w-full max-w-6xl mx-auto">
+    <section id="practice-modules" className="space-y-6 pt-2 scroll-mt-24 w-full max-w-6xl mx-auto">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
           <span className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20 shadow-[0_0_12px_rgba(20,184,166,0.12)]">
@@ -189,10 +198,10 @@ function HeroSection({ onNavigate, onExplore }) {
           <button
             type="button"
             onClick={onExplore}
-            className="py-3.5 px-6 rounded-xl bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.06] hover:border-white/[0.12] text-slate-300 hover:text-white font-medium text-sm transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-2"
+            className="py-3.5 px-6 rounded-xl bg-transparent hover:bg-white/[0.04] backdrop-blur-md border border-white/10 hover:border-white/20 text-slate-300 hover:text-white font-medium text-sm transition-all duration-200 active:scale-98 cursor-pointer flex items-center gap-2 shadow-sm"
           >
             <span>Explore practice modules</span>
-            <ChevronRight className="w-4 h-4 text-slate-500" />
+            <ChevronRight className="w-4 h-4 text-slate-400" />
           </button>
         </div>
       </div>
@@ -219,8 +228,9 @@ export default function LandingPage({ onNavigate }) {
 
       <AppNavbar currentActive="landing" />
 
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-20 flex-1 space-y-16 text-left relative z-10">
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-20 flex-1 space-y-6 text-left relative z-10">
         <HeroSection onNavigate={nav} onExplore={handleExploreModules} />
+        <SectionDivider />
         <StudioGrid studios={PRACTICE_STUDIOS} onNavigate={nav} />
       </main>
     </div>

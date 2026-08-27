@@ -95,18 +95,51 @@ export default function AppNavbar({ currentActive = 'landing' }) {
     <header className="sticky top-2 sm:top-3 z-50 px-3 sm:px-6 pointer-events-none transition-all">
       <div className="mx-auto max-w-7xl rounded-2xl bg-[#080d1a]/80 backdrop-blur-md border border-white/[0.08] shadow-[0_1px_0_rgba(255,255,255,0.06)_inset,0_12px_28px_rgba(0,0,0,0.4)] px-4 sm:px-6 h-16 flex items-center justify-between pointer-events-auto text-slate-100 transition-all">
         
-        {/* Brand Logo */}
+        {/* Brand Wordmark & Bespoke Lettermark */}
         <button
           type="button"
           onClick={() => handleSelectModule('landing')}
-          className="flex items-center gap-3 cursor-pointer select-none group text-left border-none bg-transparent"
+          className="flex items-center gap-2.5 cursor-pointer select-none group text-left border-none bg-transparent"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500/10 border border-teal-500/30 text-teal-400 shadow-[0_0_12px_rgba(20,184,166,0.15)] group-hover:scale-105 group-hover:border-teal-400/60 group-hover:bg-teal-500/20 transition-all duration-300">
-            <LogoIcon className="w-5 h-5" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500/20 via-slate-900 to-[#0c1322] border border-teal-500/30 text-teal-400 shadow-[0_0_15px_rgba(20,184,166,0.15)] group-hover:scale-105 group-hover:border-teal-400/60 group-hover:shadow-[0_0_20px_rgba(20,184,166,0.3)] transition-all duration-300">
+            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+              <path
+                d="M12 2L2 7L12 12L22 7L12 2Z"
+                stroke="url(#brandGrad1)"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M2 17L12 22L22 17"
+                stroke="url(#brandGrad2)"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M2 12L12 17L22 12"
+                stroke="#2dd4bf"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeOpacity="0.45"
+              />
+              <defs>
+                <linearGradient id="brandGrad1" x1="2" y1="2" x2="22" y2="12" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#2dd4bf" />
+                  <stop offset="1" stopColor="#38bdf8" />
+                </linearGradient>
+                <linearGradient id="brandGrad2" x1="2" y1="17" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#14b8a6" />
+                  <stop offset="1" stopColor="#0ea5e9" />
+                </linearGradient>
+              </defs>
+            </svg>
           </div>
-          <span className="font-extrabold tracking-[-0.02em] text-white text-sm sm:text-base flex items-center gap-1.5">
-            <span className="bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 bg-clip-text text-transparent">AI</span>
-            <span>Interview Evaluator</span>
+          <span className="font-bold text-white tracking-[-0.03em] text-sm sm:text-base flex items-center gap-1.5">
+            <span className="font-extrabold text-white">Interview</span>
+            <span className="bg-gradient-to-r from-teal-400 via-emerald-300 to-cyan-300 bg-clip-text text-transparent font-black tracking-[-0.01em]">AI</span>
           </span>
         </button>
 
