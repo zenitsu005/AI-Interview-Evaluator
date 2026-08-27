@@ -93,11 +93,11 @@ export default function LandingPage({ onNavigate }) {
             {/* Full Mock Studio */}
             <div
               onClick={() => nav('setup')}
-              className="flex flex-col justify-between p-6 sm:p-8 bg-[#0f172a]/50 backdrop-blur-md border border-white/[0.08] hover:border-teal-500/30 rounded-2xl transition-colors group cursor-pointer"
+              className="flex flex-col justify-between p-6 sm:p-8 bg-[#0f172a]/50 backdrop-blur-md border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] hover:-translate-y-1 hover:border-teal-500/30 hover:shadow-xl hover:shadow-teal-500/5 rounded-2xl transition-all duration-300 group cursor-pointer"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="inline-flex p-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-300 shadow-sm group-hover:scale-105 transition-all duration-300">
+                  <div className="inline-flex p-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 shadow-sm group-hover:scale-105 transition-all duration-300">
                     <Brain className="w-6 h-6" />
                   </div>
                   <span className="text-xs px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/20 font-medium">
@@ -128,14 +128,14 @@ export default function LandingPage({ onNavigate }) {
             {/* DSA Studio */}
             <div
               onClick={() => nav('dsa')}
-              className="flex flex-col justify-between p-6 sm:p-8 bg-[#0f172a]/50 backdrop-blur-md border border-white/[0.08] hover:border-teal-500/30 rounded-2xl transition-colors group cursor-pointer"
+              className="flex flex-col justify-between p-6 sm:p-8 bg-[#0f172a]/50 backdrop-blur-md border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] hover:-translate-y-1 hover:border-sky-500/30 hover:shadow-xl hover:shadow-sky-500/5 rounded-2xl transition-all duration-300 group cursor-pointer"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="inline-flex p-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 shadow-sm group-hover:scale-105 transition-all duration-300">
+                  <div className="inline-flex p-3 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 shadow-sm group-hover:scale-105 transition-all duration-300">
                     <Code2 className="w-6 h-6" />
                   </div>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/20 font-medium">
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20 font-medium">
                     4 Languages
                   </span>
                 </div>
@@ -154,7 +154,7 @@ export default function LandingPage({ onNavigate }) {
                   className="w-fit text-sm font-medium px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 border border-white/10 transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>Practice DSA</span>
-                  <ChevronRight className="w-4 h-4 text-teal-400" />
+                  <ChevronRight className="w-4 h-4 text-sky-400" />
                 </button>
               </div>
             </div>
@@ -162,14 +162,14 @@ export default function LandingPage({ onNavigate }) {
             {/* Bug Hunter Studio */}
             <div
               onClick={() => nav('bug-hunter')}
-              className="flex flex-col justify-between p-6 sm:p-8 bg-[#0f172a]/50 backdrop-blur-md border border-white/[0.08] hover:border-teal-500/30 rounded-2xl transition-colors group cursor-pointer"
+              className="flex flex-col justify-between p-6 sm:p-8 bg-[#0f172a]/50 backdrop-blur-md border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] hover:-translate-y-1 hover:border-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/5 rounded-2xl transition-all duration-300 group cursor-pointer"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="inline-flex p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 shadow-sm group-hover:scale-105 transition-all duration-300">
+                  <div className="inline-flex p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shadow-sm group-hover:scale-105 transition-all duration-300">
                     <Bug className="w-6 h-6" />
                   </div>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/20 font-medium">
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-medium">
                     Logic & Concurrency
                   </span>
                 </div>
@@ -188,7 +188,7 @@ export default function LandingPage({ onNavigate }) {
                   className="w-fit text-sm font-medium px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 border border-white/10 transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>Debug Code</span>
-                  <ChevronRight className="w-4 h-4 text-teal-400" />
+                  <ChevronRight className="w-4 h-4 text-indigo-400" />
                 </button>
               </div>
             </div>
@@ -196,14 +196,14 @@ export default function LandingPage({ onNavigate }) {
             {/* 60s Rapid Blitz */}
             <div
               onClick={() => nav('blitz')}
-              className="flex flex-col justify-between p-6 sm:p-8 bg-[#0f172a]/50 backdrop-blur-md border border-white/[0.08] hover:border-teal-500/30 rounded-2xl transition-colors group cursor-pointer"
+              className="flex flex-col justify-between p-6 sm:p-8 bg-[#0f172a]/50 backdrop-blur-md border border-white/[0.08] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] hover:-translate-y-1 hover:border-amber-500/30 hover:shadow-xl hover:shadow-amber-500/5 rounded-2xl transition-all duration-300 group cursor-pointer"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="inline-flex p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 shadow-sm group-hover:scale-105 transition-all duration-300">
                     <Zap className="w-6 h-6" />
                   </div>
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/20 font-medium">
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20 font-medium">
                     60-Second Timers
                   </span>
                 </div>
@@ -222,7 +222,7 @@ export default function LandingPage({ onNavigate }) {
                   className="w-fit text-sm font-medium px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 border border-white/10 transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>Start Rapid Blitz</span>
-                  <ChevronRight className="w-4 h-4 text-teal-400" />
+                  <ChevronRight className="w-4 h-4 text-amber-400" />
                 </button>
               </div>
             </div>

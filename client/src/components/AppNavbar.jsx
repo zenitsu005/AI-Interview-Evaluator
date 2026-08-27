@@ -18,6 +18,7 @@ import {
   TbMenu2 as Menu,
   TbX as X,
   TbChevronRight as ChevronRight,
+  TbChevronDown as ChevronDown,
   TbShieldCheck as ShieldCheck,
 } from 'react-icons/tb';
 
@@ -25,6 +26,9 @@ export default function AppNavbar({ currentActive = 'landing' }) {
   const { setPhase } = useInterview();
   const { user, isAuthenticated, logout, openAuth } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const rawName = user?.name ? user.name.split(' ')[0] : 'User';
+  const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
 
   const featureItems = [
     {
@@ -85,7 +89,7 @@ export default function AppNavbar({ currentActive = 'landing' }) {
 
   return (
     <header className="sticky top-2 sm:top-3 z-50 px-3 sm:px-6 pointer-events-none transition-all">
-      <div className="mx-auto max-w-7xl rounded-2xl bg-[#0E131F]/80 backdrop-blur-2xl border border-white/[0.08] shadow-[0_1px_0_rgba(255,255,255,0.06)_inset,0_12px_28px_rgba(0,0,0,0.4)] px-4 sm:px-6 h-16 flex items-center justify-between pointer-events-auto text-slate-100 transition-all">
+      <div className="mx-auto max-w-7xl rounded-2xl bg-[#080d1a]/80 backdrop-blur-md border border-white/[0.08] shadow-[0_1px_0_rgba(255,255,255,0.06)_inset,0_12px_28px_rgba(0,0,0,0.4)] px-4 sm:px-6 h-16 flex items-center justify-between pointer-events-auto text-slate-100 transition-all">
         
         {/* Brand Logo */}
         <button
@@ -134,12 +138,13 @@ export default function AppNavbar({ currentActive = 'landing' }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => handleSelectModule('profile')}
-                className="flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] px-3.5 py-1.5 rounded-xl transition-all duration-200 text-xs font-semibold text-slate-200 cursor-pointer shadow-[0_1px_0_rgba(255,255,255,0.04)_inset]"
+                className="group flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-teal-500/30 px-3.5 py-1.5 rounded-xl transition-all duration-200 text-xs font-semibold text-slate-200 cursor-pointer shadow-[0_1px_0_rgba(255,255,255,0.04)_inset]"
               >
-                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-teal-400 to-emerald-400 flex items-center justify-center text-[10px] font-bold text-slate-950">
-                  {user?.name ? user.name[0].toUpperCase() : 'U'}
+                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-teal-400 to-emerald-400 border border-teal-500/40 flex items-center justify-center text-[10px] font-bold text-slate-950 shadow-xs">
+                  {displayName ? displayName[0].toUpperCase() : 'U'}
                 </div>
-                <span>{user?.name?.split(' ')[0]}</span>
+                <span>{displayName}</span>
+                <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-slate-200 transition-colors" />
               </button>
               <button
                 onClick={logout}
