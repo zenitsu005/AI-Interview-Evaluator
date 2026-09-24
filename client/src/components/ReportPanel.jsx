@@ -209,11 +209,11 @@ export default function ReportPanel() {
   const weaknessesList = Array.isArray(report.weaknesses) && report.weaknesses.length > 0 ? report.weaknesses : ['Deepen trade-off analysis and quantify metrics.'];
 
   const speechMetrics = report.speechMetrics || {
-    fillerWordsCount: 2,
-    speakingPaceWpm: 138,
-    paceRating: 'Ideal (130-155 WPM)',
-    clarityScore: 88,
-    vocalSteadiness: 94,
+    fillerWordsCount: 0,
+    speakingPaceWpm: 0,
+    paceRating: 'No Audio Recorded',
+    clarityScore: 0,
+    vocalSteadiness: 0,
   };
 
   let eloRating = 0;
@@ -251,7 +251,9 @@ export default function ReportPanel() {
   };
 
   const rawPersonaFeedback = report?.barRaiserVerdict?.personaFeedback ||
-    `Evaluated against ${activeBarRaiser.company} engineering competencies. Demonstrated foundational domain familiarity with clear growth vectors in quantitative STAR metrics, edge-case resilience, and scalability trade-offs.`;
+    (overallScoreVal === 0
+      ? `Evaluated against ${activeBarRaiser.company} engineering competencies. No substantive answers were provided during this session.`
+      : `Evaluated against ${activeBarRaiser.company} engineering competencies. Demonstrated foundational domain familiarity with clear growth vectors in quantitative STAR metrics, edge-case resilience, and scalability trade-offs.`);
 
   const cleanPersonaFeedback = rawPersonaFeedback
     .replace(/As an? [A-Za-z0-9 ]*Bar Raiser,?/gi, 'As an AI Evaluator,')
@@ -259,9 +261,19 @@ export default function ReportPanel() {
     .replace(/Bar Raiser/gi, 'AI Evaluator');
 
   const barVerdict = {
-    hiringDecision: report?.barRaiserVerdict?.hiringDecision || (overallScoreVal >= 85 ? 'Strong Hire' : overallScoreVal >= 70 ? 'Lean Hire' : overallScoreVal >= 40 ? 'Lean No Hire' : 'Strong No Hire'),
+    hiringDecision:
+      report?.barRaiserVerdict?.hiringDecision ||
+      (overallScoreVal === 0
+        ? 'Strong No Hire'
+        : overallScoreVal >= 85
+        ? 'Strong Hire'
+        : overallScoreVal >= 70
+        ? 'Lean Hire'
+        : overallScoreVal >= 40
+        ? 'Lean No Hire'
+        : 'Strong No Hire'),
     personaFeedback: cleanPersonaFeedback,
-    coreCriteriaScore: report?.barRaiserVerdict?.coreCriteriaScore ?? Math.round(overallScoreVal * 0.95),
+    coreCriteriaScore: report?.barRaiserVerdict?.coreCriteriaScore ?? (overallScoreVal === 0 ? 0 : Math.round(overallScoreVal * 0.95)),
     criteriaName: (report?.barRaiserVerdict?.criteriaName || `${activeBarRaiser.company} Competency Index`).replace(/Bar Raiser/gi, 'Competency'),
   };
 
@@ -541,8 +553,8 @@ export default function ReportPanel() {
             <ScoreCard
               icon={Activity}
               label="Presence & Delivery"
-              score={report.presenceScore !== undefined ? report.presenceScore : 85}
-              feedback={report.presenceFeedback || "Evaluation of composure, vocal steadiness, and communication speed."}
+              score={report.presenceScore !== undefined ? report.presenceScore : 0}
+              feedback={report.presenceFeedback || (report.presenceScore === 0 ? "Camera was off or no speech was detected." : "Evaluation of composure, vocal steadiness, and communication speed.")}
               barColor="bg-emerald-500"
             />
           </div>

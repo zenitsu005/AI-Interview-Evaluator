@@ -13,47 +13,43 @@ import {
 
 export default function AnalyticsTrendSection({ history = [], currentReport = null, targetRole = 'Software Engineer' }) {
   const safeHistory = Array.isArray(history) ? history : [];
+  const currScore = currentReport?.overallScore ?? 0;
+  const currFillers = currentReport?.speechMetrics?.fillerWordsCount ?? 0;
+  const currApt = currentReport?.aptitudeScore ?? 0;
+  const currTech = currentReport?.technicalScore ?? 0;
+  const currHr = currentReport?.hrScore ?? 0;
+  const currPres = currentReport?.presenceScore ?? 0;
+  const currElo = currScore > 0 ? Math.round(400 + (currScore / 100) * 1400) : 400;
+
   const sessions = safeHistory.length > 0
     ? safeHistory.slice(-5)
     : [
         {
-          date: 'Initial Assessment',
-          overallScore: currentReport?.overallScore ? Math.max(50, currentReport.overallScore - 15) : 68,
-          fillerCount: 7,
-          elo: currentReport?.overallScore ? Math.round(400 + ((currentReport.overallScore - 15) / 100) * 1400) : 1350,
-          aptitude: 70,
-          technical: 65,
-          hr: 72,
-          presence: 75,
-        },
-        {
           date: 'Current Performance',
-          overallScore: currentReport?.overallScore || 85,
-          fillerCount: currentReport?.speechMetrics?.fillerWordsCount || 2,
-          elo: Math.round(400 + ((currentReport?.overallScore || 85) / 100) * 1400),
-          aptitude: currentReport?.aptitudeScore || 88,
-          technical: currentReport?.technicalScore || 85,
-          hr: currentReport?.hrScore || 87,
-          presence: currentReport?.presenceScore || 92,
+          overallScore: currScore,
+          fillerCount: currFillers,
+          elo: currElo,
+          aptitude: currApt,
+          technical: currTech,
+          hr: currHr,
+          presence: currPres,
         },
       ];
 
   const trendData = sessions.map((s, idx) => {
-    const score = s.overallScore || s.report?.overallScore || 75;
-    const fillers = s.report?.speechMetrics?.fillerWordsCount !== undefined
-      ? s.report.speechMetrics.fillerWordsCount
-      : Math.max(1, 8 - idx * 2);
-    const elo = Math.round(400 + (score / 100) * 1400);
+    const score = s.overallScore !== undefined ? s.overallScore : (s.report?.overallScore ?? 0);
+    const fillers = s.report?.speechMetrics?.fillerWordsCount ?? s.fillerCount ?? 0;
+    const elo = score > 0 ? Math.round(400 + (score / 100) * 1400) : 400;
     return {
       sessionName: s.targetRole || `Session #${idx + 1}`,
-      date: s.date ? new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : `Mock ${idx + 1}`,
+      date: s.date ? (s.date.includes(' ') ? s.date : new Date(s.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })) : `Mock ${idx + 1}`,
       score,
       fillers,
       elo,
-      aptitude: s.report?.aptitudeScore || s.aptitude || Math.round(score * 0.96),
-      technical: s.report?.technicalScore || s.technical || Math.round(score * 0.94),
-      hr: s.report?.hrScore || s.hr || Math.round(score * 0.95),
-      presence: s.report?.presenceScore || s.presence || 90,
+      aptitude: s.report?.aptitudeScore ?? s.aptitude ?? 0,
+      technical: s.report?.technicalScore ?? s.technical ?? 0,
+      hr: s.report?.hrScore ?? s.hr ?? 0,
+      presence: s.report?.presenceScore ?? s.presence ?? 0,
     };
   });
 
@@ -63,36 +59,36 @@ export default function AnalyticsTrendSection({ history = [], currentReport = nu
       category: 'Algorithms & Problem Solving',
       icon: Brain,
       score: latestSession.aptitude,
-      level: latestSession.aptitude >= 85 ? 'Expert' : latestSession.aptitude >= 70 ? 'Advanced' : 'Developing',
-      color: 'text-blue-300 bg-blue-950/80 border-blue-500/40',
-      heatColor: 'bg-blue-500',
+      level: latestSession.aptitude >= 85 ? 'Expert' : latestSession.aptitude >= 70 ? 'Advanced' : latestSession.aptitude > 0 ? 'Developing' : 'Not Assessed (0%)',
+      color: latestSession.aptitude > 0 ? 'text-blue-300 bg-blue-950/80 border-blue-500/40' : 'text-slate-400 bg-slate-900/60 border-white/10',
+      heatColor: latestSession.aptitude > 0 ? 'bg-blue-500' : 'bg-slate-700',
       subtopics: ['Time/Space Complexity', 'Graph / DP Invariants', 'Edge-case Boundary Checks'],
     },
     {
       category: 'Distributed Systems & Architecture',
       icon: Code2,
       score: latestSession.technical,
-      level: latestSession.technical >= 85 ? 'Expert' : latestSession.technical >= 70 ? 'Advanced' : 'Developing',
-      color: 'text-teal-300 bg-teal-950/80 border-teal-500/40',
-      heatColor: 'bg-teal-500',
+      level: latestSession.technical >= 85 ? 'Expert' : latestSession.technical >= 70 ? 'Advanced' : latestSession.technical > 0 ? 'Developing' : 'Not Assessed (0%)',
+      color: latestSession.technical > 0 ? 'text-teal-300 bg-teal-950/80 border-teal-500/40' : 'text-slate-400 bg-slate-900/60 border-white/10',
+      heatColor: latestSession.technical > 0 ? 'bg-teal-500' : 'bg-slate-700',
       subtopics: ['Idempotency & Queues', 'CAP & Sharding Trade-offs', 'High Concurrency Bottlenecks'],
     },
     {
       category: 'HR Round',
       icon: Users,
       score: latestSession.hr,
-      level: latestSession.hr >= 85 ? 'Master' : latestSession.hr >= 70 ? 'Proficient' : 'Developing',
-      color: 'text-amber-300 bg-amber-950/80 border-amber-500/40',
-      heatColor: 'bg-amber-500',
+      level: latestSession.hr >= 85 ? 'Master' : latestSession.hr >= 70 ? 'Proficient' : latestSession.hr > 0 ? 'Developing' : 'Not Assessed (0%)',
+      color: latestSession.hr > 0 ? 'text-amber-300 bg-amber-950/80 border-amber-500/40' : 'text-slate-400 bg-slate-900/60 border-white/10',
+      heatColor: latestSession.hr > 0 ? 'bg-amber-500' : 'bg-slate-700',
       subtopics: ['Data-Driven Ownership', 'Cross-Team Conflict Resolution', 'Executive Stakeholder Alignment'],
     },
     {
       category: 'Executive Delivery & Vocal Steadiness',
       icon: Activity,
       score: latestSession.presence,
-      level: latestSession.presence >= 85 ? 'Executive Tier' : latestSession.presence >= 70 ? 'Articulate' : 'Developing',
-      color: 'text-emerald-300 bg-emerald-950/80 border-emerald-500/40',
-      heatColor: 'bg-emerald-500',
+      level: latestSession.presence >= 85 ? 'Executive Tier' : latestSession.presence >= 70 ? 'Articulate' : latestSession.presence > 0 ? 'Developing' : 'Not Assessed (0%)',
+      color: latestSession.presence > 0 ? 'text-emerald-300 bg-emerald-950/80 border-emerald-500/40' : 'text-slate-400 bg-slate-900/60 border-white/10',
+      heatColor: latestSession.presence > 0 ? 'bg-emerald-500' : 'bg-slate-700',
       subtopics: ['Filler Word Suppression', 'Structured WPM Cadence', 'Camera Eye Contact & Posture'],
     },
   ];

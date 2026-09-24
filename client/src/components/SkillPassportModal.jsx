@@ -20,10 +20,10 @@ export default function SkillPassportModal({ isOpen, onClose, report, user, targ
   if (!isOpen) return null;
 
   const overallScoreVal = Number(report?.overallScore) || 0;
-  const aptScore = Number(report?.aptitudeScore) || 85;
-  const techScore = Number(report?.technicalScore) || 90;
-  const hrScore = Number(report?.hrScore) || 88;
-  const presenceScore = Number(report?.presenceScore) || 92;
+  const aptScore = report?.aptitudeScore !== undefined && !isNaN(Number(report?.aptitudeScore)) ? Number(report.aptitudeScore) : 0;
+  const techScore = report?.technicalScore !== undefined && !isNaN(Number(report?.technicalScore)) ? Number(report.technicalScore) : 0;
+  const hrScore = report?.hrScore !== undefined && !isNaN(Number(report?.hrScore)) ? Number(report.hrScore) : 0;
+  const presenceScore = report?.presenceScore !== undefined && !isNaN(Number(report?.presenceScore)) ? Number(report.presenceScore) : 0;
 
   const passportId = `SKILL-PASS-${Math.abs(hashString((user?.email || 'cand') + targetRole + companyTrack)) % 90000 + 10000}-X9`;
   const candidateDisplayName = isAnonymous ? `Candidate #${passportId.slice(-4)}` : (user?.name || 'Candidate');

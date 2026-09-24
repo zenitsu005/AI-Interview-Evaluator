@@ -38,15 +38,17 @@ const isEchoOrParrot = (candidateAnswer, question) => {
  * Mathematically validates and computes category scores directly from
  * question-by-question evaluation statuses, attire, voice confidence, and posture.
  */
-const computeDeterministicScores = (report) => {
+const computeDeterministicScores = (report, hasCameraFrames = true, companyTrack = 'Target Company') => {
   const qEvals = report.questionEvaluations || [];
 
   if (qEvals.length > 0) {
-    // Sanitize any parroted/echoed answers
+    // Sanitize any parroted/echoed or empty answers
     qEvals.forEach((q) => {
-      if (isEchoOrParrot(q.candidateAnswer, q.question)) {
+      if (isEchoOrParrot(q.candidateAnswer, q.question) || !q.candidateAnswer || q.candidateAnswer.includes('(No response provided)')) {
         q.status = 'Incorrect';
-        q.feedback = 'Candidate repeated or rephrased the question prompt instead of providing an actual solution.';
+        q.feedback = (!q.candidateAnswer || q.candidateAnswer.includes('(No response provided)'))
+          ? 'No substantive answer provided during this question.'
+          : 'Candidate repeated or rephrased the question prompt instead of providing an actual solution.';
       }
     });
 
@@ -91,10 +93,35 @@ const computeDeterministicScores = (report) => {
     const allWrong = aptScore === 0 && techScore === 0 && hrScore === 0;
 
     if (allWrong) {
-      report.presenceScore = Math.min(report.presenceScore || 0, 10);
+      report.presenceScore = 0;
       report.overallScore = 0;
       report.readinessLevel = 'Not Ready';
+      report.presenceFeedback = !hasCameraFrames
+        ? 'Camera was off and no substantive speech was detected.'
+        : 'No substantive spoken or video participation detected.';
+      report.barRaiserVerdict = {
+        hiringDecision: 'Strong No Hire',
+        personaFeedback: `Candidate did not provide substantive spoken or written responses during this session. Performance could not be evaluated against ${companyTrack} competencies.`,
+        coreCriteriaScore: 0,
+        criteriaName: `${companyTrack} Competency Index`,
+      };
+      report.speechMetrics = {
+        fillerWordsCount: 0,
+        speakingPaceWpm: 0,
+        paceRating: 'No Audio Recorded',
+        clarityScore: 0,
+        vocalSteadiness: 0,
+      };
+      report.strengths = ['Completed interview studio session.'];
+      report.weaknesses = ['No substantive answers provided. Practice answering each question with structured reasoning.'];
+      report.overallVerdict = 'No substantive answers were provided during this interview session.';
     } else {
+      if (!hasCameraFrames) {
+        // Audio-only presence
+        report.presenceScore = Math.min(report.presenceScore || 70, 75);
+        report.presenceFeedback = 'Camera was off (Audio Only mode). Delivery scored on vocal steadiness and pacing.';
+      }
+
       const presenceScore = report.presenceScore || 0;
 
       // 4 Core Weights: Tech 45%, Aptitude 25%, HR 15%, Executive Presence 15%
@@ -157,8 +184,8 @@ router.post('/evaluate', async (req, res) => {
       allImages = [allImages[0], allImages[allImages.length - 1]];
     }
 
-    const rawReport = await generateJSON(prompt, allImages);
-    const calibratedReport = computeDeterministicScores(rawReport);
+    const hasCameraFrames = allImages.length > 0;
+    const calibratedReport = computeDeterministicScores(rawReport, hasCameraFrames, companyTrack);
 
     res.json(calibratedReport);
   } catch (err) {

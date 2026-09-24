@@ -740,9 +740,16 @@ export default function VideoInterview() {
                 </div>
 
                 <div className="absolute bottom-2.5 left-2.5 right-2.5 z-20 flex items-center justify-between pointer-events-none">
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-emerald-400 border border-emerald-500/30 font-mono shadow-md">
-                    Composure: {composureScore}%
-                  </span>
+                  {virtualMode || !camReady ? (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-slate-400 border border-white/10 font-mono shadow-md flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                      Camera Off (Audio Only)
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-emerald-400 border border-emerald-500/30 font-mono shadow-md">
+                      Composure: {composureScore}%
+                    </span>
+                  )}
                   <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-teal-300 border border-teal-500/30 font-mono shadow-md">
                     Steadiness: {vocalSteadiness}%
                   </span>
