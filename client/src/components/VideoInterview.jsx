@@ -89,8 +89,10 @@ export default function VideoInterview() {
   const [showFillerFlash, setShowFillerFlash] = useState(false);
   const prevFillersCountRef = useRef(0);
   const lastFrameDataRef = useRef(null);
+  const faceDetectorRef = useRef(null);
 
   const [isCameraBlack, setIsCameraBlack] = useState(false);
+  const [isCandidatePresent, setIsCandidatePresent] = useState(false);
   const [isAudioActive, setIsAudioActive] = useState(false);
   const [composureScore, setComposureScore] = useState(0);
   const [vocalSteadiness, setVocalSteadiness] = useState(0);
@@ -114,7 +116,7 @@ export default function VideoInterview() {
     canvas.height = 48;
     const ctx = canvas.getContext('2d');
 
-    const checkMovement = () => {
+    const checkMovement = async () => {
       const v = videoRef.current;
       if (v && v.readyState >= 2 && v.videoWidth > 0) {
         try {
@@ -129,18 +131,43 @@ export default function VideoInterview() {
           let samples = 0;
           const lums = [];
 
-          for (let i = 0; i < currentData.length; i += 16) {
-            const r = currentData[i];
-            const g = currentData[i + 1];
-            const b = currentData[i + 2];
-            const lum = (r * 0.299 + g * 0.587 + b * 0.114);
-            totalLum += lum;
-            totalR += r;
-            totalG += g;
-            totalB += b;
-            lums.push(lum);
-            samples++;
+          // Center face/upper-torso zone: x from 16 to 48, y from 6 to 38
+          let centerLumSum = 0;
+          let centerSamples = 0;
+          let centerSkinPixels = 0;
+          const centerLums = [];
+
+          for (let y = 0; y < 48; y++) {
+            for (let x = 0; x < 64; x += 2) {
+              const i = (y * 64 + x) * 4;
+              const r = currentData[i];
+              const g = currentData[i + 1];
+              const b = currentData[i + 2];
+              const lum = (r * 0.299 + g * 0.587 + b * 0.114);
+
+              totalLum += lum;
+              totalR += r;
+              totalG += g;
+              totalB += b;
+              lums.push(lum);
+              samples++;
+
+              // Check if inside center face & torso target area
+              if (x >= 16 && x <= 48 && y >= 6 && y <= 38) {
+                centerLumSum += lum;
+                centerLums.push(lum);
+                centerSamples++;
+
+                // YCbCr skin tone detection across all ethnicities
+                const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
+                const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+                if (cb >= 77 && cb <= 127 && cr >= 133 && cr <= 173 && lum > 35) {
+                  centerSkinPixels++;
+                }
+              }
+            }
           }
+
           const avgLum = totalLum / samples;
           const avgR = totalR / samples;
           const avgG = totalG / samples;
@@ -153,11 +180,16 @@ export default function VideoInterview() {
           }
           const stdDev = Math.sqrt(varianceSum / samples);
 
+          // Center zone stats
+          const centerAvgLum = centerSamples > 0 ? centerLumSum / centerSamples : 0;
+          let centerVarianceSum = 0;
+          for (let k = 0; k < centerLums.length; k++) {
+            centerVarianceSum += Math.pow(centerLums[k] - centerAvgLum, 2);
+          }
+          const centerStdDev = Math.sqrt(centerVarianceSum / Math.max(1, centerSamples));
+          const skinRatio = centerSamples > 0 ? (centerSkinPixels / centerSamples) : 0;
+
           // Detect hand covering lens, shutter closed, dark room, or obstructed camera:
-          // A covered lens has:
-          // - Low overall light (avgLum < 36), OR
-          // - Flat uniform frame with low contrast (stdDev < 13 && avgLum < 85), OR
-          // - High optical skin scattering from hand over lens (avgR > 1.45 * avgB && avgR > 1.25 * avgG && avgLum < 75)
           const isObstructed =
             avgLum < 36 ||
             (stdDev < 13 && avgLum < 85) ||
@@ -165,12 +197,49 @@ export default function VideoInterview() {
 
           if (isObstructed) {
             setIsCameraBlack(true);
+            setIsCandidatePresent(false);
             setComposureScore(0);
             lastFrameDataRef.current = null;
             return;
           }
 
           setIsCameraBlack(false);
+
+          // Candidate Presence Check (Native FaceDetector API + Biometric fallback)
+          let hasCandidate = false;
+
+          // Method A: Native Chromium FaceDetector API
+          if (typeof window !== 'undefined' && 'FaceDetector' in window) {
+            try {
+              if (!faceDetectorRef.current) {
+                faceDetectorRef.current = new window.FaceDetector({ fastMode: true, maxDetectedFaces: 1 });
+              }
+              const faces = await faceDetectorRef.current.detect(v);
+              if (faces && faces.length > 0) {
+                hasCandidate = true;
+              }
+            } catch (e) {}
+          }
+
+          // Method B: Optical Biometric Subject Analysis
+          // A candidate sitting in front of the camera exhibits:
+          // - High central feature variance from eyes, mouth, hair (centerStdDev >= 10)
+          // - Human skin tones in the center zone (skinRatio >= 0.10)
+          // An empty wall, ceiling, or empty room has either no skin or flat uniform texture (centerStdDev < 7).
+          if (!hasCandidate) {
+            if (skinRatio >= 0.10 && centerStdDev >= 10) {
+              hasCandidate = true;
+            }
+          }
+
+          if (!hasCandidate) {
+            setIsCandidatePresent(false);
+            setComposureScore(0);
+            lastFrameDataRef.current = null;
+            return;
+          }
+
+          setIsCandidatePresent(true);
 
           if (lastFrameDataRef.current) {
             let diff = 0;
@@ -421,7 +490,7 @@ export default function VideoInterview() {
   }, [isRecording]);
 
   const captureFrame = () => {
-    if (!videoRef.current || virtualMode || isCameraBlack) return;
+    if (!videoRef.current || virtualMode || isCameraBlack || !isCandidatePresent) return;
     try {
       const v = videoRef.current;
       if (!v.videoWidth || !v.videoHeight) return;
@@ -882,7 +951,12 @@ export default function VideoInterview() {
                   ) : isCameraBlack ? (
                     <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-amber-300 border border-amber-500/40 font-mono shadow-md flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                      Camera Obstructed / No Candidate
+                      Camera Obstructed / Dark
+                    </span>
+                  ) : !isCandidatePresent ? (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-amber-300 border border-amber-500/40 font-mono shadow-md flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      No Candidate Detected
                     </span>
                   ) : (
                     <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-emerald-400 border border-emerald-500/30 font-mono shadow-md flex items-center gap-1">
