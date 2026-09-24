@@ -366,16 +366,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
           companyTrack: effectiveCompany,
           persona: effectivePersona?.id || 'amazon',
         });
-        if (dynamicQ && dynamicQ.question && dynamicQ.question !== instantQ.question) {
-          // If candidate has not answered yet, refresh to dynamic AI question
-          setCurrentQuestion((current) => {
-            if (current === instantQ) {
-              setPreviousQuestions([dynamicQ.question]);
-              return dynamicQ;
-            }
-            return current;
-          });
-        }
+        // Question 1 remains locked to the verified instant opening puzzle
       } catch (err) {
         console.log('Optimized instant question active.');
       }

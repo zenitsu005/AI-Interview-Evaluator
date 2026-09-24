@@ -76,26 +76,26 @@ export default function AiInterviewerAvatar({
       </div>
 
       {/* ── TOP FLOATING CONTROLS (Absolute overlay to prevent squishing the avatar) ── */}
-      <div className="absolute top-2.5 left-2.5 right-2.5 z-20 flex items-center justify-between pointer-events-none">
+      <div className="absolute top-2 left-2 right-2 z-20 flex items-center justify-between gap-1 pointer-events-none">
         
         {/* Interviewer ID Pill */}
-        <div className="flex items-center gap-1.5 bg-[#0D111A]/85 backdrop-blur-md px-2.5 py-1 rounded-xl border border-white/10 shadow-lg pointer-events-auto max-w-[65%]">
+        <div className="flex items-center gap-1.5 bg-[#0D111A]/90 backdrop-blur-md px-2 py-0.5 rounded-xl border border-white/10 shadow-lg pointer-events-auto min-w-0 max-w-[58%]">
           <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isSpeaking ? 'bg-teal-400 animate-ping' : 'bg-emerald-400'}`} />
-          <span className="text-[11px] font-bold text-white truncate leading-none">
+          <span className="text-[10px] sm:text-[11px] font-bold text-white truncate leading-none">
             {personaName}
           </span>
-          <span className="text-[9px] font-mono font-extrabold uppercase px-1.5 py-0.5 rounded bg-teal-950/90 text-teal-300 border border-teal-500/30 flex-shrink-0">
+          <span className="text-[8px] sm:text-[9px] font-mono font-extrabold uppercase px-1 py-0.5 rounded bg-teal-950/90 text-teal-300 border border-teal-500/30 flex-shrink-0">
             {companyTrack}
           </span>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-1.5 pointer-events-auto flex-shrink-0">
+        <div className="flex items-center gap-1 pointer-events-auto flex-shrink-0">
           {onReplaySpeech && (
             <button
               type="button"
               onClick={onReplaySpeech}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-[#0D111A]/85 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all text-[10px] font-semibold backdrop-blur-md cursor-pointer shadow-sm active:scale-95"
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-[#0D111A]/90 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-all text-[10px] font-semibold backdrop-blur-md cursor-pointer shadow-sm active:scale-95"
               title="Re-listen to question"
             >
               <RotateCcw className="w-2.5 h-2.5 text-teal-400" />
@@ -106,8 +106,8 @@ export default function AiInterviewerAvatar({
           <button
             type="button"
             onClick={() => setShowCaptions(!showCaptions)}
-            className={`px-2 py-1 rounded-lg border font-mono font-bold text-[10px] transition-all cursor-pointer backdrop-blur-md active:scale-95 ${
-              showCaptions ? 'bg-teal-950/90 border-teal-500/50 text-teal-300' : 'bg-[#0D111A]/85 border-white/10 text-slate-400 hover:text-white'
+            className={`px-1.5 py-0.5 rounded-lg border font-mono font-bold text-[10px] transition-all cursor-pointer backdrop-blur-md active:scale-95 ${
+              showCaptions ? 'bg-teal-950/90 border-teal-500/50 text-teal-300' : 'bg-[#0D111A]/90 border-white/10 text-slate-400 hover:text-white'
             }`}
             title="Toggle Live Subtitles"
           >

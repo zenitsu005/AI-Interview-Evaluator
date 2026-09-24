@@ -118,22 +118,28 @@ const aptitudeQuestionPrompt = (
   companyTrack = 'General',
   persona = 'bar_raiser'
 ) => `
-You are an expert interviewer conducting the General Aptitude & Logical Reasoning round for "${targetRole}" at company track: "${companyTrack}".
+You are conducting Round 1: General Aptitude & Logical Reasoning for candidates interviewing at company track: "${companyTrack}".
 Interviewer Persona: "${persona}".
 Base Difficulty: "${difficultyLevel}".
 
-IMPORTANT: The difficulty MUST strictly escalate periodically with questionNumber (1 to 5):
-- Question 1 (Level 1 - Foundational): Direct logical pattern, simple deduction, or number sequence puzzle.
-- Question 2 (Level 2 - Applied Quantitative): Practical math calculation (e.g. speed-distance, percentage profit/loss, ratios, unit conversion).
-- Question 3 (Level 3 - Intermediate Multi-step): Multi-variable reasoning puzzle (e.g. seating arrangement, work & time collaboration, Venn diagram logic).
-- Question 4 (Level 4 - Advanced Analytical): High-complexity probability problem, conditional logic traps, or financial/operational rate optimization.
-- Question 5 (Level 5 - Master Brainteaser): Elite lateral thinking puzzle, game theory deduction, or complex combinatorial reasoning.
+CRITICAL INSTRUCTION - STRICT DOMAIN BOUNDARY:
+- This round is EXCLUSIVELY for MATHEMATICAL PUZZLES, QUANTITATIVE APTITUDE, LOGICAL DEDUCTION, and ANALYTICAL BRAINTEASERS.
+- ABSOLUTE PROHIBITION: NEVER ask coding, software engineering, databases, microservices, APIs, backend system design, or domain-specific questions!
+- NEVER begin with "Let's begin the technical session" or mention systems/servers architecture. Technical questions belong strictly in Round 2.
+- Every question MUST be a pure quantitative puzzle, math calculation (e.g. rate of work, probability, percentages, speed-distance), logic grid, balance scale puzzle, or deduction problem with clear numerical parameters.
 
-Generate General Aptitude question #${questionNumber} of 5 (Level ${questionNumber}):
+Progression Guide for Question #${questionNumber}:
+- Question 1: Classical logical deduction puzzle, balance scale puzzle, or sequence reasoning.
+- Question 2: Practical quantitative rate / work calculation (e.g. worker rates, harmonic mean speed, percentages).
+- Question 3: Set theory, Venn diagram logic, or multi-step constraint puzzle.
+- Question 4: Probability calculation, combinatorics, or conditional expectation.
+- Question 5: Master lateral logic puzzle (e.g. water jug measurement, tournament scheduling, coin weighing).
+
+Generate General Aptitude question #${questionNumber}:
 
 Return EXACTLY this JSON:
 {
-  "question": "The complete aptitude question text with all numbers or puzzle clues clearly stated",
+  "question": "The complete math or logic puzzle question text with all numerical parameters clearly stated",
   "level": "Level ${questionNumber} of 5 (${questionNumber === 1 ? 'Foundational' : questionNumber === 2 ? 'Applied' : questionNumber === 3 ? 'Intermediate' : questionNumber === 4 ? 'Advanced' : 'Master'})",
   "type": "logical | quantitative | analytical",
   "companyTrack": "${companyTrack}"

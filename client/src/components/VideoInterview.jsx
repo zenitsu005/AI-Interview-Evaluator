@@ -677,12 +677,11 @@ export default function VideoInterview() {
             {(meetingLayout === 'dual' || meetingLayout === 'candidate-only') && (
               <div className="bg-[#131823] p-0 overflow-hidden relative border border-white/10 aspect-video flex items-center justify-center shadow-xl rounded-2xl">
                 {virtualMode ? (
-                  <div className="flex flex-col items-center justify-center text-center p-4 pt-7 space-y-1.5 bg-[#131823] w-full h-full">
-                    <div className="w-11 h-11 rounded-2xl bg-[#171E2D] border border-white/10 flex items-center justify-center text-teal-400 shadow-md">
+                  <div className="flex flex-col items-center justify-center text-center p-3 pb-8 space-y-2 bg-[#131823] w-full h-full">
+                    <div className="w-10 h-10 rounded-2xl bg-[#171E2D] border border-white/10 flex items-center justify-center text-teal-400 shadow-md">
                       <Users className="w-5 h-5" />
                     </div>
-                    <p className="text-xs text-white font-bold tracking-tight">Virtual Candidate Mode Active</p>
-                    <p className="text-[10px] text-slate-400">Speech telemetry and audio response active</p>
+                    <p className="text-xs text-white font-bold tracking-tight">Virtual Candidate Mode</p>
                   </div>
                 ) : (
                   <video
@@ -696,7 +695,7 @@ export default function VideoInterview() {
                 )}
 
                 {!camReady && !cameraError && !virtualMode && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#131823] text-slate-400">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#131823] text-slate-400 pb-8">
                     <svg className="animate-spin h-6 w-6 text-teal-400" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
@@ -706,7 +705,7 @@ export default function VideoInterview() {
                 )}
 
                 {cameraError && !virtualMode && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-[#131823]/95 text-slate-300 text-xs space-y-2 z-10">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4 pb-8 text-center bg-[#131823]/95 text-slate-300 text-xs space-y-2 z-10">
                     <p className="font-bold text-white text-xs">{cameraError}</p>
                     <div className="flex items-center gap-2">
                       <button
@@ -731,16 +730,16 @@ export default function VideoInterview() {
                   </div>
                 )}
 
-                {/* Candidate Feed Overlays (Top-Left YOU tag & Bottom Telemetry HUD to eliminate any collision) */}
-                <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
-                  <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-wider bg-black/85 backdrop-blur-md text-rose-400 border border-rose-500/30 shadow-md">
+                {/* Candidate Feed Overlays */}
+                <div className="absolute top-2 left-2 z-20 pointer-events-none">
+                  <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wider bg-black/85 backdrop-blur-md text-rose-400 border border-rose-500/30 shadow-md">
                     <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
                     YOU
                   </span>
                 </div>
 
-                <div className="absolute bottom-2.5 left-2.5 right-2.5 z-20 flex items-center justify-between pointer-events-none">
-                  {virtualMode || !camReady ? (
+                <div className="absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between pointer-events-none">
+                  {virtualMode || !camReady || cameraError ? (
                     <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-slate-400 border border-white/10 font-mono shadow-md flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
                       Camera Off (Audio Only)
