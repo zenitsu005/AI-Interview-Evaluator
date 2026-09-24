@@ -119,22 +119,52 @@ export default function VideoInterview() {
           ctx.drawImage(v, 0, 0, 64, 48);
           const currentData = ctx.getImageData(0, 0, 64, 48).data;
 
-          // 1. Measure frame brightness to detect covered lens, physical shutter, or black screen
+          // 1. Measure frame brightness, contrast variance, and color ratios
           let totalLum = 0;
+          let totalR = 0;
+          let totalG = 0;
+          let totalB = 0;
           let samples = 0;
+          const lums = [];
+
           for (let i = 0; i < currentData.length; i += 16) {
             const r = currentData[i];
             const g = currentData[i + 1];
             const b = currentData[i + 2];
-            totalLum += (r * 0.299 + g * 0.587 + b * 0.114);
+            const lum = (r * 0.299 + g * 0.587 + b * 0.114);
+            totalLum += lum;
+            totalR += r;
+            totalG += g;
+            totalB += b;
+            lums.push(lum);
             samples++;
           }
           const avgLum = totalLum / samples;
+          const avgR = totalR / samples;
+          const avgG = totalG / samples;
+          const avgB = totalB / samples;
 
-          // If covered by shutter/tape or pitch black
-          if (avgLum < 16) {
+          // Compute standard deviation of luminance across pixels
+          let varianceSum = 0;
+          for (let j = 0; j < lums.length; j++) {
+            varianceSum += Math.pow(lums[j] - avgLum, 2);
+          }
+          const stdDev = Math.sqrt(varianceSum / samples);
+
+          // Detect hand covering lens, shutter closed, dark room, or obstructed camera:
+          // A covered lens has:
+          // - Low overall light (avgLum < 36), OR
+          // - Flat uniform frame with low contrast (stdDev < 13 && avgLum < 85), OR
+          // - High optical skin scattering from hand over lens (avgR > 1.45 * avgB && avgR > 1.25 * avgG && avgLum < 75)
+          const isObstructed =
+            avgLum < 36 ||
+            (stdDev < 13 && avgLum < 85) ||
+            (avgR > 1.45 * avgB && avgR > 1.25 * avgG && avgLum < 75);
+
+          if (isObstructed) {
             setIsCameraBlack(true);
             setComposureScore(0);
+            lastFrameDataRef.current = null;
             return;
           }
 
@@ -784,7 +814,7 @@ export default function VideoInterview() {
                   ) : isCameraBlack ? (
                     <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-amber-300 border border-amber-500/40 font-mono shadow-md flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                      Camera Blocked / Dark
+                      Camera Obstructed / No Candidate
                     </span>
                   ) : (
                     <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-emerald-400 border border-emerald-500/30 font-mono shadow-md flex items-center gap-1">
