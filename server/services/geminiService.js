@@ -6,12 +6,12 @@ if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'your_gemini_a
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'MISSING_KEY');
 
-// Fast model pool - prioritizing active Gemini models
+// Fast model pool - prioritizing active official Gemini models
 const MODELS_TO_TRY = [
-  process.env.GEMINI_MODEL || 'gemini-3.6-flash',
-  'gemini-3.6-flash',
-  'gemini-2.5-flash',
-  'gemini-flash-lite-latest',
+  process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-1.5-pro',
 ];
 
 /**

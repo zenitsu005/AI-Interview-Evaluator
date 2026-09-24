@@ -63,6 +63,8 @@ export default function VideoInterview() {
   const isRecordingRef = useRef(false);
   const audioCtxRef = useRef(null);
   const ambientGainRef = useRef(null);
+  const recognitionRef = useRef(null);
+  const speechCapturedRef = useRef(false);
 
   const [cameraError, setCameraError] = useState(null);
   const [virtualMode, setVirtualMode] = useState(false);
@@ -437,8 +439,42 @@ export default function VideoInterview() {
     if (isRecording) return;
     try {
       audioChunksRef.current = [];
+      speechCapturedRef.current = false;
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioStreamRef.current = stream;
+
+      // Start browser-native real-time speech recognition if supported
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        try {
+          const recognition = new SpeechRecognition();
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.lang = 'en-US';
+
+          const initialText = transcript ? `${transcript.trim()} ` : '';
+
+          recognition.onresult = (event) => {
+            let sessionText = '';
+            for (let i = 0; i < event.results.length; i++) {
+              sessionText += event.results[i][0].transcript;
+            }
+            if (sessionText.trim()) {
+              speechCapturedRef.current = true;
+              setTranscript(initialText + sessionText);
+            }
+          };
+
+          recognition.onerror = (e) => {
+            console.warn('Browser SpeechRecognition notice:', e.error);
+          };
+
+          recognition.start();
+          recognitionRef.current = recognition;
+        } catch (e) {
+          console.warn('SpeechRecognition start notice:', e);
+        }
+      }
 
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
@@ -470,6 +506,12 @@ export default function VideoInterview() {
   };
 
   const stopRecording = useCallback(() => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {}
+      recognitionRef.current = null;
+    }
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
@@ -478,7 +520,18 @@ export default function VideoInterview() {
   }, []);
 
   const handleAudioBlob = async (blob, mimeType) => {
-    if (blob.size < 100) return;
+    // If browser speech recognition already transcribed the words in real-time
+    if (speechCapturedRef.current) {
+      setStatusMessage('Speech transcribed! Edit or submit below.');
+      setTimeout(() => setStatusMessage(null), 3000);
+      return;
+    }
+
+    if (blob.size < 100) {
+      setStatusMessage(null);
+      return;
+    }
+
     setIsTranscribing(true);
     setStatusMessage('Transcribing speech...');
     try {
@@ -487,13 +540,18 @@ export default function VideoInterview() {
         const base64 = reader.result;
         try {
           const res = await transcribeAudio(base64, mimeType);
-          if (res?.text) {
+          if (res?.text && res.text.trim()) {
             setTranscript((prev) => (prev ? `${prev} ${res.text}` : res.text));
             setStatusMessage('Speech transcribed! Edit or submit below.');
             setTimeout(() => setStatusMessage(null), 3000);
+          } else {
+            setStatusMessage('Audio recorded. You can type or edit your answer in the box.');
+            setTimeout(() => setStatusMessage(null), 4000);
           }
         } catch (e) {
-          console.warn('Transcription error:', e);
+          console.warn('Backend transcription notice:', e);
+          setStatusMessage('Voice transcription unavailable (API key required). Please type your answer directly.');
+          setTimeout(() => setStatusMessage(null), 5000);
         } finally {
           setIsTranscribing(false);
         }
@@ -502,6 +560,8 @@ export default function VideoInterview() {
     } catch (err) {
       console.warn(err);
       setIsTranscribing(false);
+      setStatusMessage('Voice transcription error. Please type your answer directly.');
+      setTimeout(() => setStatusMessage(null), 4000);
     }
   };
 
