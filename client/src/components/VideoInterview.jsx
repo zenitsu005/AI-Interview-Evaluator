@@ -88,8 +88,10 @@ export default function VideoInterview() {
   const prevFillersCountRef = useRef(0);
   const lastFrameDataRef = useRef(null);
 
-  const [composureScore, setComposureScore] = useState(96);
-  const [vocalSteadiness, setVocalSteadiness] = useState(94);
+  const [isCameraBlack, setIsCameraBlack] = useState(false);
+  const [isAudioActive, setIsAudioActive] = useState(false);
+  const [composureScore, setComposureScore] = useState(0);
+  const [vocalSteadiness, setVocalSteadiness] = useState(0);
   const [speechRate, setSpeechRate] = useState(1.0);
   const [meetingLayout, setMeetingLayout] = useState('dual');
 
@@ -98,9 +100,13 @@ export default function VideoInterview() {
   const wordCount = transcript.trim() ? transcript.trim().split(/\s+/).length : 0;
   const estimatedWpm = recordingSeconds > 3 ? Math.round(wordCount / (recordingSeconds / 60)) : 0;
 
-  // Real-Time Computer Vision Posture & Composure Telemetry Loop
+  // Real-Time Computer Vision Posture & Composure Telemetry Loop with Black/Covered Screen Detection
   useEffect(() => {
-    if (virtualMode || !camReady) return;
+    if (virtualMode || !camReady) {
+      setIsCameraBlack(false);
+      setComposureScore(0);
+      return;
+    }
     const canvas = document.createElement('canvas');
     canvas.width = 64;
     canvas.height = 48;
@@ -112,6 +118,28 @@ export default function VideoInterview() {
         try {
           ctx.drawImage(v, 0, 0, 64, 48);
           const currentData = ctx.getImageData(0, 0, 64, 48).data;
+
+          // 1. Measure frame brightness to detect covered lens, physical shutter, or black screen
+          let totalLum = 0;
+          let samples = 0;
+          for (let i = 0; i < currentData.length; i += 16) {
+            const r = currentData[i];
+            const g = currentData[i + 1];
+            const b = currentData[i + 2];
+            totalLum += (r * 0.299 + g * 0.587 + b * 0.114);
+            samples++;
+          }
+          const avgLum = totalLum / samples;
+
+          // If covered by shutter/tape or pitch black
+          if (avgLum < 16) {
+            setIsCameraBlack(true);
+            setComposureScore(0);
+            return;
+          }
+
+          setIsCameraBlack(false);
+
           if (lastFrameDataRef.current) {
             let diff = 0;
             const prevData = lastFrameDataRef.current;
@@ -120,25 +148,26 @@ export default function VideoInterview() {
             }
             const avgDiff = diff / (currentData.length / 16);
 
-            let targetComposure = 96;
+            let targetComposure = 94;
             if (avgDiff > 28) {
               // Rapid or excessive shaking / moving
-              targetComposure = Math.max(68, 96 - Math.round((avgDiff - 28) * 1.5));
+              targetComposure = Math.max(65, 94 - Math.round((avgDiff - 28) * 1.5));
             } else if (avgDiff > 16) {
               // Moderate head movement
-              targetComposure = Math.max(82, 96 - Math.round((avgDiff - 16) * 1.1));
-            } else if (avgDiff < 1) {
-              targetComposure = 92;
+              targetComposure = Math.max(80, 94 - Math.round((avgDiff - 16) * 1.1));
+            } else if (avgDiff < 0.2) {
+              // Completely frozen/static video frame
+              targetComposure = 85;
             } else {
               // Calm, composed, steady posture
-              targetComposure = Math.min(98, 93 + Math.round((16 - avgDiff) * 0.3));
+              targetComposure = Math.min(98, 92 + Math.round((16 - avgDiff) * 0.3));
             }
 
             if (detectedFillers > 0) {
               targetComposure = Math.max(60, targetComposure - detectedFillers * 3);
             }
 
-            setComposureScore((prev) => Math.round(prev * 0.8 + targetComposure * 0.2));
+            setComposureScore((prev) => (prev === 0 ? targetComposure : Math.round(prev * 0.8 + targetComposure * 0.2)));
           }
           lastFrameDataRef.current = currentData;
         } catch (e) {}
@@ -149,12 +178,11 @@ export default function VideoInterview() {
     return () => clearInterval(interval);
   }, [camReady, virtualMode, detectedFillers]);
 
-  // Real-Time Audio Telemetry & Vocal Steadiness Loop
+  // Real-Time Audio Telemetry: Only measures when actively recording & speaking
   useEffect(() => {
     if (!isRecording || !audioStreamRef.current) {
-      if (!isRecording && detectedFillers > 0) {
-        setVocalSteadiness((prev) => Math.max(70, 94 - detectedFillers * 4));
-      }
+      setIsAudioActive(false);
+      setVocalSteadiness(0);
       return;
     }
 
@@ -179,25 +207,29 @@ export default function VideoInterview() {
         }
         const avgVol = sum / dataArray.length;
 
-        let targetSteadiness = 94;
-        if (avgVol < 5) {
-          targetSteadiness = 90; // silence
-        } else if (avgVol >= 15 && avgVol <= 90) {
-          targetSteadiness = Math.min(98, 92 + Math.round((avgVol / 90) * 6));
-        } else if (avgVol > 90 && avgVol <= 140) {
-          targetSteadiness = 88;
-        } else if (avgVol > 140) {
-          targetSteadiness = Math.max(68, 85 - Math.round((avgVol - 140) * 0.3));
-        }
+        if (avgVol < 8) {
+          // Silence or pause
+          setIsAudioActive(false);
+        } else {
+          setIsAudioActive(true);
+          let targetSteadiness = 92;
+          if (avgVol >= 15 && avgVol <= 90) {
+            targetSteadiness = Math.min(98, 90 + Math.round((avgVol / 90) * 8));
+          } else if (avgVol > 90 && avgVol <= 140) {
+            targetSteadiness = 86;
+          } else if (avgVol > 140) {
+            targetSteadiness = Math.max(65, 82 - Math.round((avgVol - 140) * 0.3));
+          }
 
-        if (detectedFillers > 0) {
-          targetSteadiness = Math.max(60, targetSteadiness - detectedFillers * 4);
-        }
-        if (estimatedWpm > 180) {
-          targetSteadiness = Math.max(65, targetSteadiness - 8);
-        }
+          if (detectedFillers > 0) {
+            targetSteadiness = Math.max(55, targetSteadiness - detectedFillers * 4);
+          }
+          if (estimatedWpm > 180) {
+            targetSteadiness = Math.max(60, targetSteadiness - 8);
+          }
 
-        setVocalSteadiness((prev) => Math.round(prev * 0.75 + targetSteadiness * 0.25));
+          setVocalSteadiness((prev) => (prev === 0 ? targetSteadiness : Math.round(prev * 0.75 + targetSteadiness * 0.25)));
+        }
       };
 
       const interval = setInterval(checkAudio, 250);
@@ -356,7 +388,7 @@ export default function VideoInterview() {
   }, [isRecording]);
 
   const captureFrame = () => {
-    if (!videoRef.current || virtualMode) return;
+    if (!videoRef.current || virtualMode || isCameraBlack) return;
     try {
       const v = videoRef.current;
       if (!v.videoWidth || !v.videoHeight) return;
@@ -739,19 +771,44 @@ export default function VideoInterview() {
                 </div>
 
                 <div className="absolute bottom-2 left-2 right-2 z-20 flex items-center justify-between pointer-events-none">
-                  {virtualMode || !camReady || cameraError ? (
+                  {virtualMode ? (
                     <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-slate-400 border border-white/10 font-mono shadow-md flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-                      Camera Off (Audio Only)
+                      Virtual Mode (Audio Only)
+                    </span>
+                  ) : !camReady || cameraError ? (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-slate-400 border border-white/10 font-mono shadow-md flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                      Camera Off
+                    </span>
+                  ) : isCameraBlack ? (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-amber-300 border border-amber-500/40 font-mono shadow-md flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      Camera Blocked / Dark
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-emerald-400 border border-emerald-500/30 font-mono shadow-md">
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-emerald-400 border border-emerald-500/30 font-mono shadow-md flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       Composure: {composureScore}%
                     </span>
                   )}
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-teal-300 border border-teal-500/30 font-mono shadow-md">
-                    Steadiness: {vocalSteadiness}%
-                  </span>
+
+                  {!isRecording ? (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-slate-400 border border-white/10 font-mono shadow-md flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                      Mic Idle
+                    </span>
+                  ) : !isAudioActive ? (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-amber-300 border border-amber-500/30 font-mono shadow-md flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      Listening (Silent)
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-teal-300 border border-teal-500/30 font-mono shadow-md flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+                      Steadiness: {vocalSteadiness}%
+                    </span>
+                  )}
                 </div>
               </div>
             )}
