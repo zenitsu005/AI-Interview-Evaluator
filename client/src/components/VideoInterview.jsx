@@ -401,6 +401,7 @@ export default function VideoInterview() {
       setProbeQuestion(null);
       setProbeAnswer('');
       setHint(null);
+      setStatusMessage(null);
       framesRef.current = [];
       speakText(currentQuestion.question);
       setTimeout(() => textareaRef.current?.focus(), 150);
@@ -438,6 +439,7 @@ export default function VideoInterview() {
   const startRecording = async () => {
     if (isRecording) return;
     try {
+      voiceAssistant.stop();
       audioChunksRef.current = [];
       speechCapturedRef.current = false;
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -620,7 +622,13 @@ export default function VideoInterview() {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    // In textarea, Ctrl+Enter or Cmd+Enter submits; plain Enter creates a new line
+    if (e.target && e.target.tagName && e.target.tagName.toLowerCase() === 'textarea') {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    } else if (e.key === 'Enter') {
       e.preventDefault();
       handleSubmit();
     }
