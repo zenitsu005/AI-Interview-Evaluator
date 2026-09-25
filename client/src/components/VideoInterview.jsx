@@ -98,7 +98,6 @@ export default function VideoInterview() {
   const [composureScore, setComposureScore] = useState(0);
   const [vocalSteadiness, setVocalSteadiness] = useState(0);
   const [speechRate, setSpeechRate] = useState(1.0);
-  const [meetingLayout, setMeetingLayout] = useState('dual');
 
   const fillerWordsRegex = /\b(um|uh|like|you know|basically|actually|literally|sort of|kind of)\b/gi;
   const detectedFillers = (transcript.match(fillerWordsRegex) || []).length;
@@ -452,7 +451,7 @@ export default function VideoInterview() {
       }
       voiceAssistant.stop();
     };
-  }, [meetingLayout, virtualMode]);
+  }, [virtualMode]);
 
   const speakText = (text) => {
     if (!text) return;
@@ -858,62 +857,33 @@ export default function VideoInterview() {
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start text-left">
         {/* Left Column: Live Camera & Question Prompt (5 Cols) */}
         <div className="lg:col-span-5 space-y-4">
-          {/* Meeting View Mode Selector */}
+          {/* Meeting Feed Header */}
           <div className="flex items-center justify-between gap-2 px-1">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
               <Video className="w-3.5 h-3.5 text-teal-400" /> Meeting Feed
             </span>
-            <div className="flex bg-[#171E2D] p-1 rounded-xl border border-white/10 text-xs">
-              <button
-                type="button"
-                onClick={() => setMeetingLayout('dual')}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                  meetingLayout === 'dual' ? 'bg-teal-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Dual Meet
-              </button>
-              <button
-                type="button"
-                onClick={() => setMeetingLayout('avatar-only')}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                  meetingLayout === 'avatar-only' ? 'bg-teal-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Avatar Lead
-              </button>
-              <button
-                type="button"
-                onClick={() => setMeetingLayout('candidate-only')}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                  meetingLayout === 'candidate-only' ? 'bg-teal-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                Webcam
-              </button>
-            </div>
+            <span className="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-300 border border-teal-500/20 text-[10px] font-bold font-mono uppercase tracking-wider flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" /> Dual Meet
+            </span>
           </div>
 
-          {/* Meeting Tile Container */}
-          <div className={`grid gap-3 ${meetingLayout === 'dual' ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
+          {/* Meeting Tile Container - Always Dual Meet */}
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
             {/* Tile 1: AI Interviewer Lead Feed */}
-            {(meetingLayout === 'dual' || meetingLayout === 'avatar-only') && (
-              <div className="bg-[#131823] p-0 overflow-hidden relative border border-white/10 aspect-video flex items-center justify-center shadow-xl rounded-2xl">
-                <AiInterviewerAvatar
-                  isSpeaking={isSpeaking}
-                  persona={interviewerPersona}
-                  companyTrack={companyTrack}
-                  currentQuestionText={currentQuestion?.question}
-                  onReplaySpeech={() => speakText(currentQuestion?.question)}
-                  speechRate={speechRate}
-                  onSpeechRateChange={setSpeechRate}
-                />
-              </div>
-            )}
+            <div className="bg-[#131823] p-0 overflow-hidden relative border border-white/10 aspect-video flex items-center justify-center shadow-xl rounded-2xl">
+              <AiInterviewerAvatar
+                isSpeaking={isSpeaking}
+                persona={interviewerPersona}
+                companyTrack={companyTrack}
+                currentQuestionText={currentQuestion?.question}
+                onReplaySpeech={() => speakText(currentQuestion?.question)}
+                speechRate={speechRate}
+                onSpeechRateChange={setSpeechRate}
+              />
+            </div>
 
             {/* Tile 2: Candidate Live Webcam Feed */}
-            {(meetingLayout === 'dual' || meetingLayout === 'candidate-only') && (
-              <div className="bg-[#131823] p-0 overflow-hidden relative border border-white/10 aspect-video flex items-center justify-center shadow-xl rounded-2xl">
+            <div className="bg-[#131823] p-0 overflow-hidden relative border border-white/10 aspect-video flex items-center justify-center shadow-xl rounded-2xl">
                 {virtualMode ? (
                   <div className="flex flex-col items-center justify-center text-center p-3 pb-8 space-y-2 bg-[#131823] w-full h-full">
                     <div className="w-10 h-10 rounded-2xl bg-[#171E2D] border border-white/10 flex items-center justify-center text-teal-400 shadow-md">
@@ -1022,7 +992,6 @@ export default function VideoInterview() {
                   )}
                 </div>
               </div>
-            )}
           </div>
 
           {/* Current Question Card */}
