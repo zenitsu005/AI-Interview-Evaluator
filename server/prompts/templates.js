@@ -150,7 +150,8 @@ const technicalQuestionPrompt = (
   resumeAnalysis,
   targetRole,
   questionNumber,
-  previousQuestions,
+  previousQuestions = [],
+  lastCandidateAnswer = '',
   difficultyLevel = 'Intermediate',
   companyTrack = 'General',
   persona = 'bar_raiser',
@@ -166,26 +167,40 @@ Candidate Profile:
 - Core Skills: ${(resumeAnalysis.coreSkills || []).join(', ')}
 - Key Technologies: ${(resumeAnalysis.keyTechnologies || []).join(', ')}
 
-Previously asked questions (DO NOT repeat):
-${previousQuestions.length > 0 ? previousQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n') : 'None yet'}
+Previously asked technical questions in this session:
+${previousQuestions.length > 0 ? previousQuestions.map((q, i) => `Question ${i + 1}: ${q}`).join('\n') : 'None yet (This is Question 1)'}
 
-IMPORTANT: The technical difficulty MUST strictly escalate periodically with questionNumber (1 to 5):
-- Question 1 (Level 1 - Fundamentals): Core fundamental definition, paradigm concept, or key terminology in ${resumeAnalysis.domain}.
-- Question 2 (Level 2 - Practical Implementation / Code Sandbox): Real coding problem, algorithm implementation, or SQL query writing. (Enable hasCodingSandbox=true).
-- Question 3 (Level 3 - Intermediate Debugging & Edge Cases): Practical debugging scenario, concurrency issue, index optimization, or memory leak troubleshooting.
-- Question 4 (Level 4 - Scalable System Architecture / Whiteboard): High-level system design, database sharding/caching, microservices communication, or API gateway trade-offs. (Enable hasSystemDesignWhiteboard=true).
-- Question 5 (Level 5 - Master / Distributed Resilience): High-scale disaster recovery, distributed consensus (Raft/Paxos), extreme traffic spikes (100k QPS), or CAP theorem failure trade-offs.
+${lastCandidateAnswer ? `Candidate's previous response to the last question:\n"${lastCandidateAnswer}"\n` : ''}
+
+CRITICAL PROGRESSION ARCHITECTURE & FOLLOW-UP CONTINUITY:
+- Question 1 (Level 1 - Architectural / Foundations): Core concept, paradigm trade-off, or architectural foundation in ${resumeAnalysis.domain} (e.g. Caching, Distributed Transactions, B+ Tree Indexing, Microservices Saga, React Virtual DOM, RAG Pipeline, Rate Limiting).
+- Question 2 (Level 2 - Direct Hands-On Implementation Follow-Up):
+  * MANDATORY REQUIREMENT: Question 2 MUST BE A DIRECT, NATURAL PROGRESSIVE FOLLOW-UP TO QUESTION 1!
+  * It MUST explicitly reference or build on the topic, architecture, or candidate's proposed approach from Question 1.
+  * Start with a clear bridge phrase such as:
+    "Building directly on your answer regarding [Topic from Question 1]..." or
+    "Following up on the [Architecture / System] you described in Question 1..."
+  * Ask the candidate to write the practical code implementation, algorithmic function, or SQL query that solves the core problem or an edge case in that exact system.
+  * Set "hasCodingSandbox": true
+  * Provide relevant starter code in "starterCode" (e.g., function definition with types/comments).
+- Question 3 (Level 3 - Deep Debugging & Edge Cases):
+  * A realistic production debugging challenge, concurrency race condition, memory leak, or bottleneck in that exact technical domain.
+- Question 4 (Level 4 - Scalable System Design & Whiteboard Architecture):
+  * High-level architectural scaling, sharding, caching tiers, event buses, and API gateway design for that system.
+  * Set "hasSystemDesignWhiteboard": true
+- Question 5 (Level 5 - Extreme Resilience & Disaster Recovery):
+  * Fault tolerance, network partition handling (CAP theorem), high-availability disaster recovery, or consensus protocols at scale.
 
 Generate technical question #${questionNumber} of 5 (Level ${questionNumber}):
 
 Return EXACTLY this JSON:
 {
   "question": "The complete technical question with all context needed",
-  "level": "Level ${questionNumber} of 5 (${questionNumber === 1 ? 'Fundamentals' : questionNumber === 2 ? 'Coding Implementation' : questionNumber === 3 ? 'Debugging & Optimization' : questionNumber === 4 ? 'System Architecture' : 'Distributed Systems & Resilience'})",
+  "level": "Level ${questionNumber} of 5 (${questionNumber === 1 ? 'Fundamentals' : questionNumber === 2 ? 'Direct Implementation Follow-Up' : questionNumber === 3 ? 'Debugging & Optimization' : questionNumber === 4 ? 'System Architecture' : 'Distributed Systems & Resilience'})",
   "topic": "The specific technical topic tested",
   "hasCodingSandbox": ${questionNumber === 2 ? 'true' : 'false'},
   "hasSystemDesignWhiteboard": ${questionNumber === 4 ? 'true' : 'false'},
-  "starterCode": "${questionNumber === 2 ? '# Write your solution below:\\ndef solve():\\n    pass' : ''}",
+  "starterCode": "${questionNumber === 2 ? '# Write your solution below:\\ndef solution():\\n    pass' : ''}",
   "language": "python"
 }
 `;

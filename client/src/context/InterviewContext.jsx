@@ -169,7 +169,7 @@ export const InterviewProvider = ({ children }) => {
     []
   );
 
-const getAptitudeFallbackQuestion = (index = 1) => {
+const getAptitudeFallbackQuestion = (index = 1, excludeQuestions = []) => {
   const bank = [
     {
       question: `Welcome to Round 1: Aptitude & Logic. Let's begin with a quantitative problem on Rates of Work: Person A can complete a project in 6 hours, while Person B can complete the same project in 4 hours. If both people work together simultaneously at their constant rates, how many hours and minutes will it take them to complete the entire project together? Explain your mathematical calculation.`,
@@ -226,71 +226,414 @@ const getAptitudeFallbackQuestion = (index = 1) => {
       hints: ['First race all horses in 5 groups of 5, then race the 5 group winners.'],
       evaluationCriteria: ['Elimination tree', 'Proof of optimality', 'Exact race count'],
       hasCodingSandbox: false,
+    },
+    {
+      question: `Question 8 (Aptitude & Logic): Five people of different ages (A, B, C, D, E) are sitting in a row. A is older than B but younger than C. D is younger than A but older than B. E is older than C. Who is the second youngest person in the group? Walk through your deduction.`,
+      topic: 'Linear Order Deduction & Analytical Reasoning',
+      level: 'Analytical Deduction',
+      hints: ['Chain the inequalities: E > C > A > D > B.'],
+      evaluationCriteria: ['Inequality ordering', 'Deductive clarity', 'Correct candidate'],
+      hasCodingSandbox: false,
     }
   ];
-  return bank[(index - 1) % bank.length];
+
+  const available = bank.filter((b) => !excludeQuestions.some((q) => q && q.includes(b.topic)));
+  const pool = available.length > 0 ? available : bank;
+  return pool[Math.floor(Math.random() * pool.length)];
 };
 
-const getTechnicalFallbackQuestion = (role, index = 1, level = 'Intermediate') => {
-  const roleLower = (role || '').toLowerCase();
-  if (roleLower.includes('front') || roleLower.includes('react') || roleLower.includes('web')) {
-    const questions = [
-      `Question ${index} (Technical): How would you design a client-side state management and caching layer in React to eliminate unnecessary component re-renders during high-frequency WebSocket updates?`,
-      `Question ${index} (Technical): Walk me through your approach to optimizing Core Web Vitals (specifically LCP and INP) on a complex dashboard rendering large data tables.`,
-      `Question ${index} (Technical): Explain how the browser Event Loop handles microtasks (Promises) versus macrotasks (setTimeout/requestAnimationFrame) and how poor task scheduling causes frame drops.`,
-    ];
-    return {
-      question: questions[(index - 1) % questions.length],
+// ── Curated Progressive Technical Topic Chains (Q1 Foundation -> Q2 Practical Implementation Follow-Up) ──
+const TECHNICAL_TOPIC_CHAINS = [
+  {
+    topic: 'Backend & Idempotent Deduplication',
+    domain: 'backend',
+    q1: {
+      question: 'Question 1 (Technical): In a high-throughput backend service handling 50,000 requests/sec, describe how you would design an idempotent request-deduplication system that prevents double-processing during database connection spikes.',
+      topic: 'Idempotency & High Throughput',
+      level: 'Level 1 of 5 (Fundamentals & Architecture)',
+      hints: ['Discuss client-generated UUID idempotency keys, Redis distributed atomic set (SETNX), and response caching.'],
+      evaluationCriteria: ['Idempotency key generation', 'Atomic lock handling', 'Handling concurrent race conditions'],
+      hasCodingSandbox: false,
+    },
+    q2FollowUp: {
+      question: 'Question 2 (Technical Follow-Up): Building directly on your idempotency deduplication architecture: write the implementation of an idempotency middleware function idempotentHandler(requestId, payload, cache) that checks for duplicate request IDs, sets an atomic in-flight lock, and returns cached responses for replayed requests.',
+      topic: 'Idempotency & High Throughput',
+      level: 'Level 2 of 5 (Direct Implementation Follow-Up)',
+      hints: ['Check if key exists in cache; if pending return 409; if completed return cached result; otherwise acquire lock with TTL.'],
+      evaluationCriteria: ['Atomic lock logic', 'Error state handling', 'Clean modular design'],
+      hasCodingSandbox: true,
+      starterCode: `// Write your idempotent request deduplication logic below:
+function idempotentHandler(requestId, payload, cacheStore) {
+  // 1. Check if requestId already exists in cacheStore
+  if (cacheStore[requestId]) {
+    const entry = cacheStore[requestId];
+    if (entry.status === 'PROCESSING') {
+      return { status: 409, message: 'Request currently in-flight. Please wait.' };
+    }
+    return { status: 200, data: entry.response, cached: true };
+  }
+
+  // 2. Acquire lock & mark as PROCESSING
+  cacheStore[requestId] = { status: 'PROCESSING', startedAt: Date.now() };
+
+  // 3. Process payload and complete
+  const result = { success: true, processedAt: new Date().toISOString() };
+  cacheStore[requestId] = { status: 'COMPLETED', response: result };
+  return { status: 201, data: result, cached: false };
+}
+`,
+    },
+  },
+  {
+    topic: 'Database B+ Tree Indexing & SQL Optimization',
+    domain: 'backend',
+    q1: {
+      question: 'Question 1 (Technical): Explain database indexing under the hood. How does a B+ Tree index structure optimize range queries versus a Hash index, and what are the write amplification trade-offs?',
+      topic: 'B+ Tree Indexing & Storage Engines',
+      level: 'Level 1 of 5 (Fundamentals & Architecture)',
+      hints: ['Discuss leaf node sequential linked lists in B+ Trees, logarithmic branch traversal, and page splitting.'],
+      evaluationCriteria: ['B+ Tree node structure', 'Range scan sequential pointers', 'Write amplification vs read latency'],
+      hasCodingSandbox: false,
+    },
+    q2FollowUp: {
+      question: "Question 2 (Technical Follow-Up): Following up on your database indexing discussion: write an optimized SQL schema and multi-table query for a high-volume payments table, including the composite indexes required to satisfy WHERE user_id = ? AND status = 'COMPLETED' ORDER BY created_at DESC without filesorts.",
+      topic: 'B+ Tree Indexing & Storage Engines',
+      level: 'Level 2 of 5 (Direct Implementation Follow-Up)',
+      hints: ['Place equality columns first in composite index: (user_id, status, created_at DESC) to avoid index skip scans.'],
+      evaluationCriteria: ['Composite index column order', 'Eliminating filesort', 'Query execution plan efficiency'],
+      hasCodingSandbox: true,
+      starterCode: `-- Technical SQL Sandbox
+-- 1. Create optimal composite index for payments:
+CREATE INDEX idx_user_status_created 
+ON payments(user_id, status, created_at DESC);
+
+-- 2. Query executed with 0 filesorts:
+SELECT payment_id, amount, created_at
+FROM payments
+WHERE user_id = 42 AND status = 'COMPLETED'
+ORDER BY created_at DESC
+LIMIT 20;
+`,
+    },
+  },
+  {
+    topic: 'Caching Tier & Redis Thundering Herd',
+    domain: 'backend',
+    q1: {
+      question: 'Question 1 (Technical): Describe how you would mitigate cache penetration, cache stampede (thundering herd), and cache avalanche in a large-scale Redis caching tier.',
+      topic: 'Cache Thundering Herd & Redis Resilience',
+      level: 'Level 1 of 5 (Fundamentals & Architecture)',
+      hints: ['Discuss mutex locks, probabilistic early expiration (XFetch), Bloom filters for penetration, and TTL jitter.'],
+      evaluationCriteria: ['Distinction between stampede, penetration, and avalanche', 'Mutex lock algorithm', 'Jitter randomness'],
+      hasCodingSandbox: false,
+    },
+    q2FollowUp: {
+      question: 'Question 2 (Technical Follow-Up): Following up on your cache stampede mitigation strategy: implement the mutex locking pattern getOrComputeWithLock(key, computeFn, ttlSeconds, redisClient) that uses atomic locks so only ONE concurrent worker queries the primary database during a cache miss.',
+      topic: 'Cache Thundering Herd & Redis Resilience',
+      level: 'Level 2 of 5 (Direct Implementation Follow-Up)',
+      hints: ['Attempt to acquire lock with SET NX EX. If acquired, compute and set cache. If not, sleep and retry.'],
+      evaluationCriteria: ['SET NX EX lock acquisition', 'Lock release safety', 'Retry backoff loop'],
+      hasCodingSandbox: true,
+      starterCode: `// Mutex-Protected Cache Retrieval Pattern
+async function getOrComputeWithLock(key, computeFn, ttlSeconds, mockRedis) {
+  // 1. Check cache first
+  let cached = mockRedis.get(key);
+  if (cached) return JSON.parse(cached);
+
+  const lockKey = "lock:" + key;
+  // 2. Try to acquire atomic mutex lock with short TTL (e.g. 5 sec)
+  const acquired = mockRedis.setNx(lockKey, "LOCKED", 5);
+
+  if (acquired) {
+    try {
+      // Primary worker computes fresh data from DB
+      const freshData = await computeFn();
+      mockRedis.set(key, JSON.stringify(freshData), ttlSeconds);
+      return freshData;
+    } finally {
+      mockRedis.del(lockKey);
+    }
+  } else {
+    // Other workers wait briefly and retry cache read
+    await new Promise(r => setTimeout(r, 100));
+    return JSON.parse(mockRedis.get(key) || "null");
+  }
+}
+`,
+    },
+  },
+  {
+    topic: 'Distributed Transactions & Saga Pattern',
+    domain: 'backend',
+    q1: {
+      question: 'Question 1 (Technical): How do you handle distributed transactions across microservices? Compare the 2-Phase Commit (2PC) protocol against the Saga pattern in terms of latency, consistency, and failure recovery.',
+      topic: 'Distributed Transactions & Sagas',
+      level: 'Level 1 of 5 (Fundamentals & Architecture)',
+      hints: ['Compare synchronous coordinator locking in 2PC vs asynchronous eventual consistency and compensating actions in Sagas.'],
+      evaluationCriteria: ['Blocking nature of 2PC', 'Choreographed vs orchestrated Sagas', 'Idempotent compensation logic'],
+      hasCodingSandbox: false,
+    },
+    q2FollowUp: {
+      question: 'Question 2 (Technical Follow-Up): Following up on your Saga transaction model: write the orchestration execution flow executeOrderSaga(orderData) with step execution and compensating rollback actions if inventory reservation fails.',
+      topic: 'Distributed Transactions & Sagas',
+      level: 'Level 2 of 5 (Direct Implementation Follow-Up)',
+      hints: ['Keep a stack of executed compensation functions. If a step fails, pop and run compensations in reverse order.'],
+      evaluationCriteria: ['Compensation stack pattern', 'Reverse rollback order', 'Atomic error reporting'],
+      hasCodingSandbox: true,
+      starterCode: `// Saga Orchestrator with Compensating Rollbacks
+async function executeOrderSaga(order) {
+  const compensations = [];
+
+  try {
+    // Step 1: Authorize Payment
+    const payment = await chargeCustomer(order.amount);
+    compensations.push(() => refundCustomer(payment.id));
+
+    // Step 2: Reserve Inventory
+    const inventory = await reserveStock(order.items);
+    compensations.push(() => releaseStock(inventory.reservationId));
+
+    // Step 3: Dispatch Shipment
+    const shipment = await createShipment(order.address);
+    return { success: true, orderId: order.id, shipmentId: shipment.id };
+  } catch (err) {
+    // Rollback executed steps in reverse order
+    for (const compensate of compensations.reverse()) {
+      await compensate();
+    }
+    return { success: false, error: err.message, status: 'ROLLED_BACK' };
+  }
+}
+`,
+    },
+  },
+  {
+    topic: 'Frontend State & WebSocket Streaming',
+    domain: 'frontend',
+    q1: {
+      question: 'Question 1 (Technical): How would you design a client-side state management and caching layer in React to eliminate unnecessary component re-renders during high-frequency WebSocket updates?',
       topic: 'Frontend Architecture & Performance',
-      level: level || 'Intermediate',
-      hints: ['Discuss memoization, virtual DOM diffing, and worker threads.'],
-      evaluationCriteria: ['Deep browser internals', 'React optimization patterns', 'Measurable metrics'],
+      level: 'Level 1 of 5 (Fundamentals & Architecture)',
+      hints: ['Discuss requestAnimationFrame scheduling, mutable refs, selector memoization, and offloading diffing to Web Workers.'],
+      evaluationCriteria: ['DOM batching techniques', 'React 18 concurrent features', 'Avoiding UI thread frame drops'],
       hasCodingSandbox: false,
-    };
-  }
+    },
+    q2FollowUp: {
+      question: 'Question 2 (Technical Follow-Up): Following up on your client-side caching design: write the JavaScript implementation of a batching hook useBatchedUpdates(callback, delayMs) that queues incoming streaming WebSocket messages and flushes them in a single batch to prevent UI lag.',
+      topic: 'Frontend Architecture & Performance',
+      level: 'Level 2 of 5 (Direct Implementation Follow-Up)',
+      hints: ['Store incoming items in a ref queue, schedule a timer or requestAnimationFrame, and trigger a single state update with the flushed batch.'],
+      evaluationCriteria: ['Queue management in ref', 'Proper cleanup of timers', 'Single state flush'],
+      hasCodingSandbox: true,
+      starterCode: `// Custom Batching Hook for High-Frequency WebSocket Streams
+function createBatcher(flushCallback, delayMs = 50) {
+  let queue = [];
+  let timeoutId = null;
 
-  if (roleLower.includes('ai') || roleLower.includes('ml') || roleLower.includes('data')) {
-    const questions = [
-      `Question ${index} (Technical): Walk me through how you architect a production RAG pipeline that maintains low latency (<150ms) and prevents hallucinated responses using rerankers and guardrails.`,
-      `Question ${index} (Technical): How do you address class imbalance and data drift in a real-time fraud detection model running in production?`,
-      `Question ${index} (Technical): Compare LoRA and full fine-tuning for domain adaptation of LLMs. What are the GPU memory and inference throughput trade-offs?`,
-    ];
-    return {
-      question: questions[(index - 1) % questions.length],
-      topic: 'Machine Learning & Production AI',
-      level: level || 'Intermediate',
-      hints: ['Discuss vector similarity, precision/recall trade-offs, and parameter-efficient tuning.'],
-      evaluationCriteria: ['ML systems design', 'Mathematical rigor', 'Production scalability'],
-      hasCodingSandbox: false,
-    };
-  }
-
-  // Default Backend & Systems Engineer questions
-  const questions = [
-    `Question ${index} (Technical): In a high-throughput backend service handling 50,000 requests/sec, describe how you would design an idempotent request-deduplication system that prevents double-processing during database connection spikes.`,
-    `Question ${index} (Technical): How do you handle distributed transactions across microservices? Compare the 2-Phase Commit (2PC) protocol against the Saga pattern in terms of latency, consistency, and failure recovery.`,
-    `Question ${index} (Technical): Explain database indexing under the hood. How does a B+ Tree index structure optimize range queries versus a Hash index, and what are the write amplification trade-offs?`,
-    `Question ${index} (Technical): Describe how you would mitigate cache penetration, cache stampede (thundering herd), and cache avalanche in a large-scale Redis caching tier.`,
-  ];
-  return {
-    question: questions[(index - 1) % questions.length],
-    topic: 'Backend & Distributed Systems',
-    level: level || 'Intermediate',
-    hints: ['Structure your response: Problem Context -> Trade-offs -> Architectural Solution -> Failure Handling.'],
-    evaluationCriteria: ['Distributed system trade-offs', 'Resilience patterns', 'Concrete technical depth'],
-    hasCodingSandbox: false,
+  return function enqueue(item) {
+    queue.push(item);
+    if (!timeoutId) {
+      timeoutId = setTimeout(() => {
+        const batch = [...queue];
+        queue = [];
+        timeoutId = null;
+        flushCallback(batch);
+      }, delayMs);
+    }
   };
+}
+`,
+    },
+  },
+  {
+    topic: 'Machine Learning & Production RAG Pipelines',
+    domain: 'ai',
+    q1: {
+      question: 'Question 1 (Technical): Walk me through how you architect a production RAG pipeline that maintains low latency (<150ms) and prevents hallucinated responses using rerankers and guardrails.',
+      topic: 'RAG Architecture & LLM Guardrails',
+      level: 'Level 1 of 5 (Fundamentals & Architecture)',
+      hints: ['Discuss hybrid search (sparse BM25 + dense vectors), cross-encoder rerankers, citation verification, and token budget management.'],
+      evaluationCriteria: ['Hybrid vector retrieval', 'Cross-encoder latency trade-off', 'Confidence thresholding'],
+      hasCodingSandbox: false,
+    },
+    q2FollowUp: {
+      question: 'Question 2 (Technical Follow-Up): Following up on your RAG pipeline architecture: write a Python function filter_and_rerank(query_vector, retrieved_documents, score_threshold) that computes cosine similarities, discards low-relevance chunks, and returns top-K documents.',
+      topic: 'RAG Architecture & LLM Guardrails',
+      level: 'Level 2 of 5 (Direct Implementation Follow-Up)',
+      hints: ['Compute dot product over norms for cosine similarity, filter chunks where similarity < threshold, sort descending, and return top-K.'],
+      evaluationCriteria: ['Cosine similarity calculation', 'Threshold filtering', 'Deterministic sorting'],
+      hasCodingSandbox: true,
+      starterCode: `# Python RAG Chunk Filter & Cosine Reranker
+import math
+
+def dot_product(v1, v2):
+    return sum(a * b for a, b in zip(v1, v2))
+
+def norm(v):
+    return math.sqrt(sum(x * x for x in v))
+
+def filter_and_rerank(query_vector, documents, score_threshold=0.75, top_k=3):
+    q_norm = norm(query_vector)
+    scored_docs = []
+
+    for doc in documents:
+        sim = dot_product(query_vector, doc['embedding']) / (q_norm * norm(doc['embedding']))
+        if sim >= score_threshold:
+            scored_docs.append({'text': doc['text'], 'score': round(sim, 4)})
+
+    scored_docs.sort(key=lambda d: d['score'], reverse=True)
+    return scored_docs[:top_k]
+`,
+    },
+  },
+  {
+    topic: 'Distributed Rate Limiting & Sliding Windows',
+    domain: 'backend',
+    q1: {
+      question: 'Question 1 (Technical): How do you design a partitioned distributed rate limiter capable of enforcing sliding-window rate limits across multiple AWS regions without central bottlenecking?',
+      topic: 'Distributed Rate Limiting',
+      level: 'Level 1 of 5 (Fundamentals & Architecture)',
+      hints: ['Compare Token Bucket vs Leaky Bucket vs Sliding Window Log, discuss Redis Sorted Sets (ZSET), and local token batching.'],
+      evaluationCriteria: ['Sliding window mathematical model', 'Multi-region synchronization', 'Burst handling'],
+      hasCodingSandbox: false,
+    },
+    q2FollowUp: {
+      question: 'Question 2 (Technical Follow-Up): Building directly on your rate-limiting architecture: write the sliding window rate limiter function isRateLimited(userId, windowMs, maxRequests, requestLog) that removes expired timestamps and determines if a request should be throttled.',
+      topic: 'Distributed Rate Limiting',
+      level: 'Level 2 of 5 (Direct Implementation Follow-Up)',
+      hints: ['Filter timestamps where now - ts < windowMs; if length >= maxRequests reject; otherwise append now and allow.'],
+      evaluationCriteria: ['Window sliding logic', 'Atomic log append', 'Boolean decision accuracy'],
+      hasCodingSandbox: true,
+      starterCode: `// Sliding Window Rate Limiter Implementation
+function isRateLimited(userId, windowMs, maxRequests, requestLog) {
+  const now = Date.now();
+  if (!requestLog[userId]) requestLog[userId] = [];
+
+  // 1. Remove expired timestamps outside the current sliding window
+  requestLog[userId] = requestLog[userId].filter(ts => (now - ts) < windowMs);
+
+  // 2. Check if request count exceeds limit
+  if (requestLog[userId].length >= maxRequests) {
+    return { allowed: false, remaining: 0, retryAfterMs: windowMs - (now - requestLog[userId][0]) };
+  }
+
+  // 3. Record current request and allow
+  requestLog[userId].push(now);
+  return { allowed: true, remaining: maxRequests - requestLog[userId].length };
+}
+`,
+    },
+  },
+  {
+    topic: 'Web Security & JWT Cryptographic Verification',
+    domain: 'backend',
+    q1: {
+      question: 'Question 1 (Technical): Explain JWT signature verification versus token decoding, and how you prevent algorithmic confusion attacks (such as the none algorithm or HMAC/RSA key confusion) and handle token revocation at scale.',
+      topic: 'JWT Security & Auth Bypass Prevention',
+      level: 'Level 1 of 5 (Fundamentals & Architecture)',
+      hints: ['Explain HMAC secret vs RSA public key validation, strict algorithm whitelisting, and Redis-backed blacklists with TTL.'],
+      evaluationCriteria: ['Algorithmic confusion prevention', 'Signature verification necessity', 'Revocation strategies'],
+      hasCodingSandbox: false,
+    },
+    q2FollowUp: {
+      question: 'Question 2 (Technical Follow-Up): Following up on your JWT security model: write a secure token verification middleware verifyAndAuthorize(token, secret, revokedSet) that enforces algorithm verification, checks revocation, and returns user payload.',
+      topic: 'JWT Security & Auth Bypass Prevention',
+      level: 'Level 2 of 5 (Direct Implementation Follow-Up)',
+      hints: ['Parse header & payload, strictly verify alg matches HS256 (reject none), compute signature, check revokedSet, check expiration.'],
+      evaluationCriteria: ['Strict algorithm enforcement', 'Blacklist check', 'Expiry enforcement'],
+      hasCodingSandbox: true,
+      starterCode: `// Secure Token Verification & Revocation Check
+function verifyAndAuthorize(token, secretKey, revokedTokenSet) {
+  if (!token) return { valid: false, error: 'Missing token' };
+  if (revokedTokenSet.has(token)) return { valid: false, error: 'Token has been revoked' };
+
+  const parts = token.split('.');
+  if (parts.length !== 3) return { valid: false, error: 'Malformed JWT structure' };
+
+  try {
+    const header = JSON.parse(atob(parts[0]));
+    // Strictly prevent 'none' algorithm bypass
+    if (header.alg !== 'HS256') {
+      return { valid: false, error: 'Unsupported or unverified algorithm: ' + header.alg };
+    }
+
+    const payload = JSON.parse(atob(parts[1]));
+    if (payload.exp && Date.now() / 1000 > payload.exp) {
+      return { valid: false, error: 'Token expired' };
+    }
+
+    return { valid: true, user: payload };
+  } catch (e) {
+    return { valid: false, error: 'Signature / parsing failure' };
+  }
+}
+`,
+    },
+  }
+];
+
+const getTechnicalFallbackQuestion = (role, index = 1, level = 'Intermediate', excludeQuestions = []) => {
+  const roleLower = (role || '').toLowerCase();
+
+  // If role is frontend-specific, prioritize frontend chain
+  let relevantChains = TECHNICAL_TOPIC_CHAINS;
+  if (roleLower.includes('front') || roleLower.includes('react') || roleLower.includes('web')) {
+    relevantChains = TECHNICAL_TOPIC_CHAINS.filter(c => c.domain === 'frontend' || c.domain === 'backend');
+  } else if (roleLower.includes('ai') || roleLower.includes('ml') || roleLower.includes('data')) {
+    relevantChains = TECHNICAL_TOPIC_CHAINS.filter(c => c.domain === 'ai' || c.domain === 'backend');
+  }
+
+  // If this is Question 2, find the chain that matches Question 1!
+  if (index === 2 && excludeQuestions.length > 0) {
+    const lastQ = excludeQuestions[excludeQuestions.length - 1];
+    const matchingChain = TECHNICAL_TOPIC_CHAINS.find(c =>
+      lastQ.includes(c.q1.topic) || lastQ.includes(c.topic)
+    );
+    if (matchingChain) {
+      return matchingChain.q2FollowUp;
+    }
+  }
+
+  // Filter chains not yet asked
+  const availableChains = relevantChains.filter(
+    c => !excludeQuestions.some(eq => eq && (eq.includes(c.topic) || eq.includes(c.q1.topic)))
+  );
+  const chainToUse = availableChains.length > 0
+    ? availableChains[Math.floor(Math.random() * availableChains.length)]
+    : relevantChains[0];
+
+  if (index === 2) {
+    return chainToUse.q2FollowUp;
+  }
+  return chainToUse.q1;
 };
 
-const getHrFallbackQuestion = (index = 1) => {
+const getHrFallbackQuestion = (index = 1, excludeQuestions = []) => {
   const questions = [
-    `Question ${index} (Behavioral & HR): Describe a situation where you had a strong technical disagreement with a teammate or technical lead regarding an architectural decision. How did you handle the discussion, and what was the outcome?`,
-    `Question ${index} (Behavioral & HR): Tell me about a time when a project you were leading or contributing to suffered a critical production outage or missed a major deadline. How did you take ownership and communicate with stakeholders?`,
-    `Question ${index} (Behavioral & HR): Give an example of a project where you had to quickly learn an unfamiliar technology or framework under tight business deadlines. How did you prioritize what to learn?`,
+    {
+      question: `Question ${index} (Behavioral & HR): Describe a situation where you had a strong technical disagreement with a teammate or technical lead regarding an architectural decision. How did you handle the discussion, and what was the outcome?`,
+      topic: 'Technical Disagreement & Conflict Resolution',
+    },
+    {
+      question: `Question ${index} (Behavioral & HR): Tell me about a time when a project you were leading or contributing to suffered a critical production outage or missed a major deadline. How did you take ownership and communicate with stakeholders?`,
+      topic: 'Outage Ownership & Stakeholder Communication',
+    },
+    {
+      question: `Question ${index} (Behavioral & HR): Give an example of a project where you had to quickly learn an unfamiliar technology or framework under tight business deadlines. How did you prioritize what to learn?`,
+      topic: 'Rapid Learning & Ambiguity Navigation',
+    },
+    {
+      question: `Question ${index} (Behavioral & HR): Describe a situation where you noticed a team process or code quality issue that was slowing down engineering velocity. What initiative did you take to fix it?`,
+      topic: 'Proactive Leadership & Velocity Engineering',
+    }
   ];
+
+  const available = questions.filter((q) => !excludeQuestions.some((eq) => eq && eq.includes(q.topic)));
+  const chosen = available.length > 0 ? available[Math.floor(Math.random() * available.length)] : questions[(index - 1) % questions.length];
+
   return {
-    question: questions[(index - 1) % questions.length],
-    topic: 'Behavioral Leadership & STAR Evaluation',
+    question: chosen.question,
+    topic: chosen.topic,
     level: 'Behavioral',
     hints: ['Structure your answer using the STAR format: Situation, Task, Action, and Measurable Result.'],
     evaluationCriteria: ['STAR communication clarity', 'Accountability and ownership', 'Constructive conflict resolution'],
@@ -300,12 +643,12 @@ const getHrFallbackQuestion = (index = 1) => {
 
 const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Intermediate', persona) => {
   if (round === 'aptitude') {
-    return getAptitudeFallbackQuestion(1);
+    return getAptitudeFallbackQuestion(1, []);
   }
   if (round === 'hr') {
-    return getHrFallbackQuestion(1);
+    return getHrFallbackQuestion(1, []);
   }
-  return getTechnicalFallbackQuestion(role, 1, level);
+  return getTechnicalFallbackQuestion(role, 1, level, []);
 };
 
   /** Step 2: Instant zero-latency interview launcher (<10ms) */
@@ -327,7 +670,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
     if (overrideConfig.duration) setDuration(overrideConfig.duration);
     if (overrideConfig.interviewMode) setInterviewMode(overrideConfig.interviewMode);
 
-    // 1. Instant opening question generation
+    // 1. Instant opening question generation (randomized to prevent repeating)
     const instantQ = generateInstantOpeningQuestion(
       effectiveRole,
       'aptitude',
@@ -346,7 +689,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
     // 2. Instant Transition to Interview Studio
     setPhase('interview');
 
-    // 3. Background pre-fetch without blocking UI
+    // 3. Background dynamic generation via Gemini - updates Question 1 dynamically
     setTimeout(async () => {
       try {
         const effectiveAnalysis = resumeAnalysis || {
@@ -366,9 +709,12 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
           companyTrack: effectiveCompany,
           persona: effectivePersona?.id || 'amazon',
         });
-        // Question 1 remains locked to the verified instant opening puzzle
+        if (dynamicQ && dynamicQ.question) {
+          setCurrentQuestion(dynamicQ);
+          setPreviousQuestions([dynamicQ.question]);
+        }
       } catch (err) {
-        console.log('Optimized instant question active.');
+        console.log('Optimized opening question active.');
       }
     }, 150);
   }, [resumeAnalysis, targetRole, difficultyLevel, companyTrack, interviewerPersona, duration, interviewMode]);
@@ -435,18 +781,20 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
               round: round.id,
               questionIndex: nextQIndex,
               previousQuestions: [...previousQuestions, currentQuestion.question],
+              lastCandidateAnswer: round.id === 'technical' && nextQIndex === 2 ? answerText : undefined,
               difficultyLevel: difficultyLevel || 'Intermediate',
               companyTrack: companyTrack || 'General',
               persona: interviewerPersona?.id || 'amazon',
             });
           } catch (qErr) {
             console.warn('Next question fetch fallback:', qErr);
+            const seen = [...previousQuestions, currentQuestion?.question].filter(Boolean);
             if (round.id === 'aptitude') {
-              q = getAptitudeFallbackQuestion(nextQIndex);
+              q = getAptitudeFallbackQuestion(nextQIndex, seen);
             } else if (round.id === 'technical') {
-              q = getTechnicalFallbackQuestion(effectiveRole, nextQIndex, difficultyLevel);
+              q = getTechnicalFallbackQuestion(effectiveRole, nextQIndex, difficultyLevel, seen);
             } else {
-              q = getHrFallbackQuestion(nextQIndex);
+              q = getHrFallbackQuestion(nextQIndex, seen);
             }
           }
 
@@ -470,12 +818,13 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
             });
           } catch (qErr) {
             console.warn('Next round question fetch fallback:', qErr);
+            const seen = [...previousQuestions, currentQuestion?.question].filter(Boolean);
             if (nextRound.id === 'technical') {
-              q = getTechnicalFallbackQuestion(effectiveRole, 1, difficultyLevel);
+              q = getTechnicalFallbackQuestion(effectiveRole, 1, difficultyLevel, seen);
             } else if (nextRound.id === 'hr') {
-              q = getHrFallbackQuestion(1);
+              q = getHrFallbackQuestion(1, seen);
             } else {
-              q = getAptitudeFallbackQuestion(1);
+              q = getAptitudeFallbackQuestion(1, seen);
             }
           }
 

@@ -1,10 +1,16 @@
+require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'your_gemini_api_key_here') {
-  console.warn('⚠️  GEMINI_API_KEY not configured. Set it in your .env file.');
-}
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'MISSING_KEY');
+const getGenAI = () => {
+  const key =
+    process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your_gemini_api_key_here'
+      ? process.env.GEMINI_API_KEY
+      : null;
+  if (!key) {
+    throw new Error('GEMINI_API_KEY is not configured in server environment variables.');
+  }
+  return new GoogleGenerativeAI(key);
+};
 
 // Fast model pool - prioritizing active official Gemini models
 const MODELS_TO_TRY = [
@@ -62,6 +68,7 @@ const generateJSON = async (prompt, images = []) => {
   }
 
   let lastError = null;
+  const genAI = getGenAI();
 
   for (const modelName of MODELS_TO_TRY) {
     try {
@@ -117,6 +124,7 @@ const transcribeAudio = async (audioBase64, mimeType = 'audio/webm') => {
   ];
 
   let lastError;
+  const genAI = getGenAI();
   for (const modelName of MODELS_TO_TRY) {
     try {
       const model = genAI.getGenerativeModel({

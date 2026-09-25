@@ -44,6 +44,7 @@ router.post('/get-question', async (req, res) => {
       round,
       questionIndex,
       previousQuestions = [],
+      lastCandidateAnswer = '',
       difficultyLevel = 'Intermediate',
       companyTrack = 'General',
       persona = 'bar_raiser',
@@ -79,6 +80,7 @@ router.post('/get-question', async (req, res) => {
         targetRole,
         questionIndex,
         previousQuestions,
+        lastCandidateAnswer,
         difficultyLevel,
         companyTrack,
         persona,
@@ -201,7 +203,15 @@ router.post('/coach/chat', async (req, res) => {
     const { coachPersona, candidateMessage, interviewContext } = req.body;
     const prompt = coachChatPrompt(coachPersona, candidateMessage, interviewContext);
     const response = await generateJSON(prompt);
-    res.json(response);
+    res.json({
+      ...response,
+      reply: response?.coachResponse || response?.reply || '',
+      coachResponse: response?.coachResponse || response?.reply || '',
+      motivationalQuote: response?.encouragementQuote || response?.motivationalQuote || '',
+      encouragementQuote: response?.encouragementQuote || response?.motivationalQuote || '',
+      suggestedDrill: response?.recommendedDrill || response?.suggestedDrill || '',
+      recommendedDrill: response?.recommendedDrill || response?.suggestedDrill || '',
+    });
   } catch (err) {
     console.error('Coach chat error:', err.message);
     res.status(500).json({ error: err.message });

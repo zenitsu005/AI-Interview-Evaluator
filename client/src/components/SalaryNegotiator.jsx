@@ -327,7 +327,7 @@ export default function SalaryNegotiator() {
 
     try {
       const res = await sendSalaryNegotiation({
-        targetRole: targetRole || 'Software Engineer',
+        targetRole: selectedRole || contextRole || 'Full Stack Software Engineer',
         offerDetails: offer,
         conversationHistory: updatedMessages,
         candidateMessage: userText,

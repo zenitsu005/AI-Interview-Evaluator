@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TbCode as Code2,
   TbPlayerPlay as Play,
@@ -10,6 +10,7 @@ import {
   TbSparkles as Sparkles,
   TbCheck as Check,
 } from 'react-icons/tb';
+import { executeJavaScript, executeSQL, transpilePythonToJS, areResultsEqual } from '../utils/codeRunner';
 
 const STARTER_CODES = {
   python: `# Technical Sandbox (Python 3.10)
@@ -71,6 +72,18 @@ export default function CodeSandbox({ code, onChange, onRun }) {
   const [isRunning, setIsRunning] = useState(false);
   const [testResults, setTestResults] = useState(null);
 
+  useEffect(() => {
+    if (code) {
+      if (/^\s*(--|CREATE\s+|SELECT\s+|INSERT\s+|UPDATE\s+|FROM\s+)/i.test(code)) {
+        setLang('sql');
+      } else if (/^\s*(\/\/|function\s+|const\s+|let\s+|async\s+)/.test(code)) {
+        setLang('javascript');
+      } else if (/^\s*(#|def\s+|import\s+|class\s+Solution)/.test(code)) {
+        setLang('python');
+      }
+    }
+  }, [code]);
+
   const handleLangChange = (newLang) => {
     setLang(newLang);
     if (!code || Object.values(STARTER_CODES).includes(code)) {
@@ -85,19 +98,20 @@ export default function CodeSandbox({ code, onChange, onRun }) {
 
     setTimeout(() => {
       setIsRunning(false);
+      const activeCode = code || STARTER_CODES[lang] || '';
+
       if (lang === 'sql') {
-        setConsoleOutput(
-          'Query Executed (0.04s)\n\n| tier        | total_orders | total_revenue |\n|-------------|--------------|---------------|\n| Enterprise  | 142          | $84,200.00    |\n| Premium     | 98           | $32,150.50    |\n| Standard    | 45           | $12,400.00    |\n\n(3 rows returned in 42ms)'
-        );
-      } else if (lang === 'python') {
-        setConsoleOutput('Python 3.10 Runtime Executed (0.02s)\nResult: [2, 6, 8]\n\nExecution finished successfully with Exit Code 0');
-      } else if (lang === 'javascript') {
-        setConsoleOutput('Node.js V8 Runtime Executed (0.01s)\nResult: [ 2, 6, 8 ]\n\nExecution finished with Exit Code 0');
+        const res = executeSQL(activeCode);
+        setConsoleOutput(res.output);
+      } else if (lang === 'python' || lang === 'javascript') {
+        const res = executeJavaScript(activeCode, lang);
+        setConsoleOutput(res.output);
       } else {
-        setConsoleOutput('Compiled & Executed without errors (0.05s)\nOutput: Process finished with exit code 0');
+        setConsoleOutput(`Compiled & Executed successfully (${lang.toUpperCase()} Virtual Sandbox)\n\nExecution finished with Exit Code 0`);
       }
+
       if (onRun) onRun();
-    }, 500);
+    }, 250);
   };
 
   const handleRunTests = () => {
@@ -107,13 +121,75 @@ export default function CodeSandbox({ code, onChange, onRun }) {
 
     setTimeout(() => {
       setIsRunning(false);
-      setTestResults([
-        { id: 1, name: 'Standard Input Test', input: '[1, -2, 3, 4, -5]', expected: '[2, 6, 8]', status: 'passed', time: '12ms' },
-        { id: 2, name: 'Empty Edge Case', input: '[]', expected: '[]', status: 'passed', time: '4ms' },
-        { id: 3, name: 'All Negative Inputs', input: '[-10, -20, -5]', expected: '[]', status: 'passed', time: '6ms' },
-        { id: 4, name: 'Large Scale Benchmark', input: '10,000 Elements', expected: 'O(N) Time Limit', status: 'passed', time: '42ms' },
-      ]);
-    }, 600);
+      const activeCode = code || STARTER_CODES[lang] || '';
+      const testCases = [
+        { id: 1, name: 'Standard Input Test', input: [1, -2, 3, 4, -5], inputStr: '[1, -2, 3, 4, -5]', expected: [2, 6, 8], expectedStr: '[2, 6, 8]' },
+        { id: 2, name: 'Empty Edge Case', input: [], inputStr: '[]', expected: [], expectedStr: '[]' },
+        { id: 3, name: 'All Negative Inputs', input: [-10, -20, -5], inputStr: '[-10, -20, -5]', expected: [], expectedStr: '[]' },
+        { id: 4, name: 'Scaling Input Benchmark', input: [10, 20, 30], inputStr: '[10, 20, 30]', expected: [20, 40, 60], expectedStr: '[20, 40, 60]' },
+      ];
+
+      let fn = null;
+      try {
+        let jsCode = activeCode;
+        if (lang === 'python') {
+          jsCode = transpilePythonToJS(activeCode);
+        }
+        fn = new Function(`
+          "use strict";
+          ${jsCode};
+          if (typeof solveProblem === 'function') return solveProblem;
+          if (typeof solve_problem === 'function') return solve_problem;
+          if (typeof solution === 'function') return solution;
+          return null;
+        `)();
+      } catch (err) {
+        fn = null;
+      }
+
+      const results = testCases.map((tc) => {
+        if (!fn) {
+          return {
+            id: tc.id,
+            name: tc.name,
+            input: tc.inputStr,
+            expected: tc.expectedStr,
+            actual: 'Error: Function not found or syntax error in code',
+            status: 'failed',
+            time: '0ms',
+          };
+        }
+
+        const t0 = performance.now();
+        try {
+          const actualOutput = fn(tc.input);
+          const duration = Math.max(1, Math.round(performance.now() - t0));
+          const isPassed = areResultsEqual(actualOutput, tc.expectedStr);
+          return {
+            id: tc.id,
+            name: tc.name,
+            input: tc.inputStr,
+            expected: tc.expectedStr,
+            actual: JSON.stringify(actualOutput),
+            status: isPassed ? 'passed' : 'failed',
+            time: `${duration}ms`,
+          };
+        } catch (err) {
+          const duration = Math.max(1, Math.round(performance.now() - t0));
+          return {
+            id: tc.id,
+            name: tc.name,
+            input: tc.inputStr,
+            expected: tc.expectedStr,
+            actual: `Runtime Error: ${err.message}`,
+            status: 'failed',
+            time: `${duration}ms`,
+          };
+        }
+      });
+
+      setTestResults(results);
+    }, 280);
   };
 
   const currentCode = code || STARTER_CODES[lang] || '';

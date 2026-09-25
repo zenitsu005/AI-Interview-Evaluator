@@ -70,12 +70,15 @@ export default function AiInterviewCoach({ report, targetRole = 'Software Engine
         },
       });
 
-      const replyText = res?.reply || "Keep pushing forward! Let's conquer the next problem together.";
+      const replyText =
+        res?.coachResponse ||
+        res?.reply ||
+        "Keep pushing forward! Let's conquer the next problem together.";
       const mentorMessage = {
         sender: 'mentor',
         text: replyText,
-        quote: res?.motivationalQuote,
-        drill: res?.suggestedDrill,
+        quote: res?.encouragementQuote || res?.motivationalQuote || 'Action cures fear. Each simulated drill brings you closer to your target offer.',
+        drill: res?.recommendedDrill || res?.suggestedDrill || res?.actionItem || 'Practice targeted mock drills',
         time: 'Just now',
       };
 

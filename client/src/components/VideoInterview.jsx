@@ -474,8 +474,25 @@ export default function VideoInterview() {
       framesRef.current = [];
       speakText(currentQuestion.question);
       setTimeout(() => textareaRef.current?.focus(), 150);
+
+      // Auto-switch workspace tab based on question capability & technical follow-ups
+      if (currentQuestion.hasCodingSandbox) {
+        setActiveTab('sandbox');
+        if (currentQuestion.starterCode) {
+          setSandboxCode(currentQuestion.starterCode);
+        }
+      } else if (currentRound?.id === 'technical' && questionIndexInRound === 2) {
+        setActiveTab('sandbox');
+        if (currentQuestion.starterCode) {
+          setSandboxCode(currentQuestion.starterCode);
+        }
+      } else if (currentRound?.id === 'system-design') {
+        setActiveTab('whiteboard');
+      } else {
+        setActiveTab('text');
+      }
     }
-  }, [currentQuestion]);
+  }, [currentQuestion, currentRound, questionIndexInRound]);
 
   useEffect(() => {
     let timer = null;
@@ -1060,12 +1077,68 @@ export default function VideoInterview() {
 
         {/* Right Column: Dynamic Workspace Tool (7 Cols) */}
         <div className="lg:col-span-7 space-y-4">
+          {/* Dynamic Workspace Mode Selector */}
+          <div className="flex items-center justify-between bg-[#131823] border border-white/10 rounded-2xl p-2 shadow-lg flex-wrap gap-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setActiveTab('text')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  activeTab === 'text'
+                    ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Answer Notes</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('sandbox')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer relative ${
+                  activeTab === 'sandbox'
+                    ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
+                }`}
+              >
+                <Code2 className="w-3.5 h-3.5" />
+                <span>Code Sandbox</span>
+                {currentQuestion?.hasCodingSandbox && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('whiteboard')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  activeTab === 'whiteboard'
+                    ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>Architecture Grid</span>
+              </button>
+            </div>
+
+            {currentQuestion?.hasCodingSandbox && activeTab !== 'sandbox' && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('sandbox')}
+                className="text-[11px] font-mono text-emerald-400 font-bold bg-emerald-950/80 px-2.5 py-1 rounded-xl border border-emerald-500/40 flex items-center gap-1.5 hover:bg-emerald-900/60 transition-colors animate-pulse cursor-pointer shadow-sm"
+              >
+                <Zap className="w-3 h-3 text-emerald-400" />
+                <span>Coding Challenge Active</span>
+              </button>
+            )}
+          </div>
+
           {activeTab === 'whiteboard' ? (
-            <div className="h-80">
+            <div className="h-[420px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
               <SystemDesignWhiteboard />
             </div>
           ) : activeTab === 'sandbox' ? (
-            <div className="h-80">
+            <div className="h-[430px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
               <CodeSandbox code={sandboxCode} onChange={setSandboxCode} />
             </div>
           ) : null}
@@ -1105,7 +1178,13 @@ export default function VideoInterview() {
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type your structured answer here, or click Speak below to answer verbally..."
+                placeholder={
+                  activeTab === 'sandbox'
+                    ? 'Explain your code implementation, edge cases, and Big-O complexity here (your sandbox code is automatically submitted)...'
+                    : activeTab === 'whiteboard'
+                    ? 'Describe your system architecture, data flow, and trade-offs here...'
+                    : 'Type your structured answer here, or click Speak below to answer verbally...'
+                }
                 rows={activeTab !== 'text' ? 4 : 7}
                 disabled={isLoading || isTranscribing}
                 className="w-full bg-[#0D111A] border border-white/10 hover:border-white/20 focus:border-teal-400 rounded-2xl p-4 text-xs sm:text-sm text-slate-100 placeholder-slate-500 resize-none outline-none transition-all leading-relaxed shadow-inner"

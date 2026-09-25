@@ -79,7 +79,7 @@ export default function InterviewChat() {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       handleSubmit();
     }
@@ -196,6 +196,14 @@ export default function InterviewChat() {
                   )}
                 </div>
                 <p className="text-xs sm:text-sm text-slate-900 leading-relaxed font-medium">{currentQuestion.question}</p>
+                {currentQuestion.starterCode && (
+                  <div className="mt-3 p-3.5 bg-slate-900 text-slate-100 rounded-xl font-mono text-xs overflow-x-auto border border-slate-800 shadow-inner text-left">
+                    <div className="text-[10px] text-teal-400 font-bold uppercase tracking-wider mb-1.5">
+                      💻 Hands-on Code / SQL Template:
+                    </div>
+                    <pre className="whitespace-pre-wrap leading-relaxed">{currentQuestion.starterCode}</pre>
+                  </div>
+                )}
               </div>
             </div>
           )}
