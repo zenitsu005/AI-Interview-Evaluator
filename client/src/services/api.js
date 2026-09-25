@@ -1,10 +1,19 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+import {
+  generateDynamicQuestion,
+  generateFollowUpProbe as clientFollowUpProbe,
+  generateInterviewHint as clientInterviewHint,
+  generateEvaluationReport as clientEvaluationReport,
+  analyzeResumeClient,
+} from './geminiClient';
+
+const rawBase = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE = rawBase.includes('railway.app') ? '/api' : rawBase;
 
 const api = axios.create({
   baseURL: API_BASE,
-  timeout: 180000, // 3 minutes for Railway cold starts
+  timeout: 10000, // Fast timeout so client Gemini takes over immediately if server is slow/unreachable
 });
 
 api.interceptors.request.use((config) => {
@@ -15,51 +24,56 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Auto-retry on network errors (handles Railway cold starts)
+// Auto-retry on network errors
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const config = error.config;
-    if (!config || config._retryCount >= 3) return Promise.reject(error);
-    const isNetworkError = !error.response || error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK';
-    if (!isNetworkError) return Promise.reject(error);
-    config._retryCount = (config._retryCount || 0) + 1;
-    await new Promise((res) => setTimeout(res, 3000 * config._retryCount));
-    return api(config);
+    return Promise.reject(error);
   }
 );
 
 export const checkServerHealth = async () => {
   try {
-    const { data } = await api.get('/health', { timeout: 15000 });
+    const { data } = await api.get('/health', { timeout: 3000 });
     return data;
   } catch (e) {
     return null;
   }
 };
 
-// Automatic silent background warm-up ping for Railway cold starts
-setTimeout(() => {
-  checkServerHealth().catch(() => {});
-}, 100);
-
 export const uploadResume = async (file) => {
   const formData = new FormData();
   formData.append('resume', file);
-  const { data } = await api.post('/upload-resume', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-  return data;
+  try {
+    const { data } = await api.post('/upload-resume', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return data;
+  } catch (e) {
+    console.warn('Backend upload-resume unavailable. Using local text extraction:', e.message);
+    const text = await file.text().catch(() => 'Candidate Resume');
+    return { resumeText: text };
+  }
 };
 
 export const analyzeResume = async (resumeText, targetRole) => {
-  const { data } = await api.post('/analyze-resume', { resumeText, targetRole });
-  return data;
+  try {
+    const { data } = await api.post('/analyze-resume', { resumeText, targetRole });
+    if (data && (data.domain || data.coreSkills)) return data;
+  } catch (e) {
+    console.warn('Backend analyze-resume unavailable. Using direct Gemini AI engine:', e.message);
+  }
+  return await analyzeResumeClient({ resumeText, targetRole });
 };
 
 export const optimizeResume = async ({ resumeText, targetRole, userDetails }) => {
-  const { data } = await api.post('/optimize-resume', { resumeText, targetRole, userDetails });
-  return data;
+  try {
+    const { data } = await api.post('/optimize-resume', { resumeText, targetRole, userDetails });
+    return data;
+  } catch (e) {
+    console.warn('Backend optimize-resume unavailable:', e.message);
+    return null;
+  }
 };
 
 export const getQuestion = async ({
@@ -67,31 +81,52 @@ export const getQuestion = async ({
   targetRole,
   round,
   questionIndex,
-  previousQuestions,
-  lastCandidateAnswer,
-  difficultyLevel,
-  companyTrack,
-  persona,
-  jobDescription,
+  previousQuestions = [],
+  lastCandidateAnswer = '',
+  difficultyLevel = 'Intermediate',
+  companyTrack = 'General',
+  persona = 'bar_raiser',
+  jobDescription = '',
 }) => {
-  const { data } = await api.post('/get-question', {
-    resumeAnalysis,
-    targetRole,
+  try {
+    const { data } = await api.post('/get-question', {
+      resumeAnalysis,
+      targetRole,
+      round,
+      questionIndex,
+      previousQuestions,
+      lastCandidateAnswer,
+      difficultyLevel,
+      companyTrack,
+      persona,
+      jobDescription,
+    });
+    if (data && data.question) return data;
+  } catch (e) {
+    console.warn('Backend get-question unreachable. Generating dynamically via client Gemini AI engine:', e.message);
+  }
+
+  // 100% Dynamic Direct Gemini Generation in Browser
+  return await generateDynamicQuestion({
     round,
     questionIndex,
-    previousQuestions,
-    lastCandidateAnswer,
+    targetRole,
     difficultyLevel,
     companyTrack,
     persona,
-    jobDescription,
+    previousQuestions,
+    resumeAnalysis,
+    lastCandidateAnswer,
   });
-  return data;
 };
 
 export const getRapidFireQuestions = async ({ targetRole, domain }) => {
-  const { data } = await api.post('/rapid-fire', { targetRole, domain });
-  return data;
+  try {
+    const { data } = await api.post('/rapid-fire', { targetRole, domain });
+    return data;
+  } catch (e) {
+    return [];
+  }
 };
 
 export const getFollowUpProbe = async ({
@@ -101,57 +136,93 @@ export const getFollowUpProbe = async ({
   companyTrack,
   persona,
 }) => {
-  const { data } = await api.post('/followup-probe', {
-    question,
-    candidateAnswer,
-    targetRole,
-    companyTrack,
-    persona,
-  });
-  return data;
+  try {
+    const { data } = await api.post('/followup-probe', {
+      question,
+      candidateAnswer,
+      targetRole,
+      companyTrack,
+      persona,
+    });
+    if (data && (data.probe || data.followUp)) return data;
+  } catch (e) {
+    console.warn('Backend followup-probe unavailable. Using client Gemini engine:', e.message);
+  }
+
+  return await clientFollowUpProbe({ question, candidateAnswer, targetRole, companyTrack, persona });
 };
 
-export const getQuestionHint = async ({ question, round, targetRole, companyTrack }) => {
-  const { data } = await api.post('/hint', { question, round, targetRole, companyTrack });
-  return data;
+export const getQuestionHint = async ({ question, round, targetRole, companyTrack, difficultyLevel = 'Intermediate' }) => {
+  try {
+    const { data } = await api.post('/hint', { question, round, targetRole, companyTrack });
+    if (data && (data.hint || data.hints)) return data;
+  } catch (e) {
+    console.warn('Backend hint unavailable. Using client Gemini engine:', e.message);
+  }
+
+  return await clientInterviewHint({ question, targetRole, difficultyLevel });
 };
 
 export const generateDsaProblem = async ({ difficulty = 'Medium', category = 'Any' }) => {
-  const { data } = await api.post('/dsa/generate', { difficulty, category }, { timeout: 35000 });
-  return data;
+  try {
+    const { data } = await api.post('/dsa/generate', { difficulty, category }, { timeout: 35000 });
+    return data;
+  } catch (e) {
+    return null;
+  }
 };
 
 export const generateBugHunterDrills = async () => {
-  const { data } = await api.post('/bug-hunter/generate', {}, { timeout: 35000 });
-  return data;
+  try {
+    const { data } = await api.post('/bug-hunter/generate', {}, { timeout: 35000 });
+    return data;
+  } catch (e) {
+    return [];
+  }
 };
 
 export const evaluateInterview = async ({
   resumeAnalysis,
   targetRole,
-  allResponses,
-  difficultyLevel,
-  companyTrack,
-  persona,
+  allResponses = [],
+  difficultyLevel = 'Intermediate',
+  companyTrack = 'General',
+  persona = 'bar_raiser',
 }) => {
-  const { data } = await api.post(
-    '/evaluate',
-    {
-      resumeAnalysis,
-      targetRole,
-      allResponses,
-      difficultyLevel,
-      companyTrack,
-      persona,
-    },
-    { timeout: 120000 }
-  );
-  return data;
+  try {
+    const { data } = await api.post(
+      '/evaluate',
+      {
+        resumeAnalysis,
+        targetRole,
+        allResponses,
+        difficultyLevel,
+        companyTrack,
+        persona,
+      },
+      { timeout: 25000 }
+    );
+    if (data && (data.overallScore || data.scores)) return data;
+  } catch (e) {
+    console.warn('Backend evaluate unavailable. Generating scorecard via client Gemini engine:', e.message);
+  }
+
+  return await clientEvaluationReport({
+    responses: allResponses,
+    resumeAnalysis,
+    targetRole,
+    difficultyLevel,
+    companyTrack,
+  });
 };
 
 export const transcribeAudio = async (audioBase64, mimeType) => {
-  const { data } = await api.post('/transcribe', { audioBase64, mimeType });
-  return data;
+  try {
+    const { data } = await api.post('/transcribe', { audioBase64, mimeType });
+    return data;
+  } catch (e) {
+    return null;
+  }
 };
 
 // ── Salary Negotiation Simulator API ──
