@@ -32,11 +32,31 @@ api.interceptors.response.use(
   }
 );
 
+let isBackendAlive = null;
+let lastCheckTime = 0;
+
+export const isServerOnline = async () => {
+  const now = Date.now();
+  if (isBackendAlive !== null && now - lastCheckTime < 20000) {
+    return isBackendAlive;
+  }
+  try {
+    const res = await api.get('/health', { timeout: 1500 });
+    isBackendAlive = res?.data?.status === 'ok';
+  } catch (e) {
+    isBackendAlive = false;
+  }
+  lastCheckTime = Date.now();
+  return isBackendAlive;
+};
+
 export const checkServerHealth = async () => {
   try {
-    const { data } = await api.get('/health', { timeout: 3000 });
+    const { data } = await api.get('/health', { timeout: 1500 });
+    isBackendAlive = data?.status === 'ok';
     return data;
   } catch (e) {
+    isBackendAlive = false;
     return null;
   }
 };
@@ -57,11 +77,15 @@ export const uploadResume = async (file) => {
 };
 
 export const analyzeResume = async (resumeText, targetRole) => {
-  try {
-    const { data } = await api.post('/analyze-resume', { resumeText, targetRole });
-    if (data && (data.domain || data.coreSkills)) return data;
-  } catch (e) {
-    console.warn('Backend analyze-resume unavailable. Using direct Gemini AI engine:', e.message);
+  const online = await isServerOnline();
+  if (online) {
+    try {
+      const { data } = await api.post('/analyze-resume', { resumeText, targetRole }, { timeout: 5000 });
+      if (data && (data.domain || data.coreSkills)) return data;
+    } catch (e) {
+      console.warn('Backend analyze-resume unavailable. Using direct Gemini AI engine:', e.message);
+      isBackendAlive = false;
+    }
   }
   return await analyzeResumeClient({ resumeText, targetRole });
 };
@@ -88,25 +112,29 @@ export const getQuestion = async ({
   persona = 'bar_raiser',
   jobDescription = '',
 }) => {
-  try {
-    const { data } = await api.post('/get-question', {
-      resumeAnalysis,
-      targetRole,
-      round,
-      questionIndex,
-      previousQuestions,
-      lastCandidateAnswer,
-      difficultyLevel,
-      companyTrack,
-      persona,
-      jobDescription,
-    });
-    if (data && data.question) return data;
-  } catch (e) {
-    console.warn('Backend get-question unreachable. Generating dynamically via client Gemini AI engine:', e.message);
+  const online = await isServerOnline();
+  if (online) {
+    try {
+      const { data } = await api.post('/get-question', {
+        resumeAnalysis,
+        targetRole,
+        round,
+        questionIndex,
+        previousQuestions,
+        lastCandidateAnswer,
+        difficultyLevel,
+        companyTrack,
+        persona,
+        jobDescription,
+      }, { timeout: 5000 });
+      if (data && data.question) return data;
+    } catch (e) {
+      console.warn('Backend get-question unreachable. Generating dynamically via client Gemini AI engine:', e.message);
+      isBackendAlive = false;
+    }
   }
 
-  // 100% Dynamic Direct Gemini Generation in Browser
+  // 100% Dynamic Direct Gemini Generation in Browser (sub-2s)
   return await generateDynamicQuestion({
     round,
     questionIndex,

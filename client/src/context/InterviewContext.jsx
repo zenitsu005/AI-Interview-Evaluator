@@ -818,7 +818,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
               round: round.id,
               questionIndex: nextQIndex,
               previousQuestions: [...previousQuestions, currentQuestion.question, ...getSeenHistory()],
-              lastCandidateAnswer: round.id === 'technical' && nextQIndex === 2 ? answerText : undefined,
+              lastCandidateAnswer: round.id === 'technical' && nextQIndex === 2 ? answer : undefined,
               difficultyLevel: difficultyLevel || 'Intermediate',
               companyTrack: companyTrack || 'General',
               persona: interviewerPersona?.id || 'amazon',
