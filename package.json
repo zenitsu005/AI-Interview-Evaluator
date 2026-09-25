@@ -4,7 +4,7 @@
   "description": "Full-Stack AI Mock Interview & Bar Raiser Platform",
   "main": "server/server.js",
   "scripts": {
-    "build": "npm --prefix client install && npm --prefix client run build && npm --prefix server install",
+    "build": "npm --prefix client install && npm --prefix client run build",
     "start": "node server/server.js",
     "server": "node server/server.js",
     "client": "npm --prefix client run dev"
