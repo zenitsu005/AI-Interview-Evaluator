@@ -169,18 +169,39 @@ export const InterviewProvider = ({ children }) => {
     []
   );
 
+const getSeenHistory = () => {
+  try {
+    const raw = sessionStorage.getItem('mockai_seen_topics');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+const recordSeenTopic = (topicOrQuestion) => {
+  try {
+    if (!topicOrQuestion) return;
+    const history = getSeenHistory();
+    if (!history.includes(topicOrQuestion)) {
+      history.push(topicOrQuestion);
+    }
+    if (history.length > 25) history.shift();
+    sessionStorage.setItem('mockai_seen_topics', JSON.stringify(history));
+  } catch (e) {}
+};
+
 const getAptitudeFallbackQuestion = (index = 1, excludeQuestions = []) => {
   const bank = [
     {
       question: `Welcome to Round 1: Aptitude & Logic. Let's begin with a quantitative problem on Rates of Work: Person A can complete a project in 6 hours, while Person B can complete the same project in 4 hours. If both people work together simultaneously at their constant rates, how many hours and minutes will it take them to complete the entire project together? Explain your mathematical calculation.`,
       topic: 'Applied Quantitative & Rates of Work',
       level: 'Foundational Quantitative',
-      hints: ['Calculate each worker\'s hourly fraction of work (1/6 and 1/4), sum the rates, and invert the total.'],
+      hints: ['Calculate each worker\'s hourly fraction of work (1/6 and 4/1), sum the rates, and invert the total.'],
       evaluationCriteria: ['Rate calculation accuracy', 'Time conversion (hours & minutes)', 'Clear explanation of logic'],
       hasCodingSandbox: false,
     },
     {
-      question: `Question 2 (Aptitude & Logic): A car travels from Town A to Town B at an average speed of 60 km/h and returns along the exact same route at 40 km/h. What is the average speed across the entire round trip? (Hint: It is not 50 km/h). Explain your mathematical calculation.`,
+      question: `Question ${index} (Aptitude & Logic): A car travels from Town A to Town B at an average speed of 60 km/h and returns along the exact same route at 40 km/h. What is the average speed across the entire round trip? (Hint: It is not 50 km/h). Explain your mathematical calculation.`,
       topic: 'Harmonic Mean & Speed-Distance Optimization',
       level: 'Applied Quantitative',
       hints: ['Average speed = Total Distance / Total Time. Express time in terms of one-way distance d.'],
@@ -188,7 +209,7 @@ const getAptitudeFallbackQuestion = (index = 1, excludeQuestions = []) => {
       hasCodingSandbox: false,
     },
     {
-      question: `Question 3 (Aptitude & Logic): In a class of 100 students, 70 passed the Mathematics examination, 60 passed the Science examination, and 50 passed both examinations. How many students failed both examinations? Explain your calculation using set theory logic.`,
+      question: `Question ${index} (Aptitude & Logic): In a class of 100 students, 70 passed the Mathematics examination, 60 passed the Science examination, and 50 passed both examinations. How many students failed both examinations? Explain your calculation using set theory logic.`,
       topic: 'Set Theory & Analytical Logic',
       level: 'Intermediate Logic',
       hints: ['Use the Principle of Inclusion-Exclusion: Total = Math + Science - Both + Neither.'],
@@ -196,7 +217,7 @@ const getAptitudeFallbackQuestion = (index = 1, excludeQuestions = []) => {
       hasCodingSandbox: false,
     },
     {
-      question: `Question 4 (Aptitude & Logic): A box contains 5 red balls and 7 blue balls. If two balls are drawn at random one after the other without replacement, what is the exact probability that both drawn balls are red? Explain your step-by-step probability calculation.`,
+      question: `Question ${index} (Aptitude & Logic): A box contains 5 red balls and 7 blue balls. If two balls are drawn at random one after the other without replacement, what is the exact probability that both drawn balls are red? Explain your step-by-step probability calculation.`,
       topic: 'Probability & Combinatorics',
       level: 'Advanced Quantitative',
       hints: ['Multiply the probability of drawing the first red ball (5/12) by the conditional probability of drawing the second red ball (4/11).'],
@@ -204,7 +225,7 @@ const getAptitudeFallbackQuestion = (index = 1, excludeQuestions = []) => {
       hasCodingSandbox: false,
     },
     {
-      question: `Question 5 (Aptitude & Logic): You have 8 identical-looking gold coins, but exactly one is counterfeit and slightly heavier than the others. Using a balance scale with two pans, what is the minimum number of weighings required to guarantee identifying the counterfeit coin with certainty? Walk me through your step-by-step reasoning.`,
+      question: `Question ${index} (Aptitude & Logic): You have 8 identical-looking gold coins, but exactly one is counterfeit and slightly heavier than the others. Using a balance scale with two pans, what is the minimum number of weighings required to guarantee identifying the counterfeit coin with certainty? Walk me through your step-by-step reasoning.`,
       topic: 'Logical Deduction & Weighing Puzzles',
       level: 'Master Analytical Logic',
       hints: ['Think about dividing the 8 coins into three groups (3, 3, 2) rather than halves.'],
@@ -212,7 +233,7 @@ const getAptitudeFallbackQuestion = (index = 1, excludeQuestions = []) => {
       hasCodingSandbox: false,
     },
     {
-      question: `Question 6 (Aptitude & Logic): A clock shows 3:15. What is the exact angle in degrees between the hour hand and the minute hand? Explain your calculation.`,
+      question: `Question ${index} (Aptitude & Logic): A clock shows 3:15. What is the exact angle in degrees between the hour hand and the minute hand? Explain your calculation.`,
       topic: 'Angular Geometry & Clock Logic',
       level: 'Analytical Geometry',
       hints: ['Remember that the hour hand advances 0.5 degrees per minute while the minute hand moves 6 degrees per minute.'],
@@ -220,7 +241,7 @@ const getAptitudeFallbackQuestion = (index = 1, excludeQuestions = []) => {
       hasCodingSandbox: false,
     },
     {
-      question: `Question 7 (Aptitude & Logic): You have 25 racehorses and can only race 5 horses at a time on a track without a timer. What is the minimum number of races needed to identify the top 3 fastest horses? Explain your race scheduling deduction.`,
+      question: `Question ${index} (Aptitude & Logic): You have 25 racehorses and can only race 5 horses at a time on a track without a timer. What is the minimum number of races needed to identify the top 3 fastest horses? Explain your race scheduling deduction.`,
       topic: 'Combinatorial Tournament Logic',
       level: 'Master Puzzle',
       hints: ['First race all horses in 5 groups of 5, then race the 5 group winners.'],
@@ -228,7 +249,7 @@ const getAptitudeFallbackQuestion = (index = 1, excludeQuestions = []) => {
       hasCodingSandbox: false,
     },
     {
-      question: `Question 8 (Aptitude & Logic): Five people of different ages (A, B, C, D, E) are sitting in a row. A is older than B but younger than C. D is younger than A but older than B. E is older than C. Who is the second youngest person in the group? Walk through your deduction.`,
+      question: `Question ${index} (Aptitude & Logic): Five people of different ages (A, B, C, D, E) are sitting in a row. A is older than B but younger than C. D is younger than A but older than B. E is older than C. Who is the second youngest person in the group? Walk through your deduction.`,
       topic: 'Linear Order Deduction & Analytical Reasoning',
       level: 'Analytical Deduction',
       hints: ['Chain the inequalities: E > C > A > D > B.'],
@@ -237,9 +258,13 @@ const getAptitudeFallbackQuestion = (index = 1, excludeQuestions = []) => {
     }
   ];
 
-  const available = bank.filter((b) => !excludeQuestions.some((q) => q && q.includes(b.topic)));
+  const allExcluded = [...excludeQuestions, ...getSeenHistory()];
+  const available = bank.filter((b) => !allExcluded.some((q) => q && (q.includes(b.topic) || b.question.includes(q))));
   const pool = available.length > 0 ? available : bank;
-  return pool[Math.floor(Math.random() * pool.length)];
+  const chosen = pool[Math.floor(Math.random() * pool.length)];
+  recordSeenTopic(chosen.topic);
+  recordSeenTopic(chosen.question);
+  return chosen;
 };
 
 // ── Curated Progressive Technical Topic Chains (Q1 Foundation -> Q2 Practical Implementation Follow-Up) ──
@@ -574,6 +599,7 @@ function verifyAndAuthorize(token, secretKey, revokedTokenSet) {
 
 const getTechnicalFallbackQuestion = (role, index = 1, level = 'Intermediate', excludeQuestions = []) => {
   const roleLower = (role || '').toLowerCase();
+  const allExcluded = [...excludeQuestions, ...getSeenHistory()];
 
   // If role is frontend-specific, prioritize frontend chain
   let relevantChains = TECHNICAL_TOPIC_CHAINS;
@@ -590,21 +616,26 @@ const getTechnicalFallbackQuestion = (role, index = 1, level = 'Intermediate', e
       lastQ.includes(c.q1.topic) || lastQ.includes(c.topic)
     );
     if (matchingChain) {
+      recordSeenTopic(matchingChain.topic);
+      recordSeenTopic(matchingChain.q2FollowUp.question);
       return matchingChain.q2FollowUp;
     }
   }
 
   // Filter chains not yet asked
   const availableChains = relevantChains.filter(
-    c => !excludeQuestions.some(eq => eq && (eq.includes(c.topic) || eq.includes(c.q1.topic)))
+    c => !allExcluded.some(eq => eq && (eq.includes(c.topic) || eq.includes(c.q1.topic) || (c.q1 && c.q1.question && c.q1.question.includes(eq))))
   );
   const chainToUse = availableChains.length > 0
     ? availableChains[Math.floor(Math.random() * availableChains.length)]
-    : relevantChains[0];
+    : relevantChains[Math.floor(Math.random() * relevantChains.length)];
 
+  recordSeenTopic(chainToUse.topic);
   if (index === 2) {
+    recordSeenTopic(chainToUse.q2FollowUp.question);
     return chainToUse.q2FollowUp;
   }
+  recordSeenTopic(chainToUse.q1.question);
   return chainToUse.q1;
 };
 
@@ -628,8 +659,12 @@ const getHrFallbackQuestion = (index = 1, excludeQuestions = []) => {
     }
   ];
 
-  const available = questions.filter((q) => !excludeQuestions.some((eq) => eq && eq.includes(q.topic)));
-  const chosen = available.length > 0 ? available[Math.floor(Math.random() * available.length)] : questions[(index - 1) % questions.length];
+  const allExcluded = [...excludeQuestions, ...getSeenHistory()];
+  const available = questions.filter((q) => !allExcluded.some((eq) => eq && (eq.includes(q.topic) || q.question.includes(eq))));
+  const pool = available.length > 0 ? available : questions;
+  const chosen = pool[Math.floor(Math.random() * pool.length)];
+  recordSeenTopic(chosen.topic);
+  recordSeenTopic(chosen.question);
 
   return {
     question: chosen.question,
@@ -642,13 +677,14 @@ const getHrFallbackQuestion = (index = 1, excludeQuestions = []) => {
 };
 
 const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Intermediate', persona) => {
+  const history = getSeenHistory();
   if (round === 'aptitude') {
-    return getAptitudeFallbackQuestion(1, []);
+    return getAptitudeFallbackQuestion(1, history);
   }
   if (round === 'hr') {
-    return getHrFallbackQuestion(1, []);
+    return getHrFallbackQuestion(1, history);
   }
-  return getTechnicalFallbackQuestion(role, 1, level, []);
+  return getTechnicalFallbackQuestion(role, 1, level, history);
 };
 
   /** Step 2: Instant zero-latency interview launcher (<10ms) */
@@ -704,12 +740,13 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
           targetRole: effectiveRole,
           round: 'aptitude',
           questionIndex: 1,
-          previousQuestions: [],
+          previousQuestions: [instantQ.question, ...getSeenHistory()],
           difficultyLevel: effectiveLevel,
           companyTrack: effectiveCompany,
           persona: effectivePersona?.id || 'amazon',
         });
         if (dynamicQ && dynamicQ.question) {
+          recordSeenTopic(dynamicQ.topic || dynamicQ.question);
           setCurrentQuestion(dynamicQ);
           setPreviousQuestions([dynamicQ.question]);
         }
@@ -780,7 +817,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
               targetRole: effectiveRole,
               round: round.id,
               questionIndex: nextQIndex,
-              previousQuestions: [...previousQuestions, currentQuestion.question],
+              previousQuestions: [...previousQuestions, currentQuestion.question, ...getSeenHistory()],
               lastCandidateAnswer: round.id === 'technical' && nextQIndex === 2 ? answerText : undefined,
               difficultyLevel: difficultyLevel || 'Intermediate',
               companyTrack: companyTrack || 'General',
@@ -788,7 +825,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
             });
           } catch (qErr) {
             console.warn('Next question fetch fallback:', qErr);
-            const seen = [...previousQuestions, currentQuestion?.question].filter(Boolean);
+            const seen = [...previousQuestions, currentQuestion?.question, ...getSeenHistory()].filter(Boolean);
             if (round.id === 'aptitude') {
               q = getAptitudeFallbackQuestion(nextQIndex, seen);
             } else if (round.id === 'technical') {
@@ -798,6 +835,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
             }
           }
 
+          recordSeenTopic(q.question);
           setCurrentQuestion(q);
           setQuestionIndexInRound(nextQIndex);
           setPreviousQuestions((prev) => [...prev, q.question]);
@@ -811,14 +849,14 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
               targetRole: effectiveRole,
               round: nextRound.id,
               questionIndex: 1,
-              previousQuestions: [...previousQuestions, currentQuestion.question],
+              previousQuestions: [...previousQuestions, currentQuestion.question, ...getSeenHistory()],
               difficultyLevel: difficultyLevel || 'Intermediate',
               companyTrack: companyTrack || 'General',
               persona: interviewerPersona?.id || 'amazon',
             });
           } catch (qErr) {
             console.warn('Next round question fetch fallback:', qErr);
-            const seen = [...previousQuestions, currentQuestion?.question].filter(Boolean);
+            const seen = [...previousQuestions, currentQuestion?.question, ...getSeenHistory()].filter(Boolean);
             if (nextRound.id === 'technical') {
               q = getTechnicalFallbackQuestion(effectiveRole, 1, difficultyLevel, seen);
             } else if (nextRound.id === 'hr') {
@@ -828,6 +866,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
             }
           }
 
+          recordSeenTopic(q.question);
           setCurrentRoundIndex(nextRoundIndex);
           setQuestionIndexInRound(1);
           setCurrentQuestion(q);

@@ -185,7 +185,7 @@ router.post('/evaluate', async (req, res) => {
     }
 
     const hasCameraFrames = allImages.length > 0;
-    const rawReport = await generateJSON(prompt, allImages);
+    const rawReport = await generateJSON(prompt, allImages, { temperature: 0.2 });
     const calibratedReport = computeDeterministicScores(rawReport, hasCameraFrames, companyTrack);
 
     res.json(calibratedReport);

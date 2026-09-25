@@ -114,6 +114,7 @@ const aptitudeQuestionPrompt = (
   resumeAnalysis,
   targetRole,
   questionNumber,
+  previousQuestions = [],
   difficultyLevel = 'Intermediate',
   companyTrack = 'General',
   persona = 'bar_raiser'
@@ -122,18 +123,27 @@ You are conducting Round 1: General Aptitude & Logical Reasoning for candidates 
 Interviewer Persona: "${persona}".
 Base Difficulty: "${difficultyLevel}".
 
-CRITICAL INSTRUCTION - STRICT DOMAIN BOUNDARY:
+CRITICAL INSTRUCTION - STRICT DOMAIN BOUNDARY & DIVERSITY:
 - This round is EXCLUSIVELY for MATHEMATICAL PUZZLES, QUANTITATIVE APTITUDE, LOGICAL DEDUCTION, and ANALYTICAL BRAINTEASERS.
 - ABSOLUTE PROHIBITION: NEVER ask coding, software engineering, databases, microservices, APIs, backend system design, or domain-specific questions!
 - NEVER begin with "Let's begin the technical session" or mention systems/servers architecture. Technical questions belong strictly in Round 2.
-- Every question MUST be a pure quantitative puzzle, math calculation (e.g. rate of work, probability, percentages, speed-distance), logic grid, balance scale puzzle, or deduction problem with clear numerical parameters.
+- Every question MUST be a pure quantitative puzzle, math calculation, logic grid, or deduction problem with clear numerical parameters.
 
-Progression Guide for Question #${questionNumber}:
-- Question 1: Classical logical deduction puzzle, balance scale puzzle, or sequence reasoning.
-- Question 2: Practical quantitative rate / work calculation (e.g. worker rates, harmonic mean speed, percentages).
-- Question 3: Set theory, Venn diagram logic, or multi-step constraint puzzle.
-- Question 4: Probability calculation, combinatorics, or conditional expectation.
-- Question 5: Master lateral logic puzzle (e.g. water jug measurement, tournament scheduling, coin weighing).
+DIVERSITY MANDATE - ROTATE DOMAIN RANDOMLY:
+Pick ONE distinct puzzle domain from this spectrum:
+- Category A: Probability, dice/card combinatorics, or conditional expectation.
+- Category B: Harmonic speed, relative velocity, or time-distance optimization.
+- Category C: Angular clock geometry or modular calendar math.
+- Category D: Knockout tournament scheduling, brackets, and race efficiency.
+- Category E: Set theory, Venn diagrams, and inclusion-exclusion logic.
+- Category F: Knights & knaves, truth-tellers and liars, or seating order deduction.
+- Category G: Rates of work, reservoir filling/emptying pipes, or mixture ratios.
+
+ANTI-REPETITION ENFORCEMENT:
+DO NOT REPEAT or ask variations of any of these previously asked questions:
+${previousQuestions.length > 0 ? previousQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n') : '(First question of session)'}
+Pick a completely fresh, exciting puzzle from a different category than any seen above!
+Entropy Seed: ${Date.now()}-${Math.random()}
 
 Generate General Aptitude question #${questionNumber}:
 
@@ -209,6 +219,7 @@ const hrQuestionPrompt = (
   resumeAnalysis,
   targetRole,
   questionNumber,
+  previousQuestions = [],
   difficultyLevel = 'Intermediate',
   companyTrack = 'General',
   persona = 'bar_raiser'
@@ -223,6 +234,11 @@ IMPORTANT: The behavioral depth MUST strictly escalate periodically with questio
 - Question 3 (Level 3 - High-Pressure STAR Challenge): A situation where you had to deliver critical results under tight deadlines, shifting requirements, or missing resources.
 - Question 4 (Level 4 - Failure Ownership & Crisis Management): A major mistake or project failure you made, how you owned it, communicated with stakeholders, and recovered.
 - Question 5 (Level 5 - Executive Leadership & Ethical Dilemma): A high-stakes leadership dilemma, balancing product quality vs. business revenue pressure, or handling an ethical trade-off.
+
+ANTI-REPETITION MANDATE:
+DO NOT ask or repeat any of these previously asked behavioral questions:
+${previousQuestions.length > 0 ? previousQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n') : '(First question of session)'}
+Entropy Seed: ${Date.now()}-${Math.random()}
 
 Generate HR/behavioral question #${questionNumber} of 5 (Level ${questionNumber}):
 

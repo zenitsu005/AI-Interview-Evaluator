@@ -67,9 +67,9 @@ router.post('/get-question', async (req, res) => {
     if (round === 'aptitude') {
       prompt = aptitudeQuestionPrompt(
         effectiveResumeAnalysis,
-
         targetRole,
         questionIndex,
+        previousQuestions,
         difficultyLevel,
         companyTrack,
         persona
@@ -91,6 +91,7 @@ router.post('/get-question', async (req, res) => {
         effectiveResumeAnalysis,
         targetRole,
         questionIndex,
+        previousQuestions,
         difficultyLevel,
         companyTrack,
         persona
@@ -100,7 +101,7 @@ router.post('/get-question', async (req, res) => {
       return res.status(400).json({ error: `Unknown round: ${round}` });
     }
 
-    const question = await generateJSON(prompt);
+    const question = await generateJSON(prompt, [], { temperature: 0.85 });
     res.json(question);
   } catch (err) {
     res.status(500).json({ error: err.message });

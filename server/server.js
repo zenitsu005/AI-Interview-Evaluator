@@ -41,8 +41,15 @@ app.use('/api', evaluateRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/negotiate', negotiateRoutes);
 
+// Serverless root route fallback (handles rewrites where /api prefix may be stripped)
+app.use('/auth', authRoutes);
+app.use('/negotiate', negotiateRoutes);
+app.use('/', resumeRoutes);
+app.use('/', interviewRoutes);
+app.use('/', evaluateRoutes);
+
 // Health check
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({ status: 'ok', message: 'Mock Interview API is running 🚀' });
 });
 
