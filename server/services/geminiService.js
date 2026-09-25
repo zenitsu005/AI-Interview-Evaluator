@@ -8,10 +8,10 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'MISSING_KEY'
 
 // Fast model pool - prioritizing active official Gemini models
 const MODELS_TO_TRY = [
-  process.env.GEMINI_MODEL || 'gemini-2.0-flash',
-  'gemini-2.0-flash',
-  'gemini-1.5-flash',
-  'gemini-1.5-pro',
+  process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+  'gemini-3.5-flash',
+  'gemini-3.8-flash',
+  'gemini-flash-latest',
 ];
 
 /**
