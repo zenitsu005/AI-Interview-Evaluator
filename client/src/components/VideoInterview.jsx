@@ -1171,10 +1171,10 @@ export default function VideoInterview() {
                 onKeyDown={handleKeyDown}
                 placeholder={
                   activeTab === 'sandbox'
-                    ? 'Explain your code implementation, edge cases, and Big-O complexity here (your sandbox code is automatically submitted)...'
+                    ? 'Type or speak your explanation here (optional). Write your implementation in the Code Sandbox above...'
                     : activeTab === 'whiteboard'
                     ? 'Describe your system architecture, data flow, and trade-offs here...'
-                    : 'Type your structured answer here, or click Speak below to answer verbally...'
+                    : 'Type your structured answer here, or click Speak Answer below to speak verbally...'
                 }
                 rows={activeTab !== 'text' ? 4 : 7}
                 disabled={isLoading || isTranscribing}

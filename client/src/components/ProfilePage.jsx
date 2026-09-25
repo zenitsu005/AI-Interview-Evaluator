@@ -68,11 +68,6 @@ export default function ProfilePage() {
   const avgAttire = getCategoryAvg('attireScore');
   const avgVoice = getCategoryAvg('voiceConfidenceScore');
 
-  // Calculate Interview XP Credits: 100 XP per interview + bonus based on scores
-  const totalCredits = totalInterviews > 0
-    ? history.reduce((sum, h) => sum + 100 + Math.round((h.overallScore || 0) * 1.5), 0)
-    : 0;
-
   const getScoreColor = (score) => {
     if (score >= 70) return 'text-emerald-300 border-emerald-500/40 bg-emerald-950/60';
     if (score >= 40) return 'text-amber-300 border-amber-500/40 bg-amber-950/60';
@@ -137,8 +132,8 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Key Metrics & XP Credits */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Key Metrics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 text-center shadow-2xl">
             <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">Average Overall Score</p>
             <p className="text-4xl font-black text-white font-mono">{avgOverallScore}<span className="text-xs text-slate-500 font-normal">/100</span></p>
@@ -149,15 +144,6 @@ export default function ProfilePage() {
             <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">Total Mock Interviews</p>
             <p className="text-4xl font-black text-teal-400 font-mono">{totalInterviews}</p>
             <p className="text-[11px] text-slate-500 mt-1">Practice sessions finished</p>
-          </div>
-
-          <div className="bg-[#131823] border border-white/10 rounded-3xl p-6 text-center shadow-2xl">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1 font-mono">Interview Readiness XP</p>
-            <p className="text-4xl font-black text-amber-400 font-mono flex items-center justify-center gap-1.5">
-              <Zap className="w-7 h-7 text-amber-400 fill-amber-400" />
-              <span>{totalCredits.toLocaleString()}</span>
-            </p>
-            <p className="text-[11px] text-slate-500 mt-1">Credits earned from practice</p>
           </div>
         </div>
 
