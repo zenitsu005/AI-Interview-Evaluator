@@ -58,7 +58,7 @@ int main() {
 `,
 };
 
-export default function CodeSandbox({ code, onChange, onRun }) {
+export default function CodeSandbox({ code, onChange, onRun, testCases: propTestCases }) {
   const [lang, setLang] = useState('python');
   const [activeTab, setActiveTab] = useState('console'); // 'console' | 'tests' | 'bigo'
   const [consoleOutput, setConsoleOutput] = useState('');
@@ -115,12 +115,59 @@ export default function CodeSandbox({ code, onChange, onRun }) {
     setTimeout(() => {
       setIsRunning(false);
       const activeCode = code || STARTER_CODES[lang] || '';
-      const testCases = [
+
+      // Determine test cases to run
+      const defaultTestCases = [
         { id: 1, name: 'Standard Input Test', input: [1, -2, 3, 4, -5], inputStr: '[1, -2, 3, 4, -5]', expected: [2, 6, 8], expectedStr: '[2, 6, 8]' },
         { id: 2, name: 'Empty Edge Case', input: [], inputStr: '[]', expected: [], expectedStr: '[]' },
         { id: 3, name: 'All Negative Inputs', input: [-10, -20, -5], inputStr: '[-10, -20, -5]', expected: [], expectedStr: '[]' },
         { id: 4, name: 'Scaling Input Benchmark', input: [10, 20, 30], inputStr: '[10, 20, 30]', expected: [20, 40, 60], expectedStr: '[20, 40, 60]' },
       ];
+
+      const activeTestCases = (propTestCases && propTestCases.length > 0)
+        ? propTestCases
+        : defaultTestCases;
+
+      if (lang === 'sql') {
+        const t0 = performance.now();
+        const sqlRes = executeSQL(activeCode);
+        const duration = Math.max(1, Math.round(performance.now() - t0));
+        const hasCreatedIndex = /CREATE\s+INDEX/i.test(activeCode);
+        const hasSelectClause = /SELECT\s+.*FROM/i.test(activeCode);
+        const hasWhereClause = /WHERE/i.test(activeCode);
+
+        const results = activeTestCases.map((tc, idx) => {
+          let isPassed = false;
+          let message = '';
+          if (idx === 0) {
+            isPassed = hasCreatedIndex;
+            message = isPassed ? 'Composite Index DDL validated' : 'Missing CREATE INDEX statement';
+          } else if (idx === 1) {
+            isPassed = hasSelectClause && hasWhereClause;
+            message = isPassed ? 'Filtered Query syntax validated' : 'Missing SELECT ... WHERE filter statement';
+          } else {
+            isPassed = !sqlRes.output.includes('Error');
+            message = isPassed ? 'Query engine execution OK' : sqlRes.output;
+          }
+
+          return {
+            id: tc.id || idx + 1,
+            name: tc.name || `SQL Specification Check ${idx + 1}`,
+            input: tc.inputStr || tc.input || 'Active SQL Buffer',
+            expected: tc.expectedStr || tc.expected || 'Valid DDL / Optimized Query',
+            actual: message,
+            status: isPassed ? 'passed' : 'failed',
+            time: `${duration}ms`,
+          };
+        });
+
+        setTestResults(results);
+        return;
+      }
+
+      // Detect dynamically defined function name
+      const fnNameMatch = activeCode.match(/(?:function|def)\s+([a-zA-Z0-9_]+)/);
+      const customFnName = fnNameMatch ? fnNameMatch[1] : '';
 
       let fn = null;
       try {
@@ -131,22 +178,27 @@ export default function CodeSandbox({ code, onChange, onRun }) {
         fn = new Function(`
           "use strict";
           ${jsCode};
+          ${customFnName ? `if (typeof ${customFnName} === 'function') return ${customFnName};` : ''}
           if (typeof solveProblem === 'function') return solveProblem;
           if (typeof solve_problem === 'function') return solve_problem;
           if (typeof solution === 'function') return solution;
+          if (typeof idempotentHandler === 'function') return idempotentHandler;
+          if (typeof isRateLimited === 'function') return isRateLimited;
+          if (typeof filter_and_rerank === 'function') return filter_and_rerank;
+          if (typeof createBatcher === 'function') return createBatcher;
           return null;
         `)();
       } catch (err) {
         fn = null;
       }
 
-      const results = testCases.map((tc) => {
+      const results = activeTestCases.map((tc) => {
         if (!fn) {
           return {
             id: tc.id,
             name: tc.name,
-            input: tc.inputStr,
-            expected: tc.expectedStr,
+            input: tc.inputStr || JSON.stringify(tc.input),
+            expected: tc.expectedStr || JSON.stringify(tc.expected),
             actual: 'Error: Function not found or syntax error in code',
             status: 'failed',
             time: '0ms',
@@ -155,14 +207,16 @@ export default function CodeSandbox({ code, onChange, onRun }) {
 
         const t0 = performance.now();
         try {
-          const actualOutput = fn(tc.input);
+          const inputArg = Array.isArray(tc.input) ? tc.input : [tc.input];
+          const actualOutput = typeof fn === 'function' ? (tc.args ? fn(...tc.args) : fn(...inputArg)) : null;
           const duration = Math.max(1, Math.round(performance.now() - t0));
-          const isPassed = areResultsEqual(actualOutput, tc.expectedStr);
+          const exp = tc.expectedStr || JSON.stringify(tc.expected);
+          const isPassed = areResultsEqual(actualOutput, exp);
           return {
             id: tc.id,
             name: tc.name,
-            input: tc.inputStr,
-            expected: tc.expectedStr,
+            input: tc.inputStr || JSON.stringify(tc.input),
+            expected: exp,
             actual: JSON.stringify(actualOutput),
             status: isPassed ? 'passed' : 'failed',
             time: `${duration}ms`,
@@ -172,8 +226,8 @@ export default function CodeSandbox({ code, onChange, onRun }) {
           return {
             id: tc.id,
             name: tc.name,
-            input: tc.inputStr,
-            expected: tc.expectedStr,
+            input: tc.inputStr || JSON.stringify(tc.input),
+            expected: tc.expectedStr || JSON.stringify(tc.expected),
             actual: `Runtime Error: ${err.message}`,
             status: 'failed',
             time: `${duration}ms`,
@@ -291,7 +345,12 @@ export default function CodeSandbox({ code, onChange, onRun }) {
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Automated Tests {testResults ? `(${testResults.length}/4 ✓)` : ''}</span>
+              <span>
+                Automated Tests{' '}
+                {testResults
+                  ? `(${testResults.filter((t) => t.status === 'passed').length}/${testResults.length} Passed)`
+                  : ''}
+              </span>
             </button>
             <button
               type="button"
@@ -315,27 +374,44 @@ export default function CodeSandbox({ code, onChange, onRun }) {
 
         {/* Tab 2: Test Suite Runner */}
         {activeTab === 'tests' && (
-          <div className="p-4 bg-[#0D111A] space-y-2 min-h-[90px] max-h-[140px] overflow-y-auto">
+          <div className="p-4 bg-[#0D111A] space-y-2 min-h-[90px] max-h-[160px] overflow-y-auto">
             {testResults ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                {testResults.map((tc) => (
-                  <div
-                    key={tc.id}
-                    className="p-3 rounded-xl bg-[#131823] border border-emerald-500/30 flex items-center justify-between text-emerald-300 shadow-sm"
-                  >
-                    <div>
-                      <p className="font-bold text-white">{tc.name}</p>
-                      <p className="text-[10px] text-slate-400 font-mono">{tc.input} ➔ {tc.expected}</p>
+                {testResults.map((tc) => {
+                  const isPassed = tc.status === 'passed';
+                  return (
+                    <div
+                      key={tc.id}
+                      className={`p-3 rounded-xl border flex flex-col justify-between gap-1.5 shadow-sm transition-all ${
+                        isPassed
+                          ? 'bg-[#131823] border-emerald-500/40 text-emerald-300'
+                          : 'bg-rose-950/20 border-rose-500/40 text-rose-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-bold text-white text-xs truncate">{tc.name}</p>
+                        <span
+                          className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border flex-shrink-0 ${
+                            isPassed
+                              ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
+                              : 'bg-rose-950/80 text-rose-300 border-rose-500/40'
+                          }`}
+                        >
+                          {isPassed ? `✓ ${tc.time}` : '✕ Failed'}
+                        </span>
+                      </div>
+                      <div className="space-y-0.5 text-[10px] font-mono">
+                        <p className="text-slate-400 truncate">In: {tc.input}</p>
+                        <p className="text-slate-300 truncate">Exp: {tc.expected}</p>
+                        {!isPassed && <p className="text-rose-400 font-semibold truncate">Got: {tc.actual}</p>}
+                      </div>
                     </div>
-                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-950/80 text-emerald-300 border border-emerald-500/40">
-                      ✓ {tc.time}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <p className="text-slate-400 text-xs py-2 text-center font-mono">
-                Click "Run Tests" to execute standard and edge-case test vectors.
+                Click "Run Tests" to execute standard and edge-case test vectors against your code.
               </p>
             )}
           </div>

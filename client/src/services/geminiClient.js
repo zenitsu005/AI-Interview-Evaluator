@@ -107,6 +107,7 @@ export const generateDynamicQuestion = async ({
   difficultyLevel = 'Intermediate',
   companyTrack = 'General',
   persona = 'bar_raiser',
+  interviewerStrictness = 'bar_raiser',
   previousQuestions = [],
   resumeAnalysis = null,
   lastCandidateAnswer = '',
@@ -114,6 +115,23 @@ export const generateDynamicQuestion = async ({
   const seen = getSeenTopics();
   const allPrevious = [...previousQuestions, ...seen];
   const entropy = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+
+  const strictnessDirective =
+    interviewerStrictness === 'skeptical'
+      ? 'INTERVIEWER ATTITUDE: Stress / Skeptical Bar Raiser. Challenge candidate assumptions, probe edge cases, scale limits, and single points of failure under pressure.'
+      : interviewerStrictness === 'supportive'
+      ? 'INTERVIEWER ATTITUDE: Supportive Coach. Warm, constructive, empowering tone. Guide the candidate gently and invite step-by-step thinking.'
+      : 'INTERVIEWER ATTITUDE: Standard Bar Raiser. Objective, structured FAANG hiring bar.';
+
+  const resumeAnchor =
+    (resumeAnalysis?.projectHighlights?.length || resumeAnalysis?.coreSkills?.length)
+      ? `
+CANDIDATE RESUME PROFILE & ANCHORS:
+- Highlighted Projects: ${(resumeAnalysis?.projectHighlights || []).join('; ') || 'N/A'}
+- Technologies & Tools: ${[...(resumeAnalysis?.coreSkills || []), ...(resumeAnalysis?.keyTechnologies || [])].join(', ') || 'N/A'}
+RESUME-TAILORED CURRICULUM MANDATE: Whenever suitable, directly anchor this question in one of the candidate's actual projects or tools (e.g., "I see on your resume that you built [Project] using [Technology]; how did you handle [technical challenge]?")
+`
+      : '';
 
   let prompt = '';
 
@@ -133,6 +151,7 @@ export const generateDynamicQuestion = async ({
     prompt = `
 You are an executive interviewer testing Aptitude & Logical Reasoning for "${targetRole}" at company track "${companyTrack}".
 Interviewer Persona: "${persona}".
+${strictnessDirective}
 Base Difficulty: "${difficultyLevel}".
 Question Number: ${questionIndex} of 5.
 
@@ -160,8 +179,10 @@ Return EXACTLY this JSON:
     prompt = `
 You are a Principal Technical Interviewer evaluating a candidate for "${targetRole}" at company track "${companyTrack}".
 Interviewer Persona: "${persona}".
+${strictnessDirective}
 Base Difficulty: "${difficultyLevel}".
 Question Number: ${questionIndex} of 5.
+${resumeAnchor}
 
 Candidate Technical Profile:
 - Domain: ${resumeAnalysis?.domain || targetRole}
@@ -204,8 +225,10 @@ Return EXACTLY this JSON:
     prompt = `
 You are an Executive HR Director evaluating a candidate for "${targetRole}" at company track "${companyTrack}".
 Interviewer Persona: "${persona}".
+${strictnessDirective}
 Base Difficulty: "${difficultyLevel}".
 Question Number: ${questionIndex} of 5.
+${resumeAnchor}
 
 BEHAVIORAL ESCALATION RUBRIC:
 - Level 1: Career motivation, role alignment, and core professional values.
@@ -306,10 +329,19 @@ export const generateEvaluationReport = async ({
   targetRole = 'Software Engineer',
   difficultyLevel = 'Intermediate',
   companyTrack = 'General',
+  interviewerStrictness = 'bar_raiser',
 }) => {
+  const strictnessText =
+    interviewerStrictness === 'skeptical'
+      ? 'CALIBRATION MODE: Stress / Skeptical Bar Raiser. Scrutinize all answers strictly; reject incomplete or hand-waving explanations without clear proofs or numbers.'
+      : interviewerStrictness === 'supportive'
+      ? 'CALIBRATION MODE: Supportive Coach. Calibrate constructively, emphasize growth trajectory, problem-solving reasoning, and actionable next steps.'
+      : 'CALIBRATION MODE: Standard Bar Raiser. Objective FAANG hiring bar calibration.';
+
   const prompt = `
 You are an Executive Interview Calibration Board and Bar Raiser evaluating a candidate for "${targetRole}" at company track "${companyTrack}".
 Target Difficulty: "${difficultyLevel}".
+${strictnessText}
 
 CANDIDATE INTERVIEW TRANSCRIPT & ANSWERS:
 ${responses.map((r, i) => `
@@ -374,6 +406,56 @@ Return EXACTLY this JSON structure:
 `;
 
   return await callGeminiAPI(prompt, { temperature: 0.2 });
+};
+
+/**
+ * Fast single-question evaluation for "Instant Redo Drill"
+ */
+export const evaluateSingleQuestionAnswer = async ({
+  question,
+  topic = 'General',
+  candidateAnswer,
+  codeSnippet = '',
+  targetRole = 'Software Engineer',
+  difficultyLevel = 'Intermediate',
+  companyTrack = 'General',
+  interviewerStrictness = 'bar_raiser',
+}) => {
+  const prompt = `
+You are an expert AI Technical Interview Evaluator.
+Evaluate the candidate's re-attempt / redo drill response for the following question:
+
+Role: "${targetRole}"
+Track: "${companyTrack}"
+Difficulty: "${difficultyLevel}"
+Strictness Mode: "${interviewerStrictness}"
+
+Question:
+"${question}"
+Topic: "${topic}"
+
+Candidate's Redo Answer:
+"${candidateAnswer || '(No response provided)'}"
+${codeSnippet ? `Candidate's Submitted Code:\n${codeSnippet}` : ''}
+
+EVALUATION MANDATES:
+1. Honest scoring between 0 and 100.
+2. If the candidate answer is empty or just says "hello" or copies boilerplate, score 0-25 with status "Needs Work".
+3. If partial solution, score 45-70 with status "Partially Correct".
+4. If substantive, accurate, addresses edge cases/scale, score 75-100 with status "Correct".
+5. Give direct, actionable feedback on what changed and what makes it stronger.
+
+Return EXACTLY this JSON:
+{
+  "score": <integer 0-100>,
+  "status": "Correct | Partially Correct | Needs Work",
+  "feedback": "2-3 sentences evaluating the substance and depth of this redo response",
+  "strengths": ["Clear handling of X", "Accurate explanation of Y"],
+  "areasForImprovement": ["Further edge cases or considerations to address"]
+}
+`;
+
+  return await callGeminiAPI(prompt, { temperature: 0.3 });
 };
 
 /**
@@ -530,4 +612,54 @@ export const transcribeAudioClient = async (audioBase64, mimeType = 'audio/wav')
     console.warn('transcribeAudioClient error:', err);
   }
   return '';
+};
+
+/**
+ * 60-Second Elevator Pitch & Behavioral Blitz Evaluator
+ */
+export const evaluateBehavioralPitchClient = async ({
+  promptTitle,
+  promptQuestion,
+  candidateSpeech,
+  durationSeconds = 60,
+  targetRole = 'Software Engineer',
+  speakingPaceWpm = 0,
+  fillerWordsCount = 0,
+}) => {
+  const prompt = `
+You are a Principal Bar Raiser and Executive Communication Coach at a top tech company (Google / Amazon / Meta).
+Evaluate the candidate's 60-Second Elevator Pitch / Behavioral Blitz response:
+
+Role: "${targetRole}"
+Pitch Drill: "${promptTitle}"
+Prompt: "${promptQuestion}"
+Candidate Spoken Answer: "${candidateSpeech || '(No speech recorded)'}"
+Speech Metrics:
+- Time Spent: ${durationSeconds}s / 60s
+- Speaking Pace: ${speakingPaceWpm} WPM (Ideal: 130-160 WPM)
+- Filler Words: ${fillerWordsCount} detected
+
+EVALUATION RUBRIC:
+1. Honest, rigorous evaluation. If candidate said nothing or meaningless words, score 0-20.
+2. STAR Structure: Did they clearly state Situation/Task, specific Actions they took, and quantifiable Results?
+3. Executive Presence & Conciseness: Did they command authority, speak crisply without meandering, and fit key impact into 60s?
+4. Ownership: Did they use "I designed/built" or hide behind "we"?
+
+Return EXACTLY this JSON:
+{
+  "overallScore": <integer 0-100>,
+  "executivePresenceScore": <integer 0-100>,
+  "concisenessRating": "Crisp & Impactful | Well Paced | Rambling | Rushed | Incomplete",
+  "starBreakdown": {
+    "situation": "1-sentence evaluation of context setting",
+    "action": "1-sentence evaluation of candidate agency & technical depth",
+    "result": "1-sentence evaluation of metric quantification and impact"
+  },
+  "strengths": ["Clear strength 1", "Clear strength 2"],
+  "actionableTips": ["Specific improvement tip 1", "Specific improvement tip 2"],
+  "summaryVerdict": "2-3 sentences concise executive verdict"
+}
+`;
+
+  return await callGeminiAPI(prompt, { temperature: 0.3 });
 };

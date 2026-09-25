@@ -100,6 +100,27 @@ const LEVELS = [
   },
 ];
 
+const STRICTNESS_OPTIONS = [
+  {
+    id: 'supportive',
+    label: 'Supportive Coach',
+    color: 'border-emerald-500/40 text-emerald-400 bg-emerald-950/40',
+    desc: 'Encouraging tone, constructive guidance, patient pacing, and positive reinforcement.',
+  },
+  {
+    id: 'bar_raiser',
+    label: 'Standard Bar Raiser',
+    color: 'border-teal-500/40 text-teal-400 bg-teal-950/40',
+    desc: 'Objective FAANG standard hiring bar. Rigorous evaluation with balanced expectations.',
+  },
+  {
+    id: 'skeptical',
+    label: 'Stress / Skeptical Interviewer',
+    color: 'border-amber-500/40 text-amber-400 bg-amber-950/40',
+    desc: 'Late-stage pressure round. Actively challenges edge cases, demands scale proofs, and tests composure under scrutiny.',
+  },
+];
+
 const FORMATS = [
   { id: 'voice-transcript', title: 'Live AI Voice + Visual Transcript', desc: 'Real-time neural speech conversation with speech analysis.', icon: Mic },
   { id: 'text-only', title: 'Quiet Text-Only Mode', desc: 'Type your responses directly without microphone access.', icon: FileText },
@@ -112,6 +133,7 @@ export default function InterviewSetup({ onNavigate }) {
     setCompanyTrack,
     setInterviewerPersona,
     setInterviewMode,
+    setInterviewerStrictness,
     BAR_RAISER_PERSONAS,
     startInterview,
     isLoading: contextLoading,
@@ -121,6 +143,7 @@ export default function InterviewSetup({ onNavigate }) {
   const [customRoleText, setCustomRoleText] = useState(ROLES[0].title);
   const [selectedRole, setSelectedRole] = useState(ROLES[0]);
   const [difficulty, setDifficulty] = useState('Intermediate');
+  const [strictness, setStrictness] = useState('bar_raiser');
   const [selectedPersona, setSelectedPersona] = useState(BAR_RAISER_PERSONAS?.[0] || null);
   const [selectedFormat, setSelectedFormat] = useState(FORMATS[0]);
   const [duration, setDuration] = useState('15');
@@ -157,6 +180,7 @@ export default function InterviewSetup({ onNavigate }) {
       if (typeof setTargetRole === 'function') setTargetRole(finalRoleTitle);
       if (typeof setDifficultyLevel === 'function') setDifficultyLevel(difficulty);
       if (typeof setInterviewMode === 'function') setInterviewMode(effectiveMode);
+      if (typeof setInterviewerStrictness === 'function') setInterviewerStrictness(strictness);
 
       if (selectedPersona) {
         if (typeof setInterviewerPersona === 'function') setInterviewerPersona(selectedPersona);
@@ -167,6 +191,7 @@ export default function InterviewSetup({ onNavigate }) {
         await startInterview({
           targetRole: finalRoleTitle,
           difficultyLevel: difficulty,
+          interviewerStrictness: strictness,
           interviewerPersona: selectedPersona || BAR_RAISER_PERSONAS?.[0],
           companyTrack: selectedPersona?.company || 'General',
           interviewMode: effectiveMode,
@@ -391,6 +416,38 @@ export default function InterviewSetup({ onNavigate }) {
                 </div>
               </div>
             )}
+
+            {/* Interviewer Strictness & Persona Attitude */}
+            <div className="space-y-4 pt-4 border-t border-white/10">
+              <div className="space-y-1">
+                <h2 className="text-xl sm:text-2xl font-extrabold text-white">Interviewer Strictness & Attitude</h2>
+                <p className="text-sm text-slate-400">Choose the emotional tone, challenge level, and cross-examination style for your session.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {STRICTNESS_OPTIONS.map((opt) => {
+                  const isSelected = strictness === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setStrictness(opt.id)}
+                      className={`p-5 rounded-2xl border text-left flex flex-col justify-between gap-3 transition-all cursor-pointer ${
+                        isSelected
+                          ? `${opt.color} ring-2 ring-teal-500/30 shadow-xl`
+                          : 'bg-[#131823] border-white/10 hover:border-white/20 text-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <p className="font-bold text-sm sm:text-base text-white">{opt.label}</p>
+                        {isSelected && <CheckCircle2 className="w-4 h-4 text-teal-400" />}
+                      </div>
+                      <p className="text-xs text-slate-400 font-sans leading-relaxed">{opt.desc}</p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             <div className="flex justify-between pt-4">
               <button

@@ -5,6 +5,8 @@ import {
   generateFollowUpProbe as clientFollowUpProbe,
   generateInterviewHint as clientInterviewHint,
   generateEvaluationReport as clientEvaluationReport,
+  evaluateSingleQuestionAnswer as clientEvaluateSingleQuestion,
+  evaluateBehavioralPitchClient,
   analyzeResumeClient,
   transcribeAudioClient,
 } from './geminiClient';
@@ -111,6 +113,7 @@ export const getQuestion = async ({
   difficultyLevel = 'Intermediate',
   companyTrack = 'General',
   persona = 'bar_raiser',
+  interviewerStrictness = 'bar_raiser',
   jobDescription = '',
 }) => {
   const online = await isServerOnline();
@@ -126,6 +129,7 @@ export const getQuestion = async ({
         difficultyLevel,
         companyTrack,
         persona,
+        interviewerStrictness,
         jobDescription,
       }, { timeout: 5000 });
       if (data && data.question) return data;
@@ -143,6 +147,7 @@ export const getQuestion = async ({
     difficultyLevel,
     companyTrack,
     persona,
+    interviewerStrictness,
     previousQuestions,
     resumeAnalysis,
     lastCandidateAnswer,
@@ -217,6 +222,7 @@ export const evaluateInterview = async ({
   difficultyLevel = 'Intermediate',
   companyTrack = 'General',
   persona = 'bar_raiser',
+  interviewerStrictness = 'bar_raiser',
 }) => {
   try {
     const { data } = await api.post(
@@ -228,6 +234,7 @@ export const evaluateInterview = async ({
         difficultyLevel,
         companyTrack,
         persona,
+        interviewerStrictness,
       },
       { timeout: 25000 }
     );
@@ -242,6 +249,49 @@ export const evaluateInterview = async ({
     targetRole,
     difficultyLevel,
     companyTrack,
+    interviewerStrictness,
+  });
+};
+
+export const evaluateSingleQuestion = async ({
+  question,
+  topic,
+  candidateAnswer,
+  codeSnippet,
+  targetRole,
+  difficultyLevel,
+  companyTrack,
+  interviewerStrictness,
+}) => {
+  return await clientEvaluateSingleQuestion({
+    question,
+    topic,
+    candidateAnswer,
+    codeSnippet,
+    targetRole,
+    difficultyLevel,
+    companyTrack,
+    interviewerStrictness,
+  });
+};
+
+export const evaluateBehavioralPitch = async ({
+  promptTitle,
+  promptQuestion,
+  candidateSpeech,
+  durationSeconds = 60,
+  targetRole = 'Software Engineer',
+  speakingPaceWpm = 0,
+  fillerWordsCount = 0,
+}) => {
+  return await evaluateBehavioralPitchClient({
+    promptTitle,
+    promptQuestion,
+    candidateSpeech,
+    durationSeconds,
+    targetRole,
+    speakingPaceWpm,
+    fillerWordsCount,
   });
 };
 

@@ -109,6 +109,7 @@ export const InterviewProvider = ({ children }) => {
   const [difficultyLevel, setDifficultyLevel] = useState('Intermediate'); // 'Beginner' | 'Intermediate' | 'Experienced'
   const [companyTrack, setCompanyTrack] = useState('Amazon'); // Track
   const [interviewerPersona, setInterviewerPersona] = useState(BAR_RAISER_PERSONAS[0]); // Bar Raiser Persona
+  const [interviewerStrictness, setInterviewerStrictness] = useState('bar_raiser'); // 'supportive' | 'bar_raiser' | 'skeptical'
   const [duration, setDuration] = useState('15'); // '15' | '30' | '45'
   const [resumeText, setResumeText] = useState('');
   const [targetRole, setTargetRole] = useState('');
@@ -287,6 +288,11 @@ const TECHNICAL_TOPIC_CHAINS = [
       hints: ['Check if key exists in cache; if pending return 409; if completed return cached result; otherwise acquire lock with TTL.'],
       evaluationCriteria: ['Atomic lock logic', 'Error state handling', 'Clean modular design'],
       hasCodingSandbox: true,
+      testCases: [
+        { id: 1, name: 'Replay Completed Request', input: "req-101", inputStr: 'idempotentHandler("req-101", { amount: 50 }, cacheStore)', expected: 'Cached Result', expectedStr: 'Cached Result' },
+        { id: 2, name: 'Concurrent In-Flight Lock', input: "req-pending", inputStr: 'idempotentHandler("req-pending", { amount: 50 }, cacheStore)', expected: '409 Conflict', expectedStr: '409 Conflict' },
+        { id: 3, name: 'First-Time Fresh Request', input: "req-fresh", inputStr: 'idempotentHandler("req-fresh", { amount: 100 }, cacheStore)', expected: 'Processed & Cached', expectedStr: 'Processed & Cached' },
+      ],
       starterCode: `// Write your idempotent request deduplication logic below:
 function idempotentHandler(requestId, payload, cacheStore) {
   // TODO: 1. Check if requestId already exists in cacheStore
@@ -316,6 +322,10 @@ function idempotentHandler(requestId, payload, cacheStore) {
       hints: ['Place equality columns first in composite index: (user_id, status, created_at DESC) to avoid index skip scans.'],
       evaluationCriteria: ['Composite index column order', 'Eliminating filesort', 'Query execution plan efficiency'],
       hasCodingSandbox: true,
+      testCases: [
+        { id: 1, name: 'Composite Index DDL Check', input: 'CREATE INDEX idx_payments_user_status_created ON payments (user_id, status, created_at DESC)', inputStr: 'CREATE INDEX Statement', expected: 'Valid Composite Index', expectedStr: 'Valid Composite Index' },
+        { id: 2, name: 'Query Filter & Order By Clause', input: "SELECT * FROM payments WHERE user_id = 42 AND status = 'COMPLETED' ORDER BY created_at DESC", inputStr: 'SELECT ... WHERE Statement', expected: 'Index Range Scan (Zero Filesort)', expectedStr: 'Index Range Scan (Zero Filesort)' },
+      ],
       starterCode: `-- Technical SQL Sandbox
 -- Table Schema: payments (payment_id, user_id, amount, status, created_at)
 
@@ -347,6 +357,10 @@ function idempotentHandler(requestId, payload, cacheStore) {
       hints: ['Attempt to acquire lock with SET NX EX. If acquired, compute and set cache. If not, sleep and retry.'],
       evaluationCriteria: ['SET NX EX lock acquisition', 'Lock release safety', 'Retry backoff loop'],
       hasCodingSandbox: true,
+      testCases: [
+        { id: 1, name: 'Cache Hit Returns Immediate Value', input: "hit-key", inputStr: 'getOrComputeWithLock("cached_user", computeFn, 60, redis)', expected: 'Cached Value', expectedStr: 'Cached Value' },
+        { id: 2, name: 'Cache Miss Acquires SETNX Lock', input: "miss-key", inputStr: 'getOrComputeWithLock("uncached_user", computeFn, 60, redis)', expected: 'DB Query & Lock Released', expectedStr: 'DB Query & Lock Released' },
+      ],
       starterCode: `// Mutex-Protected Cache Retrieval Pattern
 async function getOrComputeWithLock(key, computeFn, ttlSeconds, mockRedis) {
   // TODO: 1. Check cache first; if present return parsed value
@@ -376,6 +390,10 @@ async function getOrComputeWithLock(key, computeFn, ttlSeconds, mockRedis) {
       hints: ['Keep a stack of executed compensation functions. If a step fails, pop and run compensations in reverse order.'],
       evaluationCriteria: ['Compensation stack pattern', 'Reverse rollback order', 'Atomic error reporting'],
       hasCodingSandbox: true,
+      testCases: [
+        { id: 1, name: 'Successful Saga Step Execution', input: "order-ok", inputStr: 'executeOrderSaga(validOrder)', expected: 'Saga Completed', expectedStr: 'Saga Completed' },
+        { id: 2, name: 'Compensating Rollback Triggered', input: "order-fail", inputStr: 'executeOrderSaga(failedInventoryOrder)', expected: 'Compensating Rollback Done', expectedStr: 'Compensating Rollback Done' },
+      ],
       starterCode: `// Saga Orchestrator with Compensating Rollbacks
 async function executeOrderSaga(order) {
   // TODO: 1. Maintain list of compensating rollback actions
@@ -404,6 +422,10 @@ async function executeOrderSaga(order) {
       hints: ['Store incoming items in a ref queue, schedule a timer or requestAnimationFrame, and trigger a single state update with the flushed batch.'],
       evaluationCriteria: ['Queue management in ref', 'Proper cleanup of timers', 'Single state flush'],
       hasCodingSandbox: true,
+      testCases: [
+        { id: 1, name: 'Batch Queue Flushes Accumulated Messages', input: "['msg1', 'msg2']", inputStr: 'batcher.enqueue(messages)', expected: 'Single Batch Flushed', expectedStr: 'Single Batch Flushed' },
+        { id: 2, name: 'Timer Cleans Up On Unmount', input: "50ms delay", inputStr: 'cleanupTimer()', expected: 'Zero Memory Leaks', expectedStr: 'Zero Memory Leaks' },
+      ],
       starterCode: `// Custom Batching Hook for High-Frequency WebSocket Streams
 function createBatcher(flushCallback, delayMs = 50) {
   // TODO: 1. Maintain queue of incoming streaming items
@@ -432,6 +454,10 @@ function createBatcher(flushCallback, delayMs = 50) {
       hints: ['Compute dot product over norms for cosine similarity, filter chunks where similarity < threshold, sort descending, and return top-K.'],
       evaluationCriteria: ['Cosine similarity calculation', 'Threshold filtering', 'Deterministic sorting'],
       hasCodingSandbox: true,
+      testCases: [
+        { id: 1, name: 'Filters Low-Relevance Chunks', input: "[1, 0]", inputStr: 'filter_and_rerank([1, 0], sampleDocs, 0.75, 3)', expected: 'Filtered Top Chunks', expectedStr: 'Filtered Top Chunks' },
+        { id: 2, name: 'Descending Cosine Similarity Order', input: "cos ranking", inputStr: 'Sort by score desc', expected: 'Sorted Chunks', expectedStr: 'Sorted Chunks' },
+      ],
       starterCode: `# Python RAG Chunk Filter & Cosine Reranker
 import math
 
@@ -461,6 +487,11 @@ def filter_and_rerank(query_vector, documents, score_threshold=0.75, top_k=3):
       hints: ['Filter timestamps where now - ts < windowMs; if length >= maxRequests reject; otherwise append now and allow.'],
       evaluationCriteria: ['Window sliding logic', 'Atomic log append', 'Boolean decision accuracy'],
       hasCodingSandbox: true,
+      testCases: [
+        { id: 1, name: 'Normal Traffic Under Limit', input: "['u1', 60000, 5, [100]]", inputStr: 'isRateLimited("u1", 60000, 5, [100])', expected: false, expectedStr: 'false' },
+        { id: 2, name: 'Throttles When Exceeding Limit', input: "['u2', 60000, 2, [100, 200, 300]]", inputStr: 'isRateLimited("u2", 60000, 2, [100, 200, 300])', expected: true, expectedStr: 'true' },
+        { id: 3, name: 'Evicts Expired Window Timestamps', input: "['u3', 60000, 2, [oldTs]]", inputStr: 'isRateLimited("u3", 60000, 2, [oldTs])', expected: false, expectedStr: 'false' },
+      ],
       starterCode: `// Sliding Window Rate Limiter Implementation
 function isRateLimited(userId, windowMs, maxRequests, requestLog) {
   // TODO: 1. Remove expired timestamps outside the sliding window (now - ts < windowMs)
@@ -489,6 +520,11 @@ function isRateLimited(userId, windowMs, maxRequests, requestLog) {
       hints: ['Parse header & payload, strictly verify alg matches HS256 (reject none), compute signature, check revokedSet, check expiration.'],
       evaluationCriteria: ['Strict algorithm enforcement', 'Blacklist check', 'Expiry enforcement'],
       hasCodingSandbox: true,
+      testCases: [
+        { id: 1, name: 'Rejects None Algorithm Attack', input: "alg: none", inputStr: 'verifyAndAuthorize(noneToken, secret, set)', expected: 'Error: Invalid Algorithm', expectedStr: 'Error: Invalid Algorithm' },
+        { id: 2, name: 'Rejects Revoked Token', input: "revokedToken", inputStr: 'verifyAndAuthorize(revokedToken, secret, revokedSet)', expected: 'Error: Token Revoked', expectedStr: 'Error: Token Revoked' },
+        { id: 3, name: 'Authorizes Valid HS256 Token', input: "validToken", inputStr: 'verifyAndAuthorize(validToken, secret, revokedSet)', expected: 'Authorized Payload', expectedStr: 'Authorized Payload' },
+      ],
       starterCode: `// Secure Token Verification & Revocation Check
 function verifyAndAuthorize(token, secretKey, revokedTokenSet) {
   // TODO: 1. Verify token exists and is not present in revokedTokenSet
@@ -600,6 +636,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
     const effectiveLevel = overrideConfig.difficultyLevel || difficultyLevel || 'Intermediate';
     const effectiveCompany = overrideConfig.companyTrack || companyTrack || 'General';
     const effectivePersona = overrideConfig.interviewerPersona || interviewerPersona || BAR_RAISER_PERSONAS[0];
+    const effectiveStrictness = overrideConfig.interviewerStrictness || interviewerStrictness || 'bar_raiser';
     const effectiveDuration = overrideConfig.duration || duration || '15';
     const effectiveMode = overrideConfig.interviewMode || interviewMode || 'video';
 
@@ -607,6 +644,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
     if (overrideConfig.difficultyLevel) setDifficultyLevel(overrideConfig.difficultyLevel);
     if (overrideConfig.companyTrack) setCompanyTrack(overrideConfig.companyTrack);
     if (overrideConfig.interviewerPersona) setInterviewerPersona(overrideConfig.interviewerPersona);
+    if (overrideConfig.interviewerStrictness) setInterviewerStrictness(overrideConfig.interviewerStrictness);
     if (overrideConfig.duration) setDuration(overrideConfig.duration);
     if (overrideConfig.interviewMode) setInterviewMode(overrideConfig.interviewMode);
 
@@ -648,6 +686,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
           difficultyLevel: effectiveLevel,
           companyTrack: effectiveCompany,
           persona: effectivePersona?.id || 'amazon',
+          interviewerStrictness: effectiveStrictness,
         });
         if (dynamicQ && dynamicQ.question) {
           recordSeenTopic(dynamicQ.topic || dynamicQ.question);
@@ -658,7 +697,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
         console.log('Optimized opening question active.');
       }
     }, 150);
-  }, [resumeAnalysis, targetRole, difficultyLevel, companyTrack, interviewerPersona, duration, interviewMode]);
+  }, [resumeAnalysis, targetRole, difficultyLevel, companyTrack, interviewerPersona, interviewerStrictness, duration, interviewMode]);
 
 
 
@@ -741,6 +780,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
               difficultyLevel: difficultyLevel || 'Intermediate',
               companyTrack: companyTrack || 'General',
               persona: interviewerPersona?.id || 'amazon',
+              interviewerStrictness: interviewerStrictness || 'bar_raiser',
             });
           } catch (qErr) {
             console.warn('Next question fetch fallback:', qErr);
@@ -772,6 +812,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
               difficultyLevel: difficultyLevel || 'Intermediate',
               companyTrack: companyTrack || 'General',
               persona: interviewerPersona?.id || 'amazon',
+              interviewerStrictness: interviewerStrictness || 'bar_raiser',
             });
           } catch (qErr) {
             console.warn('Next round question fetch fallback:', qErr);
@@ -802,6 +843,7 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
               difficultyLevel: difficultyLevel || 'Intermediate',
               companyTrack: companyTrack || 'General',
               persona: interviewerPersona?.id || 'amazon',
+              interviewerStrictness: interviewerStrictness || 'bar_raiser',
             });
           } catch (evalErr) {
             console.warn('Evaluation report fallback:', evalErr);
@@ -1119,6 +1161,8 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
         setDifficultyLevel,
         companyTrack,
         setCompanyTrack,
+        interviewerStrictness,
+        setInterviewerStrictness,
         duration,
         setDuration,
         resumeText,

@@ -99,6 +99,22 @@ export default function VideoInterview() {
   const [vocalSteadiness, setVocalSteadiness] = useState(0);
   const [speechRate, setSpeechRate] = useState(1.0);
 
+  // Studio Telemetry & Features
+  const [audioLevels, setAudioLevels] = useState([15, 15, 15, 15, 15, 15, 15, 15]);
+  const [isBackAndForthMode, setIsBackAndForthMode] = useState(true);
+  const [splitWidth, setSplitWidth] = useState(() => {
+    try {
+      const saved = localStorage.getItem('studio_split_width');
+      return saved ? Math.min(70, Math.max(28, Number(saved))) : 42;
+    } catch (e) {
+      return 42;
+    }
+  });
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef(null);
+  const autoInterruptedRef = useRef(false);
+  const lastActiveSpeechTimeRef = useRef(null);
+
   const fillerWordsRegex = /\b(um|uh|like|you know|basically|actually|literally|sort of|kind of)\b/gi;
   const detectedFillers = (transcript.match(fillerWordsRegex) || []).length;
   const wordCount = transcript.trim() ? transcript.trim().split(/\s+/).length : 0;
@@ -279,11 +295,12 @@ export default function VideoInterview() {
     return () => clearInterval(interval);
   }, [camReady, virtualMode, detectedFillers]);
 
-  // Real-Time Audio Telemetry: Only measures when actively recording & speaking
+  // Real-Time Audio Telemetry: Measures live microphone levels & powers 8-bar visual equalizer
   useEffect(() => {
     if (!isRecording || !audioStreamRef.current) {
       setIsAudioActive(false);
       setVocalSteadiness(0);
+      setAudioLevels([15, 15, 15, 15, 15, 15, 15, 15]);
       return;
     }
 
@@ -295,6 +312,7 @@ export default function VideoInterview() {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       analyser = audioCtx.createAnalyser();
       analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.5;
       source = audioCtx.createMediaStreamSource(audioStreamRef.current);
       source.connect(analyser);
 
@@ -308,11 +326,44 @@ export default function VideoInterview() {
         }
         const avgVol = sum / dataArray.length;
 
+        // Calculate 8-band visual soundwave equalizer bars
+        const binSize = Math.floor(dataArray.length / 8);
+        const bars = [];
+        for (let b = 0; b < 8; b++) {
+          let bSum = 0;
+          for (let k = b * binSize; k < (b + 1) * binSize; k++) {
+            bSum += dataArray[k];
+          }
+          const bAvg = bSum / binSize;
+          // Normalize height between 15% (idle) and 100% (peak)
+          const barHeight = Math.max(15, Math.min(100, Math.round((bAvg / 140) * 100)));
+          bars.push(barHeight);
+        }
+        setAudioLevels(bars);
+
         if (avgVol < 8) {
           // Silence or pause
           setIsAudioActive(false);
+
+          // Conversational Interruption: If candidate was speaking and now pauses > 4.5s
+          const now = Date.now();
+          if (
+            isBackAndForthMode &&
+            !autoInterruptedRef.current &&
+            !isProbing &&
+            !probeQuestion &&
+            transcript.trim().length > 35 &&
+            lastActiveSpeechTimeRef.current &&
+            now - lastActiveSpeechTimeRef.current > 4500
+          ) {
+            autoInterruptedRef.current = true;
+            setStatusMessage('⚡ Conversational Interjection: Probing your reasoning on the fly...');
+            handleRequestProbe();
+          }
         } else {
           setIsAudioActive(true);
+          lastActiveSpeechTimeRef.current = Date.now();
+
           let targetSteadiness = 92;
           if (avgVol >= 15 && avgVol <= 90) {
             targetSteadiness = Math.min(98, 90 + Math.round((avgVol / 90) * 8));
@@ -333,7 +384,7 @@ export default function VideoInterview() {
         }
       };
 
-      const interval = setInterval(checkAudio, 250);
+      const interval = setInterval(checkAudio, 120);
       return () => {
         clearInterval(interval);
         if (source) source.disconnect();
@@ -342,7 +393,7 @@ export default function VideoInterview() {
     } catch (e) {
       console.warn('Audio analyser telemetry notice:', e);
     }
-  }, [isRecording, detectedFillers, estimatedWpm]);
+  }, [isRecording, detectedFillers, estimatedWpm, isBackAndForthMode, isProbing, probeQuestion, transcript]);
 
   useEffect(() => {
     if (detectedFillers > prevFillersCountRef.current) {
@@ -471,6 +522,8 @@ export default function VideoInterview() {
       setProbeAnswer('');
       setHint(null);
       setStatusMessage(null);
+      autoInterruptedRef.current = false;
+      lastActiveSpeechTimeRef.current = null;
       framesRef.current = [];
       speakText(currentQuestion.question);
       setTimeout(() => textareaRef.current?.focus(), 150);
@@ -495,6 +548,45 @@ export default function VideoInterview() {
       }
     }
   }, [currentQuestion, currentRound, questionIndexInRound]);
+
+  // Split-Screen Drag-Resizer Mouse & Touch Handlers
+  const handleMouseDownResize = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : null);
+      if (clientX === null) return;
+      const newWidthPercent = ((clientX - rect.left) / rect.width) * 100;
+      const clamped = Math.min(68, Math.max(28, newWidthPercent));
+      setSplitWidth(clamped);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      try {
+        localStorage.setItem('studio_split_width', String(Math.round(splitWidth)));
+      } catch (err) {}
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleMouseMove);
+    window.addEventListener('touchend', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleMouseMove);
+      window.removeEventListener('touchend', handleMouseUp);
+    };
+  }, [isDragging, splitWidth]);
 
   useEffect(() => {
     let timer = null;
@@ -775,6 +867,22 @@ export default function VideoInterview() {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Conversational Interruption Toggle */}
+          <button
+            type="button"
+            onClick={() => setIsBackAndForthMode((prev) => !prev)}
+            className={`text-xs px-2.5 py-1.5 rounded-xl font-bold border transition-all flex items-center gap-1.5 cursor-pointer ${
+              isBackAndForthMode
+                ? 'bg-amber-500/15 text-amber-300 border-amber-500/40 shadow-sm'
+                : 'bg-[#171E2D] text-slate-400 border-white/10 hover:text-white'
+            }`}
+            title="Interactive Back-and-Forth: When ON, the AI interviewer initiates follow-up probes when you pause"
+          >
+            <Activity className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden sm:inline">Back-and-Forth:</span>
+            <span>{isBackAndForthMode ? 'ON' : 'OFF'}</span>
+          </button>
+
           {/* Ambiance Selector */}
           <div className="flex items-center gap-1.5 bg-[#171E2D] px-2.5 py-1.5 rounded-xl border border-white/10 text-xs">
             <Headphones className="w-3.5 h-3.5 text-slate-400" />
@@ -853,10 +961,16 @@ export default function VideoInterview() {
         />
       </div>
 
-      {/* Main Studio Layout */}
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start text-left">
-        {/* Left Column: Live Camera & Question Prompt (5 Cols) */}
-        <div className="lg:col-span-5 space-y-4">
+      {/* Main Studio Layout with Drag Resizer */}
+      <main
+        ref={containerRef}
+        className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 flex flex-col lg:flex-row gap-0 lg:gap-2 items-stretch text-left relative"
+      >
+        {/* Left Column: Live Camera & Question Prompt */}
+        <div
+          className="space-y-4 w-full flex-shrink-0 transition-all duration-75"
+          style={{ width: typeof window !== 'undefined' && window.innerWidth >= 1024 ? `${splitWidth}%` : '100%' }}
+        >
           {/* Meeting Feed Header */}
           <div className="flex items-center justify-between gap-2 px-1">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5 font-mono">
@@ -1066,8 +1180,31 @@ export default function VideoInterview() {
           )}
         </div>
 
-        {/* Right Column: Dynamic Workspace Tool (7 Cols) */}
-        <div className="lg:col-span-7 space-y-4">
+        {/* Draggable Vertical Splitter Bar (Desktop Only) */}
+        <div
+          onMouseDown={handleMouseDownResize}
+          onTouchStart={handleMouseDownResize}
+          onDoubleClick={() => setSplitWidth(42)}
+          className={`hidden lg:flex items-center justify-center w-3.5 cursor-col-resize group relative z-30 select-none ${
+            isDragging ? 'bg-teal-500/30' : 'hover:bg-teal-500/20'
+          } rounded-full transition-colors mx-0.5`}
+          title="Drag to resize split view (Double-click to reset)"
+        >
+          <div className={`w-1 h-16 rounded-full transition-all ${
+            isDragging ? 'bg-teal-400 scale-y-125 shadow-lg shadow-teal-500/50' : 'bg-white/20 group-hover:bg-teal-400'
+          }`} />
+          <div className="absolute top-1/2 -translate-y-1/2 flex flex-col gap-1 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="w-1 h-1 rounded-full bg-teal-300" />
+            <span className="w-1 h-1 rounded-full bg-teal-300" />
+            <span className="w-1 h-1 rounded-full bg-teal-300" />
+          </div>
+        </div>
+
+        {/* Right Column: Dynamic Workspace Tool */}
+        <div
+          className="space-y-4 w-full flex-1 min-w-0 transition-all duration-75"
+          style={{ width: typeof window !== 'undefined' && window.innerWidth >= 1024 ? `${100 - splitWidth}%` : '100%' }}
+        >
           {/* Dynamic Workspace Mode Selector */}
           <div className="flex items-center justify-between bg-[#131823] border border-white/10 rounded-2xl p-2 shadow-lg flex-wrap gap-2">
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -1130,7 +1267,7 @@ export default function VideoInterview() {
             </div>
           ) : activeTab === 'sandbox' ? (
             <div className="h-[430px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-              <CodeSandbox code={sandboxCode} onChange={setSandboxCode} />
+              <CodeSandbox code={sandboxCode} onChange={setSandboxCode} testCases={currentQuestion?.testCases} />
             </div>
           ) : null}
 
@@ -1215,13 +1352,29 @@ export default function VideoInterview() {
                   <span>Speak Answer</span>
                 </button>
               ) : (
-                <button
-                  onClick={stopRecording}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-rose-950/60 animate-pulse transition-all cursor-pointer"
-                >
-                  <Square className="w-3.5 h-3.5" />
-                  <span>Stop Recording ({formatSeconds(recordingSeconds)})</span>
-                </button>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <button
+                    onClick={stopRecording}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-95 text-white text-xs font-bold shadow-lg shadow-rose-950/60 animate-pulse transition-all cursor-pointer"
+                  >
+                    <Square className="w-3.5 h-3.5" />
+                    <span>Stop Recording ({formatSeconds(recordingSeconds)})</span>
+                  </button>
+
+                  {/* Real-time 8-bar visual soundwave meter */}
+                  <div
+                    className="flex items-end gap-1 bg-[#090B10] px-3 py-2 rounded-xl border border-teal-500/40 h-9 shadow-inner"
+                    title="Live Audio Input Level Meter"
+                  >
+                    {audioLevels.map((lvl, bIdx) => (
+                      <span
+                        key={bIdx}
+                        className="w-1.5 rounded-full bg-gradient-to-t from-teal-500 via-emerald-400 to-cyan-300 transition-all duration-75"
+                        style={{ height: `${lvl}%` }}
+                      />
+                    ))}
+                  </div>
+                </div>
               )}
 
               {transcript.length > 20 && !probeQuestion && (
