@@ -4,16 +4,16 @@
 // and zero dependence on external server infrastructure.
 // ─────────────────────────────────────────────────────────────
 
-const FALLBACK_KEY_TOKEN = 'QVEuQWI4Uk42SmJvT1MyME5qQ19meEcwT0lwWUZLNmdfZmZmZmtGVTgxT29WQnNLUVhRUlE=';
+const FALLBACK_KEY_TOKEN = 'QVEuQWI4Uk42SmJvT1MyME5qQ19meEcwT0lwWUZLNmc1ZlJmZmtGVTgxT29WQnNLUVhRUlE=';
 const GEMINI_API_KEY =
   import.meta.env.VITE_GEMINI_API_KEY ||
   (typeof atob === 'function' ? atob(FALLBACK_KEY_TOKEN) : '');
 
 const FAST_MODELS = [
-  'gemini-3.6-flash',
   'gemini-3.5-flash-lite',
   'gemini-flash-lite-latest',
-  'gemini-3.5-flash',
+  'gemini-3.8-flash',
+  'gemini-3.6-flash',
 ];
 
 const SEEN_STORAGE_KEY = 'mockai_seen_topics';
@@ -324,6 +324,13 @@ ${r.followUpAnswer ? `Follow-up Probe Answer: ${r.followUpAnswer}` : ''}
 EVALUATE CANDIDATE RIGOROUSLY ACROSS ALL ROUNDS.
 Generate an honest, calibrated scorecard (scores out of 100).
 
+CRITICAL CALIBRATION MANDATES:
+1. STRICT ZERO-TOLERANCE FOR EMPTY RESPONSES OR UNMODIFIED STARTER CODE:
+   - If a candidate provides "(No response provided)", leaves the question blank, or only submits boilerplate starter comments without writing actual solution code, mark that question STRICTLY as 0 points with feedback "No substantive answer or solution code provided."
+   - Do NOT award points for pre-existing boilerplate code or unedited starter templates!
+2. If a candidate leaves most questions unanswered, the overall score MUST reflect that reality honestly (e.g. < 25/100, Strong No Hire).
+3. If candidate only typed "hello", random words, or echoed the question, mark that question as 0 points.
+
 Return EXACTLY this JSON structure:
 {
   "overallScore": <integer 0-100>,
@@ -396,4 +403,131 @@ Return EXACTLY this JSON structure:
 `;
 
   return await callGeminiAPI(prompt, { temperature: 0.4 });
+};
+
+/**
+ * Converts any browser audio blob to a 16kHz mono 16-bit linear PCM WAV base64 string.
+ * This guarantees 100% compatibility with Google Gemini audio models across all browsers (including Brave).
+ */
+export const convertBlobToWavBase64 = async (audioBlob) => {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return null;
+    const audioCtx = new AudioCtx();
+    const arrayBuffer = await audioBlob.arrayBuffer();
+    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+    const targetSampleRate = 16000;
+    const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(
+      1,
+      Math.max(1, Math.ceil(audioBuffer.duration * targetSampleRate)),
+      targetSampleRate
+    );
+
+    const source = offlineCtx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(offlineCtx.destination);
+    source.start(0);
+
+    const renderedBuffer = await offlineCtx.startRendering();
+    const channelData = renderedBuffer.getChannelData(0);
+
+    const buffer = new ArrayBuffer(44 + channelData.length * 2);
+    const view = new DataView(buffer);
+
+    const writeStr = (offset, str) => {
+      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+    };
+
+    writeStr(0, 'RIFF');
+    view.setUint32(4, 36 + channelData.length * 2, true);
+    writeStr(8, 'WAVE');
+    writeStr(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true); // PCM format
+    view.setUint16(22, 1, true); // Mono
+    view.setUint32(24, targetSampleRate, true);
+    view.setUint32(28, targetSampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeStr(36, 'data');
+    view.setUint32(40, channelData.length * 2, true);
+
+    let offset = 44;
+    for (let i = 0; i < channelData.length; i++, offset += 2) {
+      const s = Math.max(-1, Math.min(1, channelData[i]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+    }
+
+    const uint8 = new Uint8Array(buffer);
+    let binary = '';
+    const chunkSz = 8192;
+    for (let i = 0; i < uint8.length; i += chunkSz) {
+      binary += String.fromCharCode.apply(null, uint8.subarray(i, i + chunkSz));
+    }
+    return btoa(binary);
+  } catch (e) {
+    console.warn('WAV conversion fallback notice:', e);
+    return null;
+  }
+};
+
+/**
+ * Direct multimodal audio transcription via Gemini
+ */
+export const transcribeAudioClient = async (audioBase64, mimeType = 'audio/wav') => {
+  try {
+    const base64Data = audioBase64.includes(',') ? audioBase64.split(',')[1] : audioBase64;
+    let cleanMime = (mimeType || 'audio/wav').split(';')[0].trim();
+    if (!cleanMime || cleanMime === 'application/octet-stream') cleanMime = 'audio/wav';
+
+    const prompt =
+      'Listen to this candidate speaking their job interview answer. Transcribe their spoken words accurately word-for-word. Return ONLY the plain transcribed words with no quotes, formatting, or commentary. If the audio is silent or unintelligible, return an empty string.';
+
+    const transcribeModels = ['gemini-3.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.8-flash', 'gemini-3.6-flash'];
+
+    for (const model of transcribeModels) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { text: prompt },
+                  {
+                    inlineData: {
+                      data: base64Data,
+                      mimeType: cleanMime,
+                    },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.1,
+              maxOutputTokens: 1024,
+            },
+          }),
+        });
+
+        if (response.ok) {
+          const json = await response.json();
+          const text = json.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text && text.trim()) {
+            const cleaned = text.trim();
+            if (cleaned.toLowerCase() === 'silence' || cleaned.toLowerCase() === 'silence.') return '';
+            return cleaned;
+          }
+        }
+      } catch (err) {
+        console.warn(`Gemini audio transcribe with ${model} error:`, err);
+      }
+    }
+  } catch (err) {
+    console.warn('transcribeAudioClient error:', err);
+  }
+  return '';
 };

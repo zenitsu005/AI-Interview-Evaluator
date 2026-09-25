@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useInterview } from '../context/InterviewContext';
 import { transcribeAudio, getFollowUpProbe, getQuestionHint } from '../services/api';
+import { convertBlobToWavBase64 } from '../services/geminiClient';
 import voiceAssistant from '../services/voiceAssistant';
 import CodeSandbox from './CodeSandbox';
 import SystemDesignWhiteboard from './SystemDesignWhiteboard';
@@ -488,8 +489,10 @@ export default function VideoInterview() {
         }
       } else if (currentRound?.id === 'system-design') {
         setActiveTab('whiteboard');
+        setSandboxCode('');
       } else {
         setActiveTab('text');
+        setSandboxCode('');
       }
     }
   }, [currentQuestion, currentRound, questionIndexInRound]);
@@ -586,7 +589,7 @@ export default function VideoInterview() {
       recorder.start(250);
       setIsRecording(true);
       isRecordingRef.current = true;
-      setStatusMessage('Listening to your answer...');
+      setStatusMessage('🎙️ Listening... Click [Stop Recording] when you finish speaking.');
     } catch (err) {
       console.warn('Microphone issue:', err);
       setStatusMessage('Microphone access denied. You can type your answer in the box.');
@@ -604,52 +607,56 @@ export default function VideoInterview() {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       isRecordingRef.current = false;
+      setStatusMessage('⏳ Transcribing your speech with AI...');
     }
   }, []);
 
   const handleAudioBlob = async (blob, mimeType) => {
     // If browser speech recognition already transcribed the words in real-time
-    if (speechCapturedRef.current) {
-      setStatusMessage('Speech transcribed! Edit or submit below.');
+    if (speechCapturedRef.current && transcript && transcript.trim().length > 3) {
+      setStatusMessage('✅ Speech transcribed! Edit or submit below.');
       setTimeout(() => setStatusMessage(null), 3000);
       return;
     }
 
-    if (blob.size < 100) {
+    if (!blob || blob.size < 100) {
       setStatusMessage(null);
       return;
     }
 
     setIsTranscribing(true);
-    setStatusMessage('Transcribing speech...');
+    setStatusMessage('⏳ Transcribing your speech with AI...');
     try {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = reader.result;
-        try {
-          const res = await transcribeAudio(base64, mimeType);
-          if (res?.text && res.text.trim()) {
-            setTranscript((prev) => (prev ? `${prev} ${res.text}` : res.text));
-            setStatusMessage('Speech transcribed! Edit or submit below.');
-            setTimeout(() => setStatusMessage(null), 3000);
-          } else {
-            setStatusMessage('Audio recorded. You can type or edit your answer in the box.');
-            setTimeout(() => setStatusMessage(null), 4000);
-          }
-        } catch (e) {
-          console.warn('Backend transcription notice:', e);
-          setStatusMessage('Voice transcription unavailable (API key required). Please type your answer directly.');
-          setTimeout(() => setStatusMessage(null), 5000);
-        } finally {
-          setIsTranscribing(false);
-        }
-      };
-      reader.readAsDataURL(blob);
-    } catch (err) {
-      console.warn(err);
-      setIsTranscribing(false);
-      setStatusMessage('Voice transcription error. Please type your answer directly.');
+      // 1. Convert audio blob to 16kHz mono WAV for 100% reliable Gemini transcription
+      const wavBase64 = await convertBlobToWavBase64(blob);
+      let res = null;
+      if (wavBase64) {
+        res = await transcribeAudio(wavBase64, 'audio/wav');
+      } else {
+        // Fallback to raw base64
+        const reader = new FileReader();
+        const rawBase64 = await new Promise((resolve) => {
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        });
+        res = await transcribeAudio(rawBase64, mimeType);
+      }
+
+      if (res?.text && res.text.trim()) {
+        const spoken = res.text.trim();
+        setTranscript((prev) => (prev ? `${prev.trim()} ${spoken}` : spoken));
+        setStatusMessage('✅ Speech transcribed! Edit or submit below.');
+        setTimeout(() => setStatusMessage(null), 3500);
+      } else {
+        setStatusMessage('No speech detected. You can speak again or type your answer in the box.');
+        setTimeout(() => setStatusMessage(null), 4000);
+      }
+    } catch (e) {
+      console.warn('Transcription notice:', e);
+      setStatusMessage('Could not transcribe audio. Please type your answer directly in the box.');
       setTimeout(() => setStatusMessage(null), 4000);
+    } finally {
+      setIsTranscribing(false);
     }
   };
 
@@ -697,14 +704,29 @@ export default function VideoInterview() {
     }
   };
 
+  const isCodeUnedited = (code, starter) => {
+    if (!code || !code.trim()) return true;
+    if (starter && code.trim() === starter.trim()) return true;
+    const stripped = code
+      .replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '')
+      .replace(/^\s*#.*$/gm, '')
+      .replace(/^\s*--.*$/gm, '')
+      .trim();
+    return stripped.length === 0;
+  };
+
   const handleSubmit = async () => {
     if (isLoading || isRecording || isTranscribing) return;
     const finalAnswer = transcript.trim() || '(No response provided)';
+    const isCodingQuestion = Boolean(currentQuestion?.hasCodingSandbox || activeTab === 'sandbox');
+    const codeToSubmit = isCodingQuestion && !isCodeUnedited(sandboxCode, currentQuestion?.starterCode)
+      ? sandboxCode
+      : '';
 
     captureFrame();
     clearError();
     voiceAssistant.stop();
-    await submitAnswer(finalAnswer, framesRef.current, sandboxCode, probeAnswer.trim());
+    await submitAnswer(finalAnswer, framesRef.current, codeToSubmit, probeAnswer.trim());
   };
 
   const handleKeyDown = (e) => {

@@ -15,41 +15,34 @@ import { executeJavaScript, executeSQL, transpilePythonToJS, areResultsEqual } f
 const STARTER_CODES = {
   python: `# Technical Sandbox (Python 3.10)
 def solve_problem(data):
-    # Example: Filter positives & double values
-    return [x * 2 for x in data if x > 0]
+    # TODO: Write your algorithm implementation here
+    pass
 
-# Sample execution
+# Sample test execution
 test_input = [1, -2, 3, 4, -5]
 print("Result:", solve_problem(test_input))
 `,
   javascript: `// Technical Sandbox (Node.js/ES6)
-function solveProblem(arr) {
-  return arr.filter(x => x > 0).map(x => x * 2);
+function solveProblem(input) {
+  // TODO: Write your solution logic here
+  
 }
 
 const testInput = [1, -2, 3, 4, -5];
 console.log("Result:", solveProblem(testInput));
 `,
   sql: `-- Technical SQL Sandbox
--- Target: Calculate total revenue per customer tier
-SELECT 
-  c.tier,
-  COUNT(o.order_id) AS total_orders,
-  SUM(o.amount) AS total_revenue
-FROM customers c
-JOIN orders o ON c.customer_id = o.customer_id
-WHERE o.status = 'COMPLETED'
-GROUP BY c.tier
-HAVING SUM(o.amount) > 1000
-ORDER BY total_revenue DESC;
+-- Write your query or DDL statement below:
+-- TODO: SELECT ... FROM ...
+
 `,
   java: `// Technical Java Sandbox
 import java.util.*;
 
 public class Solution {
     public static void main(String[] args) {
-        int[] input = {1, -2, 3, 4, -5};
-        System.out.println("Processing: " + Arrays.toString(input));
+        // TODO: Implement solution logic
+        System.out.println("Ready to test...");
     }
 }
 `,

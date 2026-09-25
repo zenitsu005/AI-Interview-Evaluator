@@ -6,6 +6,7 @@ import {
   generateInterviewHint as clientInterviewHint,
   generateEvaluationReport as clientEvaluationReport,
   analyzeResumeClient,
+  transcribeAudioClient,
 } from './geminiClient';
 
 const rawBase = import.meta.env.VITE_API_BASE_URL || '/api';
@@ -245,12 +246,18 @@ export const evaluateInterview = async ({
 };
 
 export const transcribeAudio = async (audioBase64, mimeType) => {
-  try {
-    const { data } = await api.post('/transcribe', { audioBase64, mimeType });
-    return data;
-  } catch (e) {
-    return null;
+  const online = await isServerOnline();
+  if (online) {
+    try {
+      const { data } = await api.post('/transcribe', { audioBase64, mimeType }, { timeout: 8000 });
+      if (data && data.text) return data;
+    } catch (e) {
+      console.warn('Backend transcribe failed, using direct client Gemini:', e.message);
+    }
   }
+
+  const text = await transcribeAudioClient(audioBase64, mimeType);
+  return { text };
 };
 
 // ── Salary Negotiation Simulator API ──

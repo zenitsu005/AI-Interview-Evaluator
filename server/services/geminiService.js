@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const FALLBACK_KEY_ENCODED = 'QVEuQWI4Uk42SmJvT1MyME5qQ19meEcwT0lwWUZLNmdfZmZmZmtGVTgxT29WQnNLUVhRUlE=';
+const FALLBACK_KEY_ENCODED = 'QVEuQWI4Uk42SmJvT1MyME5qQ19meEcwT0lwWUZLNmc1ZlJmZmtGVTgxT29WQnNLUVhRUlE=';
 
 const getGenAI = () => {
   const key =
@@ -15,6 +15,7 @@ const getGenAI = () => {
 const MODELS_TO_TRY = [
   'gemini-3.5-flash-lite',
   'gemini-flash-lite-latest',
+  'gemini-3.8-flash',
   'gemini-3.6-flash',
   'gemini-3.5-flash',
 ];

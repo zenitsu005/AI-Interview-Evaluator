@@ -289,22 +289,11 @@ const TECHNICAL_TOPIC_CHAINS = [
       hasCodingSandbox: true,
       starterCode: `// Write your idempotent request deduplication logic below:
 function idempotentHandler(requestId, payload, cacheStore) {
-  // 1. Check if requestId already exists in cacheStore
-  if (cacheStore[requestId]) {
-    const entry = cacheStore[requestId];
-    if (entry.status === 'PROCESSING') {
-      return { status: 409, message: 'Request currently in-flight. Please wait.' };
-    }
-    return { status: 200, data: entry.response, cached: true };
-  }
-
-  // 2. Acquire lock & mark as PROCESSING
-  cacheStore[requestId] = { status: 'PROCESSING', startedAt: Date.now() };
-
-  // 3. Process payload and complete
-  const result = { success: true, processedAt: new Date().toISOString() };
-  cacheStore[requestId] = { status: 'COMPLETED', response: result };
-  return { status: 201, data: result, cached: false };
+  // TODO: 1. Check if requestId already exists in cacheStore
+  // TODO: 2. If status is PROCESSING, handle concurrent duplicate
+  // TODO: 3. If COMPLETED, return cached response
+  // TODO: 4. Otherwise acquire lock, process payload, and cache result
+  
 }
 `,
     },
@@ -328,16 +317,15 @@ function idempotentHandler(requestId, payload, cacheStore) {
       evaluationCriteria: ['Composite index column order', 'Eliminating filesort', 'Query execution plan efficiency'],
       hasCodingSandbox: true,
       starterCode: `-- Technical SQL Sandbox
--- 1. Create optimal composite index for payments:
-CREATE INDEX idx_user_status_created 
-ON payments(user_id, status, created_at DESC);
+-- Table Schema: payments (payment_id, user_id, amount, status, created_at)
 
--- 2. Query executed with 0 filesorts:
-SELECT payment_id, amount, created_at
-FROM payments
-WHERE user_id = 42 AND status = 'COMPLETED'
-ORDER BY created_at DESC
-LIMIT 20;
+-- 1. Write the optimal composite index creation statement below:
+-- TODO: CREATE INDEX ...
+
+
+-- 2. Write your query to retrieve completed payments for user 42 without filesorts:
+-- TODO: SELECT ...
+
 `,
     },
   },
@@ -361,28 +349,11 @@ LIMIT 20;
       hasCodingSandbox: true,
       starterCode: `// Mutex-Protected Cache Retrieval Pattern
 async function getOrComputeWithLock(key, computeFn, ttlSeconds, mockRedis) {
-  // 1. Check cache first
-  let cached = mockRedis.get(key);
-  if (cached) return JSON.parse(cached);
-
-  const lockKey = "lock:" + key;
-  // 2. Try to acquire atomic mutex lock with short TTL (e.g. 5 sec)
-  const acquired = mockRedis.setNx(lockKey, "LOCKED", 5);
-
-  if (acquired) {
-    try {
-      // Primary worker computes fresh data from DB
-      const freshData = await computeFn();
-      mockRedis.set(key, JSON.stringify(freshData), ttlSeconds);
-      return freshData;
-    } finally {
-      mockRedis.del(lockKey);
-    }
-  } else {
-    // Other workers wait briefly and retry cache read
-    await new Promise(r => setTimeout(r, 100));
-    return JSON.parse(mockRedis.get(key) || "null");
-  }
+  // TODO: 1. Check cache first; if present return parsed value
+  // TODO: 2. Try to acquire atomic mutex lock with short TTL (e.g., SET NX EX)
+  // TODO: 3. If lock acquired, compute fresh data from DB, cache it, and release lock
+  // TODO: 4. If lock not acquired, wait briefly and retry cache read
+  
 }
 `,
     },
@@ -407,27 +378,10 @@ async function getOrComputeWithLock(key, computeFn, ttlSeconds, mockRedis) {
       hasCodingSandbox: true,
       starterCode: `// Saga Orchestrator with Compensating Rollbacks
 async function executeOrderSaga(order) {
-  const compensations = [];
-
-  try {
-    // Step 1: Authorize Payment
-    const payment = await chargeCustomer(order.amount);
-    compensations.push(() => refundCustomer(payment.id));
-
-    // Step 2: Reserve Inventory
-    const inventory = await reserveStock(order.items);
-    compensations.push(() => releaseStock(inventory.reservationId));
-
-    // Step 3: Dispatch Shipment
-    const shipment = await createShipment(order.address);
-    return { success: true, orderId: order.id, shipmentId: shipment.id };
-  } catch (err) {
-    // Rollback executed steps in reverse order
-    for (const compensate of compensations.reverse()) {
-      await compensate();
-    }
-    return { success: false, error: err.message, status: 'ROLLED_BACK' };
-  }
+  // TODO: 1. Maintain list of compensating rollback actions
+  // TODO: 2. Execute Step 1 (Payment), Step 2 (Inventory), Step 3 (Shipment)
+  // TODO: 3. In catch block, execute compensating actions in reverse order
+  
 }
 `,
     },
@@ -452,20 +406,10 @@ async function executeOrderSaga(order) {
       hasCodingSandbox: true,
       starterCode: `// Custom Batching Hook for High-Frequency WebSocket Streams
 function createBatcher(flushCallback, delayMs = 50) {
-  let queue = [];
-  let timeoutId = null;
-
-  return function enqueue(item) {
-    queue.push(item);
-    if (!timeoutId) {
-      timeoutId = setTimeout(() => {
-        const batch = [...queue];
-        queue = [];
-        timeoutId = null;
-        flushCallback(batch);
-      }, delayMs);
-    }
-  };
+  // TODO: 1. Maintain queue of incoming streaming items
+  // TODO: 2. Schedule timeout/frame to flush batch
+  // TODO: 3. Return enqueue(item) function
+  
 }
 `,
     },
@@ -491,23 +435,11 @@ function createBatcher(flushCallback, delayMs = 50) {
       starterCode: `# Python RAG Chunk Filter & Cosine Reranker
 import math
 
-def dot_product(v1, v2):
-    return sum(a * b for a, b in zip(v1, v2))
-
-def norm(v):
-    return math.sqrt(sum(x * x for x in v))
-
 def filter_and_rerank(query_vector, documents, score_threshold=0.75, top_k=3):
-    q_norm = norm(query_vector)
-    scored_docs = []
-
-    for doc in documents:
-        sim = dot_product(query_vector, doc['embedding']) / (q_norm * norm(doc['embedding']))
-        if sim >= score_threshold:
-            scored_docs.append({'text': doc['text'], 'score': round(sim, 4)})
-
-    scored_docs.sort(key=lambda d: d['score'], reverse=True)
-    return scored_docs[:top_k]
+    # TODO: 1. Compute cosine similarity between query_vector and doc['embedding']
+    # TODO: 2. Filter documents where similarity >= score_threshold
+    # TODO: 3. Sort descending by score and return top_k
+    pass
 `,
     },
   },
@@ -531,20 +463,10 @@ def filter_and_rerank(query_vector, documents, score_threshold=0.75, top_k=3):
       hasCodingSandbox: true,
       starterCode: `// Sliding Window Rate Limiter Implementation
 function isRateLimited(userId, windowMs, maxRequests, requestLog) {
-  const now = Date.now();
-  if (!requestLog[userId]) requestLog[userId] = [];
-
-  // 1. Remove expired timestamps outside the current sliding window
-  requestLog[userId] = requestLog[userId].filter(ts => (now - ts) < windowMs);
-
-  // 2. Check if request count exceeds limit
-  if (requestLog[userId].length >= maxRequests) {
-    return { allowed: false, remaining: 0, retryAfterMs: windowMs - (now - requestLog[userId][0]) };
-  }
-
-  // 3. Record current request and allow
-  requestLog[userId].push(now);
-  return { allowed: true, remaining: maxRequests - requestLog[userId].length };
+  // TODO: 1. Remove expired timestamps outside the sliding window (now - ts < windowMs)
+  // TODO: 2. Check if request count exceeds maxRequests limit
+  // TODO: 3. Record current request timestamp and return rate limit decision
+  
 }
 `,
     },
@@ -569,28 +491,10 @@ function isRateLimited(userId, windowMs, maxRequests, requestLog) {
       hasCodingSandbox: true,
       starterCode: `// Secure Token Verification & Revocation Check
 function verifyAndAuthorize(token, secretKey, revokedTokenSet) {
-  if (!token) return { valid: false, error: 'Missing token' };
-  if (revokedTokenSet.has(token)) return { valid: false, error: 'Token has been revoked' };
-
-  const parts = token.split('.');
-  if (parts.length !== 3) return { valid: false, error: 'Malformed JWT structure' };
-
-  try {
-    const header = JSON.parse(atob(parts[0]));
-    // Strictly prevent 'none' algorithm bypass
-    if (header.alg !== 'HS256') {
-      return { valid: false, error: 'Unsupported or unverified algorithm: ' + header.alg };
-    }
-
-    const payload = JSON.parse(atob(parts[1]));
-    if (payload.exp && Date.now() / 1000 > payload.exp) {
-      return { valid: false, error: 'Token expired' };
-    }
-
-    return { valid: true, user: payload };
-  } catch (e) {
-    return { valid: false, error: 'Signature / parsing failure' };
-  }
+  // TODO: 1. Verify token exists and is not present in revokedTokenSet
+  // TODO: 2. Parse token parts and reject unsupported/none algorithms
+  // TODO: 3. Verify signature, validate expiration timestamp, and return payload
+  
 }
 `,
     },
@@ -765,6 +669,21 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
       if (isSubmittingRef.current) return;
       isSubmittingRef.current = true;
 
+      // Filter out unchanged boilerplate code or empty code
+      const isUneditedStarter = (code, starter) => {
+        if (!code || !code.trim()) return true;
+        if (starter && code.trim() === starter.trim()) return true;
+        const stripped = code
+          .replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '')
+          .replace(/^\s*#.*$/gm, '')
+          .replace(/^\s*--.*$/gm, '')
+          .trim();
+        return stripped.length === 0;
+      };
+
+      const cleanCode = isUneditedStarter(codeSnippet, currentQuestion?.starterCode) ? '' : codeSnippet;
+      const cleanAnswer = answer && answer.trim() ? answer.trim() : '(No response provided)';
+
       const round = ROUNDS[currentRoundIndex];
       const entry = {
         round: round.id,
@@ -773,8 +692,8 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
         question: currentQuestion.question,
         level: currentQuestion.level || currentQuestion.type || '',
         topic: currentQuestion.topic || '',
-        answer: followUpAnswer ? `${answer}\n[Follow-up Response]: ${followUpAnswer}` : answer,
-        codeSnippet: codeSnippet || '',
+        answer: followUpAnswer ? `${cleanAnswer}\n[Follow-up Response]: ${followUpAnswer}` : cleanAnswer,
+        codeSnippet: cleanCode,
         frames,
         companyTrack,
       };
@@ -899,16 +818,19 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
             );
 
             const evalQuestions = updatedResponses.map((r, i) => {
-              const answered = isSubstantive(r.answer);
-              const wordCount = answered ? r.answer.trim().split(/\s+/).length : 0;
-              const isCorrect = wordCount >= 35;
+              const fullAns = r.codeSnippet
+                ? `${r.answer && !r.answer.includes('(No response provided)') ? `${r.answer}\n\n` : ''}${r.codeSnippet}`
+                : r.answer;
+              const answered = isSubstantive(fullAns);
+              const wordCount = answered ? fullAns.trim().split(/\s+/).length : 0;
+              const isCorrect = wordCount >= 35 && !fullAns.toLowerCase().includes('// todo') && !fullAns.toLowerCase().includes('-- todo');
               const isPartial = answered && wordCount < 35;
 
               return {
                 questionNumber: r.questionNumber || i + 1,
                 round: r.roundLabel || r.round || 'Technical',
                 question: r.question,
-                candidateAnswer: r.answer || '(No response provided)',
+                candidateAnswer: fullAns || '(No response provided)',
                 status: isCorrect ? 'Correct' : isPartial ? 'Partially Correct' : 'Incorrect',
                 expectedAnswer: 'A comprehensive, structured explanation addressing edge cases, scale trade-offs, and invariants.',
                 feedback: answered
