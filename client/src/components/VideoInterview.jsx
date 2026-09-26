@@ -66,10 +66,13 @@ export default function VideoInterview() {
   const ambientGainRef = useRef(null);
   const recognitionRef = useRef(null);
   const speechCapturedRef = useRef(false);
+  const finalTranscriptRef = useRef('');
 
   const [cameraError, setCameraError] = useState(null);
   const [virtualMode, setVirtualMode] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [interimText, setInterimText] = useState('');
+  const [probeCountdown, setProbeCountdown] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -345,24 +348,35 @@ export default function VideoInterview() {
           // Silence or pause
           setIsAudioActive(false);
 
-          // Conversational Interruption: If candidate was speaking and now pauses > 4.5s
+          // Conversational Interruption: If candidate was speaking and now pauses
           const now = Date.now();
+          const wordCount = (transcript.trim() + ' ' + (interimText || '')).trim().split(/\s+/).filter(Boolean).length;
+          const silenceDuration = lastActiveSpeechTimeRef.current ? now - lastActiveSpeechTimeRef.current : 0;
+
           if (
             isBackAndForthMode &&
             !autoInterruptedRef.current &&
             !isProbing &&
             !probeQuestion &&
-            transcript.trim().length > 35 &&
-            lastActiveSpeechTimeRef.current &&
-            now - lastActiveSpeechTimeRef.current > 4500
+            wordCount >= 15 &&
+            lastActiveSpeechTimeRef.current
           ) {
-            autoInterruptedRef.current = true;
-            setStatusMessage('⚡ Conversational Interjection: Probing your reasoning on the fly...');
-            handleRequestProbe();
+            if (silenceDuration > 3000 && silenceDuration < 5000) {
+              const remainingSec = Math.max(1, Math.ceil((5000 - silenceDuration) / 1000));
+              setProbeCountdown(remainingSec);
+            } else if (silenceDuration >= 5000) {
+              autoInterruptedRef.current = true;
+              setProbeCountdown(null);
+              setStatusMessage('⚡ Conversational Interjection: Probing your reasoning on the fly...');
+              handleRequestProbe();
+            }
           }
         } else {
           setIsAudioActive(true);
           lastActiveSpeechTimeRef.current = Date.now();
+          // Reset probe countdown if candidate started speaking again
+          setProbeCountdown((prev) => (prev !== null ? null : null));
+        }
 
           let targetSteadiness = 92;
           if (avgVol >= 15 && avgVol <= 90) {
@@ -381,8 +395,7 @@ export default function VideoInterview() {
           }
 
           setVocalSteadiness((prev) => (prev === 0 ? targetSteadiness : Math.round(prev * 0.75 + targetSteadiness * 0.25)));
-        }
-      };
+        };
 
       const interval = setInterval(checkAudio, 120);
       return () => {
@@ -518,6 +531,9 @@ export default function VideoInterview() {
   useEffect(() => {
     if (currentQuestion?.question) {
       setTranscript('');
+      finalTranscriptRef.current = '';
+      setInterimText('');
+      setProbeCountdown(null);
       setProbeQuestion(null);
       setProbeAnswer('');
       setHint(null);
@@ -634,21 +650,43 @@ export default function VideoInterview() {
           recognition.interimResults = true;
           recognition.lang = 'en-US';
 
-          const initialText = transcript ? `${transcript.trim()} ` : '';
+          finalTranscriptRef.current = transcript ? `${transcript.trim()} ` : '';
 
           recognition.onresult = (event) => {
-            let sessionText = '';
-            for (let i = 0; i < event.results.length; i++) {
-              sessionText += event.results[i][0].transcript;
+            let interim = '';
+            let newlyFinal = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+              const res = event.results[i];
+              if (res.isFinal) {
+                newlyFinal += res[0].transcript + ' ';
+              } else {
+                interim += res[0].transcript;
+              }
             }
-            if (sessionText.trim()) {
+
+            if (newlyFinal) {
+              finalTranscriptRef.current += newlyFinal;
               speechCapturedRef.current = true;
-              setTranscript(initialText + sessionText);
+              setTranscript(finalTranscriptRef.current.trim());
             }
+            setInterimText(interim);
           };
 
           recognition.onerror = (e) => {
-            console.warn('Browser SpeechRecognition notice:', e.error);
+            if (e.error !== 'no-speech') {
+              console.warn('Browser SpeechRecognition notice:', e.error);
+            }
+          };
+
+          // Continuous listening watchdog: auto-restart immediately when browser pauses
+          recognition.onend = () => {
+            if (isRecordingRef.current) {
+              try {
+                recognition.start();
+              } catch (err) {
+                console.warn('SpeechRecognition auto-restart notice:', err);
+              }
+            }
           };
 
           recognition.start();
@@ -680,7 +718,7 @@ export default function VideoInterview() {
       recorder.start(250);
       setIsRecording(true);
       isRecordingRef.current = true;
-      setStatusMessage('🎙️ Listening... Click [Stop Recording] when you finish speaking.');
+      setStatusMessage('🎙️ Listening... Speak naturally. Click [Stop Recording] when finished.');
     } catch (err) {
       console.warn('Microphone issue:', err);
       setStatusMessage('Microphone access denied. You can type your answer in the box.');
@@ -688,6 +726,9 @@ export default function VideoInterview() {
   };
 
   const stopRecording = useCallback(() => {
+    isRecordingRef.current = false;
+    setInterimText('');
+    setProbeCountdown(null);
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
@@ -697,7 +738,6 @@ export default function VideoInterview() {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
-      isRecordingRef.current = false;
       setStatusMessage('⏳ Transcribing your speech with AI...');
     }
   }, []);
@@ -1160,13 +1200,38 @@ export default function VideoInterview() {
             )}
           </div>
 
+          {/* Pre-Interruption Warning Pill */}
+          {probeCountdown !== null && !probeQuestion && (
+            <div className="p-3.5 rounded-2xl bg-amber-950/60 border border-amber-500/50 text-xs text-amber-200 animate-pulse flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                <span className="font-bold text-amber-300">
+                  Interviewer formulating follow-up probe ({probeCountdown}s)...
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-300 font-mono bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
+                Keep speaking to continue
+              </span>
+            </div>
+          )}
+
           {/* Follow-Up Probe Box */}
           {probeQuestion && (
             <div className="bg-[#131823] border border-amber-500/40 rounded-3xl p-5 space-y-3 animate-fade-in shadow-2xl">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400 uppercase tracking-wider font-mono">
-                <Zap className="w-4 h-4" /> Adaptive Cross-Examination Follow-Up
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400 uppercase tracking-wider font-mono">
+                  <Zap className="w-4 h-4 fill-current" /> Adaptive Cross-Examination Follow-Up
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setProbeQuestion(null)}
+                  className="text-[11px] text-slate-400 hover:text-slate-200 bg-white/5 px-2.5 py-1 rounded-lg border border-white/10 transition-colors cursor-pointer"
+                  title="Dismiss probe and continue main response"
+                >
+                  Dismiss & Continue
+                </button>
               </div>
-              <p className="text-xs sm:text-sm font-semibold text-white">{probeQuestion}</p>
+              <p className="text-xs sm:text-sm font-semibold text-white leading-relaxed">{probeQuestion}</p>
               <input
                 ref={probeInputRef}
                 type="text"
@@ -1267,7 +1332,12 @@ export default function VideoInterview() {
             </div>
           ) : activeTab === 'sandbox' ? (
             <div className="h-[430px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-              <CodeSandbox code={sandboxCode} onChange={setSandboxCode} testCases={currentQuestion?.testCases} />
+              <CodeSandbox
+                code={sandboxCode}
+                onChange={setSandboxCode}
+                testCases={currentQuestion?.testCases}
+                starterCode={currentQuestion?.starterCode}
+              />
             </div>
           ) : null}
 
@@ -1317,6 +1387,13 @@ export default function VideoInterview() {
                 disabled={isLoading || isTranscribing}
                 className="w-full bg-[#0D111A] border border-white/10 hover:border-white/20 focus:border-teal-400 rounded-2xl p-4 text-xs sm:text-sm text-slate-100 placeholder-slate-500 resize-none outline-none transition-all leading-relaxed shadow-inner"
               />
+
+              {interimText && (
+                <div className="text-xs text-teal-300/80 italic mt-1.5 flex items-center gap-1.5 animate-pulse px-1 font-mono">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 flex-shrink-0 animate-ping" />
+                  <span className="truncate font-semibold">Streaming: "{interimText}"</span>
+                </div>
+              )}
 
               <div className="flex items-center justify-between mt-2.5 px-1">
                 <div className="flex-1 h-1.5 bg-[#171E2D] rounded-full mr-3 overflow-hidden border border-white/5">

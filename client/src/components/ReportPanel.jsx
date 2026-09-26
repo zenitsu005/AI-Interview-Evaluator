@@ -126,6 +126,7 @@ export default function ReportPanel() {
   const [isEvaluatingRedo, setIsEvaluatingRedo] = useState(false);
   const [redoResult, setRedoResult] = useState(null);
   const [redoSpeechRecognition, setRedoSpeechRecognition] = useState(null);
+  const [scoreUpgradeToast, setScoreUpgradeToast] = useState(null);
 
   // Redo Timer Effect
   useEffect(() => {
@@ -362,12 +363,34 @@ export default function ReportPanel() {
       }, 0) / (prevEvals.length || 1)
     );
 
+    const oldScore = report.overallScore || 0;
+    const delta = avgScore - oldScore;
+    const newReadiness =
+      avgScore >= 85
+        ? 'Excellent'
+        : avgScore >= 70
+        ? 'Interview Ready'
+        : avgScore >= 50
+        ? 'Almost Ready'
+        : avgScore >= 35
+        ? 'Needs Improvement'
+        : 'Not Ready';
+
     setReport({
       ...report,
       questionEvaluations: prevEvals,
       overallScore: avgScore,
+      readinessLevel: newReadiness,
     });
     setRedoModalOpen(false);
+
+    setScoreUpgradeToast({
+      oldScore,
+      newScore: avgScore,
+      delta: delta > 0 ? `+${delta}` : `${delta}`,
+      qNum: activeRedoQuestion.questionNumber || (activeRedoQuestion.index + 1),
+    });
+    setTimeout(() => setScoreUpgradeToast(null), 6000);
   };
 
   const studyPlan = Array.isArray(report.studyRoadmap) && report.studyRoadmap.length > 0 ? report.studyRoadmap : DEFAULT_ROADMAP;
@@ -578,6 +601,27 @@ export default function ReportPanel() {
           </button>
         </div>
       </header>
+
+      {/* ── Score Upgrade Dopamine Banner ── */}
+      {scoreUpgradeToast && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/20 animate-bounce">
+          <Trophy className="w-5 h-5 text-amber-300 animate-pulse flex-shrink-0" />
+          <div className="text-xs">
+            <span className="font-extrabold text-sm text-white">Scorecard Upgraded! </span>
+            <span>Question #{scoreUpgradeToast.qNum} boosted your overall score: </span>
+            <span className="font-mono font-bold text-amber-200">
+              {scoreUpgradeToast.oldScore} → {scoreUpgradeToast.newScore} ({scoreUpgradeToast.delta} pts)
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setScoreUpgradeToast(null)}
+            className="text-white/80 hover:text-white ml-2 text-xs font-bold cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-7 text-left">

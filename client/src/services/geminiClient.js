@@ -10,9 +10,8 @@ const GEMINI_API_KEY =
   (typeof atob === 'function' ? atob(FALLBACK_KEY_TOKEN) : '');
 
 const FAST_MODELS = [
-  'gemini-3.5-flash-lite',
   'gemini-flash-lite-latest',
-  'gemini-3.8-flash',
+  'gemini-3.5-flash-lite',
   'gemini-3.6-flash',
 ];
 
@@ -361,7 +360,8 @@ CRITICAL CALIBRATION MANDATES:
    - If a candidate provides "(No response provided)", leaves the question blank, or only submits boilerplate starter comments without writing actual solution code, mark that question STRICTLY as 0 points with feedback "No substantive answer or solution code provided."
    - Do NOT award points for pre-existing boilerplate code or unedited starter templates!
 2. If a candidate leaves most questions unanswered, the overall score MUST reflect that reality honestly (e.g. < 25/100, Strong No Hire).
-3. If candidate only typed "hello", random words, or echoed the question, mark that question as 0 points.
+3. If candidate only typed "hello", random words, or echoed/repeated the question prompt without actual reasoning, mark that question strictly as 0 points.
+4. STRICT SCORING CONSISTENCY: The overallScore MUST mathematically reflect the weighted mean of roundScores. If round scores are below 25, overallScore MUST NOT exceed 25. Keep sentences concise (1-2 sentences each) for rapid JSON generation.
 
 Return EXACTLY this JSON structure:
 {

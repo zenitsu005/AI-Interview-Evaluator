@@ -58,7 +58,7 @@ int main() {
 `,
 };
 
-export default function CodeSandbox({ code, onChange, onRun, testCases: propTestCases }) {
+export default function CodeSandbox({ code, onChange, onRun, testCases: propTestCases, starterCode: propStarterCode }) {
   const [lang, setLang] = useState('python');
   const [activeTab, setActiveTab] = useState('console'); // 'console' | 'tests' | 'bigo'
   const [consoleOutput, setConsoleOutput] = useState('');
@@ -82,6 +82,10 @@ export default function CodeSandbox({ code, onChange, onRun, testCases: propTest
     if (!code || Object.values(STARTER_CODES).includes(code)) {
       onChange(STARTER_CODES[newLang] || '');
     }
+  };
+
+  const handleResetCode = () => {
+    onChange(propStarterCode || STARTER_CODES[lang] || '');
   };
 
   const handleRun = () => {
@@ -285,12 +289,16 @@ export default function CodeSandbox({ code, onChange, onRun, testCases: propTest
           </button>
           <button
             type="button"
-            onClick={() => onChange(STARTER_CODES[lang])}
+            onClick={handleResetCode}
             className="text-xs text-slate-300 hover:text-white px-2.5 py-1.5 rounded-xl bg-[#171E2D] border border-white/10 hover:bg-[#1E273A] transition-colors cursor-pointer flex items-center gap-1"
+            title="Reset code to starter skeleton"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Reset</span>
           </button>
+          <span className="text-[10px] text-slate-500 font-mono hidden sm:inline bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
+            Ctrl+Enter ↵
+          </span>
           <button
             type="button"
             onClick={handleRunTests}
@@ -317,7 +325,17 @@ export default function CodeSandbox({ code, onChange, onRun, testCases: propTest
         <textarea
           value={code || STARTER_CODES[lang] || ''}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Write your code or SQL solution here..."
+          onKeyDown={(e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+              e.preventDefault();
+              if (propTestCases && propTestCases.length > 0) {
+                handleRunTests();
+              } else {
+                handleRun();
+              }
+            }
+          }}
+          placeholder="Write your code or SQL solution here... (Ctrl+Enter to run)"
           className="w-full h-full min-h-[140px] bg-transparent text-emerald-400 font-mono text-xs leading-relaxed resize-none focus:outline-none placeholder-slate-600"
           spellCheck={false}
         />
