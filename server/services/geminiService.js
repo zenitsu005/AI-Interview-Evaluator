@@ -13,11 +13,10 @@ const getGenAI = () => {
 
 // Fast, zero-demand-spike model pool - sub-2 second response times
 const MODELS_TO_TRY = [
-  'gemini-3.5-flash-lite',
-  'gemini-flash-lite-latest',
-  'gemini-3.8-flash',
-  'gemini-3.6-flash',
-  'gemini-3.5-flash',
+  'gemini-1.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash-8b',
+  'gemini-1.5-pro',
 ];
 
 /**
@@ -112,7 +111,7 @@ const transcribeAudio = async (audioBase64, mimeType = 'audio/webm') => {
   }
 
   const prompt =
-    'Listen carefully to this candidate speaking their job interview answer. Transcribe their spoken words accurately word-for-word. Return ONLY the plain transcribed text without quotes, markdown, timestamps, or comments. If the audio is silent or unintelligible, return an empty string.';
+    'You are a strict verbatim speech-to-text transcriber. Transcribe ONLY the exact audio words spoken in this recording verbatim. DO NOT complete sentences. DO NOT invent or hallucinate job interview responses, sample answers, or extra text. If the speaker says "hello hello hello", return ONLY "hello hello hello". If the audio is silent, background noise, or unintelligible, return an empty string. Output ONLY plain transcribed text.';
 
   const parts = [
     { text: prompt },

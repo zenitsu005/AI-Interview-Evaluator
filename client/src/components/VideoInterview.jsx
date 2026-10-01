@@ -26,6 +26,9 @@ import {
   IconRadio as Radio,
   IconFileText as FileText,
   IconActivity as Activity,
+  IconArrowLeft as ArrowLeft,
+  IconShieldCheck as ShieldCheck,
+  IconShield as ShieldIcon,
 } from '@tabler/icons-react';
 
 const ROUND_CONFIG = {
@@ -37,6 +40,7 @@ const ROUND_CONFIG = {
 export default function VideoInterview() {
   const {
     phase,
+    setPhase,
     currentRound,
     currentQuestion,
     questionIndexInRound,
@@ -94,15 +98,94 @@ export default function VideoInterview() {
   const prevFillersCountRef = useRef(0);
   const lastFrameDataRef = useRef(null);
   const faceDetectorRef = useRef(null);
+  const multiFaceCounterRef = useRef(0);
 
   const [isCameraBlack, setIsCameraBlack] = useState(false);
   const [isCandidatePresent, setIsCandidatePresent] = useState(false);
+  const [isMultipleFacesDetected, setIsMultipleFacesDetected] = useState(false);
   const [isAudioActive, setIsAudioActive] = useState(false);
   const [composureScore, setComposureScore] = useState(0);
   const [vocalSteadiness, setVocalSteadiness] = useState(0);
   const [speechRate, setSpeechRate] = useState(1.0);
 
-  // Studio Telemetry & Features
+  // Fullscreen Anti-Cheating Proctoring State & Violations
+  const [isFullscreen, setIsFullscreen] = useState(true);
+  const [showProctorModal, setShowProctorModal] = useState(false);
+  const [proctorViolationsCount, setProctorViolationsCount] = useState(0);
+  const [violationReason, setViolationReason] = useState('');
+
+  const enterFullscreen = useCallback(() => {
+    const elem = document.documentElement;
+    if (!elem) return;
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+        setShowProctorModal(false);
+      }).catch(() => {});
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen().then(() => {
+        setIsFullscreen(true);
+        setShowProctorModal(false);
+      }).catch(() => {});
+    }
+  }, []);
+
+  const exitFullscreen = useCallback(() => {
+    if (document.exitFullscreen && document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    } else if (document.webkitExitFullscreen && document.webkitFullscreenElement) {
+      document.webkitExitFullscreen().catch(() => {});
+    }
+  }, []);
+
+  const handleSessionDisqualification = useCallback((reason) => {
+    voiceAssistant.stop();
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      try { mediaRecorderRef.current.stop(); } catch (e) {}
+    }
+    setViolationReason(reason);
+    setProctorViolationsCount((prev) => prev + 1);
+    setShowProctorModal(true);
+  }, []);
+
+  // Enforce Strict Fullscreen Proctoring & Terminate Session on Exiting Fullscreen / Tab Switch
+  useEffect(() => {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      enterFullscreen();
+    }
+
+    const handleFullscreenChange = () => {
+      const isFS = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      setIsFullscreen(isFS);
+      if (!isFS) {
+        handleSessionDisqualification('Exited Fullscreen Mode');
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        handleSessionDisqualification('Switched Browser Tab / Minimized Window');
+      }
+    };
+
+    const handleBlur = () => {
+      handleSessionDisqualification('Lost Window Focus (Navigated to External AI App)');
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleBlur);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, [enterFullscreen, handleSessionDisqualification]);
+
+  // Audio Equalizer Telemetry
   const [audioLevels, setAudioLevels] = useState([15, 15, 15, 15, 15, 15, 15, 15]);
   const [isBackAndForthMode, setIsBackAndForthMode] = useState(true);
   const [splitWidth, setSplitWidth] = useState(() => {
@@ -142,7 +225,7 @@ export default function VideoInterview() {
           ctx.drawImage(v, 0, 0, 64, 48);
           const currentData = ctx.getImageData(0, 0, 64, 48).data;
 
-          // 1. Measure frame brightness, contrast variance, and color ratios
+          // 1. Measure frame brightness, total lum, and column skin distribution across 64 canvas columns
           let totalLum = 0;
           let totalR = 0;
           let totalG = 0;
@@ -150,14 +233,15 @@ export default function VideoInterview() {
           let samples = 0;
           const lums = [];
 
-          // Center face/upper-torso zone: x from 16 to 48, y from 6 to 38
-          let centerLumSum = 0;
-          let centerSamples = 0;
-          let centerSkinPixels = 0;
-          const centerLums = [];
+          const colSkin = new Array(64).fill(0);
+          let totalSkinPixels = 0;
+
+          // Outer side skin tracking: Far-Left (x: 0..17) and Far-Right (x: 46..63)
+          let farLeftSkin = 0;
+          let farRightSkin = 0;
 
           for (let y = 0; y < 48; y++) {
-            for (let x = 0; x < 64; x += 2) {
+            for (let x = 0; x < 64; x += 1) {
               const i = (y * 64 + x) * 4;
               const r = currentData[i];
               const g = currentData[i + 1];
@@ -171,18 +255,16 @@ export default function VideoInterview() {
               lums.push(lum);
               samples++;
 
-              // Check if inside center face & torso target area
-              if (x >= 16 && x <= 48 && y >= 6 && y <= 38) {
-                centerLumSum += lum;
-                centerLums.push(lum);
-                centerSamples++;
+              // YCbCr skin tone detection across all skin tones
+              const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
+              const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+              const isSkin = cb >= 77 && cb <= 127 && cr >= 133 && cr <= 173 && lum > 35;
 
-                // YCbCr skin tone detection across all ethnicities
-                const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
-                const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
-                if (cb >= 77 && cb <= 127 && cr >= 133 && cr <= 173 && lum > 35) {
-                  centerSkinPixels++;
-                }
+              if (isSkin) {
+                colSkin[x]++;
+                totalSkinPixels++;
+                if (x <= 17) farLeftSkin++;
+                if (x >= 46) farRightSkin++;
               }
             }
           }
@@ -199,15 +281,6 @@ export default function VideoInterview() {
           }
           const stdDev = Math.sqrt(varianceSum / samples);
 
-          // Center zone stats
-          const centerAvgLum = centerSamples > 0 ? centerLumSum / centerSamples : 0;
-          let centerVarianceSum = 0;
-          for (let k = 0; k < centerLums.length; k++) {
-            centerVarianceSum += Math.pow(centerLums[k] - centerAvgLum, 2);
-          }
-          const centerStdDev = Math.sqrt(centerVarianceSum / Math.max(1, centerSamples));
-          const skinRatio = centerSamples > 0 ? (centerSkinPixels / centerSamples) : 0;
-
           // Detect hand covering lens, shutter closed, dark room, or obstructed camera:
           const isObstructed =
             avgLum < 36 ||
@@ -217,39 +290,175 @@ export default function VideoInterview() {
           if (isObstructed) {
             setIsCameraBlack(true);
             setIsCandidatePresent(false);
+            setIsMultipleFacesDetected(false);
             setComposureScore(0);
             lastFrameDataRef.current = null;
+            multiFaceCounterRef.current = 0;
             return;
           }
 
           setIsCameraBlack(false);
 
-          // Candidate Presence Check (Native FaceDetector API + Biometric fallback)
+          // Candidate Presence & Multi-Face Check
           let hasCandidate = false;
+          let hasMultiFaces = false;
 
-          // Method A: Native Chromium FaceDetector API
+          let nativeFaceCount = null;
+          // Method A: Native Chromium FaceDetector API (with chest/lanyard zone & horizontal separation filters)
           if (typeof window !== 'undefined' && 'FaceDetector' in window) {
             try {
               if (!faceDetectorRef.current) {
-                faceDetectorRef.current = new window.FaceDetector({ fastMode: true, maxDetectedFaces: 1 });
+                faceDetectorRef.current = new window.FaceDetector({ fastMode: true, maxDetectedFaces: 5 });
               }
               const faces = await faceDetectorRef.current.detect(v);
               if (faces && faces.length > 0) {
-                hasCandidate = true;
+                const streamW = v.videoWidth || 640;
+                const streamH = v.videoHeight || 480;
+                const streamMinDim = Math.min(streamW, streamH);
+                const minFaceSize = Math.max(60, Math.round(streamMinDim * 0.12));
+
+                // 1. Filter out chest/shirt/lanyard detections (yCenter > 65% of height) and small artifacts (< minFaceSize)
+                const validUpperFaces = faces.filter((f) => {
+                  const b = f.boundingBox;
+                  if (!b || b.width < minFaceSize || b.height < minFaceSize) return false;
+                  const yCenter = b.top + b.height / 2;
+                  if (yCenter > streamH * 0.65) return false; // Exclude chest/lanyard zone
+                  const aspect = b.width / b.height;
+                  return aspect >= 0.45 && aspect <= 1.55;
+                });
+
+                if (validUpperFaces.length > 0) hasCandidate = true;
+
+                // 2. Multi-face requires 2 faces with distinct HORIZONTAL separation (|x1 - x2| >= 18% of stream width)
+                if (validUpperFaces.length > 1) {
+                  let distinctHorizontalFaces = false;
+                  for (let i = 0; i < validUpperFaces.length - 1; i++) {
+                    for (let j = i + 1; j < validUpperFaces.length; j++) {
+                      const x1 = validUpperFaces[i].boundingBox.left + validUpperFaces[i].boundingBox.width / 2;
+                      const x2 = validUpperFaces[j].boundingBox.left + validUpperFaces[j].boundingBox.width / 2;
+                      if (Math.abs(x1 - x2) >= streamW * 0.18) {
+                        distinctHorizontalFaces = true;
+                        break;
+                      }
+                    }
+                  }
+                  nativeFaceCount = distinctHorizontalFaces ? 2 : 1;
+                } else if (validUpperFaces.length === 1) {
+                  nativeFaceCount = 1;
+                }
               }
             } catch (e) {}
           }
 
-          // Method B: Optical Biometric Subject Analysis
-          // A candidate sitting in front of the camera exhibits:
-          // - High central feature variance from eyes, mouth, hair (centerStdDev >= 10)
-          // - Human skin tones in the center zone (skinRatio >= 0.10)
-          // An empty wall, ceiling, or empty room has either no skin or flat uniform texture (centerStdDev < 7).
+          // Method B: Multi-Zone Skin Density & Facial Feature Contrast Analysis
+          const smoothedCol = new Array(64).fill(0);
+          for (let x = 1; x < 63; x++) {
+            smoothedCol[x] = (colSkin[x - 1] + colSkin[x] + colSkin[x + 1]) / 3;
+          }
+
+          // Find local skin density peaks across columns
+          const rawPeaks = [];
+          for (let x = 4; x < 60; x++) {
+            if (smoothedCol[x] > 5.0 && smoothedCol[x] >= smoothedCol[x - 1] && smoothedCol[x] >= smoothedCol[x + 1]) {
+              if (rawPeaks.length === 0 || (x - rawPeaks[rawPeaks.length - 1].x) >= 8) {
+                rawPeaks.push({ x, height: smoothedCol[x] });
+              } else if (smoothedCol[x] > rawPeaks[rawPeaks.length - 1].height) {
+                rawPeaks[rawPeaks.length - 1] = { x, height: smoothedCol[x] };
+              }
+            }
+          }
+
+          // Validate peaks by checking skin presence AND internal facial feature luminance variance
+          const validFacePeaks = [];
+          for (const pk of rawPeaks) {
+            let pLumSum = 0;
+            let pSamples = 0;
+            let pSkinCount = 0;
+            const pLums = [];
+
+            const xStart = Math.max(0, pk.x - 3);
+            const xEnd = Math.min(63, pk.x + 3);
+
+            // Focus on head/face height zone (y: 4..40)
+            for (let y = 4; y < 40; y++) {
+              for (let px = xStart; px <= xEnd; px++) {
+                const idx = (y * 64 + px) * 4;
+                const r = currentData[idx];
+                const g = currentData[idx + 1];
+                const b = currentData[idx + 2];
+                const lum = (r * 0.299 + g * 0.587 + b * 0.114);
+
+                const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
+                const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+                const isSkin = cb >= 77 && cb <= 127 && cr >= 133 && cr <= 173 && lum > 35;
+                if (isSkin) pSkinCount++;
+
+                pLumSum += lum;
+                pLums.push(lum);
+                pSamples++;
+              }
+            }
+
+            const pAvgLum = pSamples > 0 ? pLumSum / pSamples : 0;
+            let pVarSum = 0;
+            for (let k = 0; k < pLums.length; k++) {
+              pVarSum += Math.pow(pLums[k] - pAvgLum, 2);
+            }
+            const pStdDev = Math.sqrt(pVarSum / Math.max(1, pSamples));
+
+            // Must have skin pixel density >= 12% in head zone AND facial feature variance stdDev >= 11.5
+            const skinDensity = pSamples > 0 ? (pSkinCount / pSamples) : 0;
+            if (pStdDev >= 11.5 && skinDensity >= 0.12) {
+              validFacePeaks.push({ ...pk, stdDev: pStdDev, skinDensity });
+            }
+          }
+
+          // Check if 2 valid human face peaks exist separated horizontally by at least 14 columns
+          let hasMultiFacePeaks = false;
+          if (validFacePeaks.length >= 2) {
+            for (let p = 0; p < validFacePeaks.length - 1; p++) {
+              const p1 = validFacePeaks[p];
+              const p2 = validFacePeaks[p + 1];
+              if (Math.abs(p2.x - p1.x) >= 14) {
+                let minValley = Math.min(p1.height, p2.height);
+                for (let vx = p1.x + 1; vx < p2.x; vx++) {
+                  if (smoothedCol[vx] < minValley) {
+                    minValley = smoothedCol[vx];
+                  }
+                }
+                // Require dip between heads (valley <= 55% of lower peak)
+                if (minValley <= 0.55 * Math.min(p1.height, p2.height)) {
+                  hasMultiFacePeaks = true;
+                  break;
+                }
+              }
+            }
+          }
+
+          const overallSkinRatio = totalSkinPixels / (64 * 48);
+
           if (!hasCandidate) {
-            if (skinRatio >= 0.10 && centerStdDev >= 10) {
+            if (overallSkinRatio >= 0.05 || totalSkinPixels > 100) {
               hasCandidate = true;
             }
           }
+
+          // Native FaceDetector takes authoritative priority if active.
+          // Otherwise, require 2 distinct valid face peaks with horizontal separation and valley gap.
+          if (nativeFaceCount !== null) {
+            hasMultiFaces = nativeFaceCount > 1;
+          } else if (hasCandidate) {
+            hasMultiFaces = hasMultiFacePeaks;
+          }
+
+          // Debounce multi-face flag using consecutive frame counter
+          if (hasMultiFaces) {
+            multiFaceCounterRef.current = Math.min(5, multiFaceCounterRef.current + 1);
+          } else {
+            multiFaceCounterRef.current = Math.max(0, multiFaceCounterRef.current - 1);
+          }
+          const confirmMultiFace = multiFaceCounterRef.current >= 2;
+          setIsMultipleFacesDetected(confirmMultiFace);
 
           if (!hasCandidate) {
             setIsCandidatePresent(false);
@@ -261,33 +470,67 @@ export default function VideoInterview() {
           setIsCandidatePresent(true);
 
           if (lastFrameDataRef.current) {
-            let diff = 0;
+            let headDiff = 0;
+            let headPixelCount = 0;
+            let totalDiffSum = 0;
             const prevData = lastFrameDataRef.current;
-            for (let i = 0; i < currentData.length; i += 16) {
-              diff += Math.abs(currentData[i] - prevData[i]);
+
+            for (let y = 0; y < 48; y++) {
+              for (let x = 0; x < 64; x += 1) {
+                const i = (y * 64 + x) * 4;
+                const pixDiff = (
+                  Math.abs(currentData[i] - prevData[i]) +
+                  Math.abs(currentData[i + 1] - prevData[i + 1]) +
+                  Math.abs(currentData[i + 2] - prevData[i + 2])
+                ) / 3;
+
+                totalDiffSum += pixDiff;
+
+                // Track motion specifically across candidate head, face, & torso zone (x: 10..54, y: 4..44)
+                if (x >= 10 && x <= 54 && y >= 4 && y <= 44) {
+                  const r = currentData[i];
+                  const g = currentData[i + 1];
+                  const b = currentData[i + 2];
+                  const lum = (r * 0.299 + g * 0.587 + b * 0.114);
+                  const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
+                  const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+                  const isSkin = cb >= 77 && cb <= 127 && cr >= 133 && cr <= 173 && lum > 35;
+
+                  if (isSkin || lum > 40) {
+                    headDiff += pixDiff;
+                    headPixelCount++;
+                  }
+                }
+              }
             }
-            const avgDiff = diff / (currentData.length / 16);
+
+            const avgHeadDiff = headPixelCount > 20 ? (headDiff / headPixelCount) : (totalDiffSum / (64 * 48));
 
             let targetComposure = 94;
-            if (avgDiff > 28) {
-              // Rapid or excessive shaking / moving
-              targetComposure = Math.max(65, 94 - Math.round((avgDiff - 28) * 1.5));
-            } else if (avgDiff > 16) {
-              // Moderate head movement
-              targetComposure = Math.max(80, 94 - Math.round((avgDiff - 16) * 1.1));
-            } else if (avgDiff < 0.2) {
-              // Completely frozen/static video frame
+            if (confirmMultiFace) {
+              targetComposure = Math.max(35, Math.min(48, 94 - 50));
+            } else if (avgHeadDiff > 20) {
+              // Rapid or heavy continuous head movement / shaking / tilting
+              targetComposure = Math.max(45, 75 - Math.round((avgHeadDiff - 20) * 2.5));
+            } else if (avgHeadDiff > 10) {
+              // Moderate head movement / fidgeting / restlessness
+              targetComposure = Math.max(68, 88 - Math.round((avgHeadDiff - 10) * 2.0));
+            } else if (avgHeadDiff > 4.5) {
+              // Minor natural head movement
+              targetComposure = Math.max(82, 94 - Math.round((avgHeadDiff - 4.5) * 1.5));
+            } else if (avgHeadDiff < 0.2) {
               targetComposure = 85;
             } else {
-              // Calm, composed, steady posture
-              targetComposure = Math.min(98, 92 + Math.round((16 - avgDiff) * 0.3));
+              // Steady, composed posture
+              targetComposure = Math.min(98, 94 + Math.round((4.5 - avgHeadDiff) * 0.8));
             }
 
             if (detectedFillers > 0) {
-              targetComposure = Math.max(60, targetComposure - detectedFillers * 3);
+              targetComposure = Math.max(40, targetComposure - detectedFillers * 3);
             }
 
-            setComposureScore((prev) => (prev === 0 ? targetComposure : Math.round(prev * 0.8 + targetComposure * 0.2)));
+            // Exponential smoothing (0.4 / 0.6) for rapid response to head movement
+            setComposureScore((prev) => (prev === 0 ? targetComposure : Math.round(prev * 0.4 + targetComposure * 0.6)));
           }
           lastFrameDataRef.current = currentData;
         } catch (e) {}
@@ -638,63 +881,12 @@ export default function VideoInterview() {
       voiceAssistant.stop();
       audioChunksRef.current = [];
       speechCapturedRef.current = false;
+      setTranscript('');
+      finalTranscriptRef.current = '';
+      setInterimText('');
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioStreamRef.current = stream;
-
-      // Start browser-native real-time speech recognition if supported
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        try {
-          const recognition = new SpeechRecognition();
-          recognition.continuous = true;
-          recognition.interimResults = true;
-          recognition.lang = 'en-US';
-
-          finalTranscriptRef.current = transcript ? `${transcript.trim()} ` : '';
-
-          recognition.onresult = (event) => {
-            let interim = '';
-            let newlyFinal = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-              const res = event.results[i];
-              if (res.isFinal) {
-                newlyFinal += res[0].transcript + ' ';
-              } else {
-                interim += res[0].transcript;
-              }
-            }
-
-            if (newlyFinal) {
-              finalTranscriptRef.current += newlyFinal;
-              speechCapturedRef.current = true;
-              setTranscript(finalTranscriptRef.current.trim());
-            }
-            setInterimText(interim);
-          };
-
-          recognition.onerror = (e) => {
-            if (e.error !== 'no-speech') {
-              console.warn('Browser SpeechRecognition notice:', e.error);
-            }
-          };
-
-          // Continuous listening watchdog: auto-restart immediately when browser pauses
-          recognition.onend = () => {
-            if (isRecordingRef.current) {
-              try {
-                recognition.start();
-              } catch (err) {
-                console.warn('SpeechRecognition auto-restart notice:', err);
-              }
-            }
-          };
-
-          recognition.start();
-          recognitionRef.current = recognition;
-        } catch (e) {
-          console.warn('SpeechRecognition start notice:', e);
-        }
-      }
 
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
@@ -729,12 +921,6 @@ export default function VideoInterview() {
     isRecordingRef.current = false;
     setInterimText('');
     setProbeCountdown(null);
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch (e) {}
-      recognitionRef.current = null;
-    }
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
@@ -743,10 +929,8 @@ export default function VideoInterview() {
   }, []);
 
   const handleAudioBlob = async (blob, mimeType) => {
-    // If browser speech recognition already transcribed the words in real-time
-    if (speechCapturedRef.current && transcript && transcript.trim().length > 3) {
-      setStatusMessage('✅ Speech transcribed! Edit or submit below.');
-      setTimeout(() => setStatusMessage(null), 3000);
+    if (!blob || blob.size < 100) {
+      setStatusMessage(null);
       return;
     }
 
@@ -775,7 +959,7 @@ export default function VideoInterview() {
 
       if (res?.text && res.text.trim()) {
         const spoken = res.text.trim();
-        setTranscript((prev) => (prev ? `${prev.trim()} ${spoken}` : spoken));
+        setTranscript(spoken);
         setStatusMessage('✅ Speech transcribed! Edit or submit below.');
         setTimeout(() => setStatusMessage(null), 3500);
       } else {
@@ -892,9 +1076,79 @@ export default function VideoInterview() {
         </div>
       )}
 
+      {/* ── Anti-Cheating Fullscreen Proctoring Modal Guard ── */}
+      {showProctorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0B0D13]/98 backdrop-blur-2xl p-6 text-center animate-fade-in text-white">
+          <div className="bg-[#131823] border-2 border-rose-500/70 rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-6 shadow-[0_0_60px_rgba(244,63,94,0.4)] relative overflow-hidden text-left">
+            <div className="flex items-center gap-3.5 border-b border-rose-500/20 pb-4">
+              <div className="w-12 h-12 rounded-2xl bg-rose-950/90 border border-rose-500/50 flex items-center justify-center text-rose-400 shadow-lg flex-shrink-0 animate-pulse">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
+                  Interview Terminated & Disqualified
+                </h3>
+                <span className="text-xs font-mono font-bold text-rose-400 uppercase tracking-wider">
+                  Proctoring Security Invariant Enforced
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-3.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
+              <div className="p-3.5 rounded-xl bg-rose-950/50 border border-rose-500/40 text-rose-200 font-semibold flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
+                <span>Violation Event: <strong>{violationReason}</strong></span>
+              </div>
+
+              <p>
+                To guarantee zero-cheating integrity and prevent external AI assistance or web searches, exiting full-screen mode or switching tabs during an active proctored interview results in immediate session cancellation.
+              </p>
+
+              <div className="p-3.5 rounded-2xl bg-[#171E2D] border border-white/10 font-mono text-xs space-y-1.5">
+                <div className="flex items-center justify-between text-rose-300 font-bold">
+                  <span>Session Status:</span>
+                  <span>Permanently Invalidated</span>
+                </div>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  This interview session has been cancelled and cannot be resumed. You must start a brand new interview setup.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  voiceAssistant.stop();
+                  exitFullscreen();
+                  setPhase('setup');
+                }}
+                className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-rose-500 via-red-500 to-amber-500 hover:from-rose-400 hover:to-amber-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-rose-500/25 transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>Start New Interview Setup</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Top Bar ── */}
       <header className="bg-[#0E121B]/90 border-b border-white/10 px-4 py-3 flex items-center justify-between sticky top-0 z-40 backdrop-blur-xl shadow-lg gap-3">
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <button
+            type="button"
+            onClick={() => {
+              exitFullscreen();
+              setPhase('landing');
+            }}
+            className="px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 hover:border-teal-500/50 transition-all flex items-center gap-1.5 text-xs font-bold cursor-pointer shadow-sm active:scale-95 flex-shrink-0"
+            title="Exit Studio & Return to Home"
+          >
+            <ArrowLeft className="w-4 h-4 text-teal-400" />
+            <span>Back to Home</span>
+          </button>
+
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-slate-950 shadow-md flex-shrink-0">
             <Sparkles className="w-4 h-4" />
           </div>
@@ -907,6 +1161,20 @@ export default function VideoInterview() {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Proctored Fullscreen Status Badge */}
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#171E2D] border border-white/10 text-xs font-mono font-bold">
+            {proctorViolationsCount === 0 && isFullscreen ? (
+              <span className="text-emerald-400 flex items-center gap-1.5" title="Active Full-Screen Proctoring Enforcement">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Proctored Full-Screen</span>
+              </span>
+            ) : (
+              <span className="text-rose-400 flex items-center gap-1.5 animate-pulse" title="Tab Switching or Focus Violation Detected">
+                <ShieldIcon className="w-3.5 h-3.5 text-rose-400" />
+                <span>Focus Violations: {proctorViolationsCount}</span>
+              </span>
+            )}
+          </div>
           {/* Conversational Interruption Toggle */}
           <button
             type="button"
@@ -1116,10 +1384,20 @@ export default function VideoInterview() {
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                       Camera Obstructed / Dark
                     </span>
+                  ) : isMultipleFacesDetected ? (
+                    <span className="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-rose-950/90 backdrop-blur-md text-rose-300 border border-rose-500/60 font-mono shadow-md flex items-center gap-1 animate-pulse">
+                      <AlertTriangle className="w-3 h-3 text-rose-400" />
+                      Multiple Faces (Proctor Flag)
+                    </span>
                   ) : !isCandidatePresent ? (
                     <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-amber-300 border border-amber-500/40 font-mono shadow-md flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                       No Candidate Detected
+                    </span>
+                  ) : composureScore < 80 ? (
+                    <span className="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-950/90 backdrop-blur-md text-amber-300 border border-amber-500/50 font-mono shadow-md flex items-center gap-1 animate-pulse">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                      Composure: {composureScore}% (Head Motion)
                     </span>
                   ) : (
                     <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-black/85 backdrop-blur-md text-emerald-400 border border-emerald-500/30 font-mono shadow-md flex items-center gap-1">
@@ -1347,13 +1625,27 @@ export default function VideoInterview() {
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-rose-500 animate-pulse' : 'bg-slate-500'}`} />
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-300 font-mono">Your Answer</span>
+                {transcript && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTranscript('');
+                      finalTranscriptRef.current = '';
+                      setInterimText('');
+                    }}
+                    className="ml-2 text-[11px] text-rose-400 hover:text-rose-300 font-mono font-semibold transition-colors px-2 py-0.5 rounded bg-rose-950/40 border border-rose-500/30 shadow-sm"
+                    title="Clear response text box"
+                  >
+                    Clear Text
+                  </button>
+                )}
               </div>
 
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border transition-all ${
                   detectedFillers > 2
                     ? 'bg-amber-950/80 text-amber-300 border-amber-500/40 animate-pulse'
-                    : 'bg-[#171E2D] text-slate-300 border-white/10'
+                    : 'bg-[#171E2D]'
                 }`}>
                   Fillers: {detectedFillers} {detectedFillers > 2 ? '⚠️' : '✓'}
                 </span>
@@ -1376,6 +1668,12 @@ export default function VideoInterview() {
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
                 onKeyDown={handleKeyDown}
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
+                data-gramm="false"
+                data-enable-grammarly="false"
                 placeholder={
                   activeTab === 'sandbox'
                     ? 'Type or speak your explanation here (optional). Write your implementation in the Code Sandbox above...'

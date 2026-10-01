@@ -296,18 +296,20 @@ export const evaluateBehavioralPitch = async ({
 };
 
 export const transcribeAudio = async (audioBase64, mimeType) => {
-  const online = await isServerOnline();
-  if (online) {
-    try {
-      const { data } = await api.post('/transcribe', { audioBase64, mimeType }, { timeout: 8000 });
-      if (data && data.text) return data;
-    } catch (e) {
-      console.warn('Backend transcribe failed, using direct client Gemini:', e.message);
-    }
+  // Fast path: direct client Gemini 1.5 Flash sub-second execution
+  const text = await transcribeAudioClient(audioBase64, mimeType);
+  if (text !== undefined && text !== null) {
+    return { text };
   }
 
-  const text = await transcribeAudioClient(audioBase64, mimeType);
-  return { text };
+  try {
+    const { data } = await api.post('/transcribe', { audioBase64, mimeType }, { timeout: 4000 });
+    if (data && data.text) return data;
+  } catch (e) {
+    console.warn('Backend transcribe fallback notice:', e.message);
+  }
+
+  return { text: '' };
 };
 
 // ── Salary Negotiation Simulator API ──
@@ -469,10 +471,19 @@ export const getMe = async () => {
 export const getInterviewHistory = async () => {
   try {
     const { data } = await api.get('/auth/history');
-    return data;
-  } catch (err) {
-    return { history: [] };
-  }
+    if (data && Array.isArray(data.history) && data.history.length > 0) {
+      return data;
+    }
+  } catch (err) {}
+
+  try {
+    const localHist = localStorage.getItem('mockai_guest_history');
+    if (localHist) {
+      return { history: JSON.parse(localHist) };
+    }
+  } catch (e) {}
+
+  return { history: [] };
 };
 
 export const saveInterviewHistory = async ({
@@ -482,6 +493,18 @@ export const saveInterviewHistory = async ({
   report,
   allResponses,
 }) => {
+  const newRecord = {
+    id: 'hist_' + Date.now(),
+    targetRole: targetRole || 'General Engineering',
+    difficultyLevel: difficultyLevel || 'Intermediate',
+    companyTrack: companyTrack || 'General',
+    overallScore: report?.overallScore || 0,
+    readinessLevel: report?.readinessLevel || 'Not Ready',
+    report,
+    allResponses: allResponses || [],
+    date: new Date().toISOString(),
+  };
+
   try {
     const { data } = await api.post('/auth/save-history', {
       targetRole,
@@ -490,9 +513,28 @@ export const saveInterviewHistory = async ({
       report,
       allResponses,
     });
-    return data;
+    if (data && data.success) {
+      // Also sync to local guest history
+      try {
+        const existing = JSON.parse(localStorage.getItem('mockai_guest_history') || '[]');
+        const updated = [newRecord, ...existing.filter(h => h.id !== newRecord.id)];
+        localStorage.setItem('mockai_guest_history', JSON.stringify(updated));
+      } catch (e) {}
+      return data;
+    }
   } catch (err) {
-    return { success: true };
+    console.warn('Backend history save unavailable. Saving to local storage:', err.message);
+  }
+
+  // Fallback: save to client local storage for guest/offline sessions
+  try {
+    const existing = JSON.parse(localStorage.getItem('mockai_guest_history') || '[]');
+    const updated = [newRecord, ...existing.filter(h => h.id !== newRecord.id)];
+    localStorage.setItem('mockai_guest_history', JSON.stringify(updated));
+    return { success: true, history: updated, record: newRecord };
+  } catch (e) {
+    return { success: true, history: [newRecord], record: newRecord };
   }
 };
+
 

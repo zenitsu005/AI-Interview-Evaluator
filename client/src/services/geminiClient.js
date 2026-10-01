@@ -10,9 +10,10 @@ const GEMINI_API_KEY =
   (typeof atob === 'function' ? atob(FALLBACK_KEY_TOKEN) : '');
 
 const FAST_MODELS = [
-  'gemini-flash-lite-latest',
-  'gemini-3.5-flash-lite',
-  'gemini-3.6-flash',
+  'gemini-1.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash-8b',
+  'gemini-1.5-pro',
 ];
 
 const SEEN_STORAGE_KEY = 'mockai_seen_topics';
@@ -564,9 +565,9 @@ export const transcribeAudioClient = async (audioBase64, mimeType = 'audio/wav')
     if (!cleanMime || cleanMime === 'application/octet-stream') cleanMime = 'audio/wav';
 
     const prompt =
-      'Listen to this candidate speaking their job interview answer. Transcribe their spoken words accurately word-for-word. Return ONLY the plain transcribed words with no quotes, formatting, or commentary. If the audio is silent or unintelligible, return an empty string.';
+      'You are a strict verbatim speech-to-text transcriber. Transcribe ONLY the exact audio words spoken in this recording verbatim. DO NOT complete sentences. DO NOT invent or hallucinate job interview responses, sample answers, or extra text. If the speaker says "hello hello hello", return ONLY "hello hello hello". If the audio is silent, background noise, or unintelligible, return an empty string. Output ONLY plain transcribed text.';
 
-    const transcribeModels = ['gemini-3.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.8-flash', 'gemini-3.6-flash'];
+    const transcribeModels = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro'];
 
     for (const model of transcribeModels) {
       try {

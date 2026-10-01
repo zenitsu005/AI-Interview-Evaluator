@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
+import { useAuth } from './AuthContext';
 import {
   uploadResume,
   analyzeResume,
@@ -104,6 +105,7 @@ export const BAR_RAISER_PERSONAS = [
 ];
 
 export const InterviewProvider = ({ children }) => {
+  const { addHistoryRecord, refreshHistory } = useAuth();
   const [phase, setPhase] = useState('landing');
   const [interviewMode, setInterviewMode] = useState('video'); // 'video' | 'text'
   const [difficultyLevel, setDifficultyLevel] = useState('Intermediate'); // 'Beginner' | 'Intermediate' | 'Experienced'
@@ -993,13 +995,19 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
 
           // Auto-save result to history
           try {
-            await saveInterviewHistory({
+            const savedRes = await saveInterviewHistory({
               targetRole: effectiveRole,
               difficultyLevel: difficultyLevel || 'Intermediate',
               companyTrack: companyTrack || 'General',
               report: evalReport,
               allResponses: updatedResponses,
             });
+            if (savedRes && savedRes.history && addHistoryRecord) {
+              addHistoryRecord(savedRes.history);
+            } else if (addHistoryRecord && savedRes && savedRes.record) {
+              addHistoryRecord(savedRes.record);
+            }
+            if (refreshHistory) refreshHistory();
           } catch (e) {
             console.warn('History save notice:', e);
           }
@@ -1027,6 +1035,8 @@ const generateInstantOpeningQuestion = (role, round = 'aptitude', level = 'Inter
       previousQuestions,
       duration,
       ROUNDS,
+      addHistoryRecord,
+      refreshHistory,
     ]
   );
 

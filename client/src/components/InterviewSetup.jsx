@@ -167,6 +167,19 @@ export default function InterviewSetup({ onNavigate }) {
 
   const handleLaunchSession = async (fallbackToText = false) => {
     setLaunchError(null);
+
+    // Request Fullscreen Mode immediately on user click gesture
+    try {
+      const elem = document.documentElement;
+      if (elem) {
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen().catch(() => {});
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen().catch(() => {});
+        }
+      }
+    } catch (e) {}
+
     const chosenFormat = fallbackToText ? 'text-only' : selectedFormat.id;
     const effectiveMode = chosenFormat === 'text-only' ? 'text' : 'video';
 

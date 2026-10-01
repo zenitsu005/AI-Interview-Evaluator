@@ -27,7 +27,12 @@ export const AuthProvider = ({ children }) => {
           const res = await getMe();
           if (res.user) {
             setUser(res.user);
-            if (res.history) setHistory(res.history);
+            if (res.history && Array.isArray(res.history) && res.history.length > 0) {
+              setHistory(res.history);
+            } else {
+              const localHist = localStorage.getItem('mockai_guest_history');
+              if (localHist) setHistory(JSON.parse(localHist));
+            }
           }
         } catch (e) {
           console.warn('Session expired or invalid:', e);
@@ -35,6 +40,11 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
           setToken(null);
         }
+      } else {
+        try {
+          const localHist = localStorage.getItem('mockai_guest_history');
+          if (localHist) setHistory(JSON.parse(localHist));
+        } catch (e) {}
       }
       setIsLoading(false);
     };
@@ -42,14 +52,31 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const refreshHistory = useCallback(async () => {
-    const storedToken = localStorage.getItem('mockai_token');
-    if (!storedToken) return;
     try {
       const res = await getInterviewHistory();
-      if (res.history) setHistory(res.history);
+      if (res && Array.isArray(res.history)) {
+        setHistory(res.history);
+      }
     } catch (e) {
       console.warn('History fetch error:', e);
     }
+  }, []);
+
+  const addHistoryRecord = useCallback((newHistoryOrRecord) => {
+    setHistory((prev) => {
+      let updated;
+      if (Array.isArray(newHistoryOrRecord)) {
+        updated = newHistoryOrRecord;
+      } else if (newHistoryOrRecord) {
+        updated = [newHistoryOrRecord, ...prev.filter((h) => h.id !== newHistoryOrRecord.id)];
+      } else {
+        return prev;
+      }
+      try {
+        localStorage.setItem('mockai_guest_history', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
   }, []);
 
   const login = useCallback(async (email, password) => {
@@ -148,6 +175,7 @@ export const AuthProvider = ({ children }) => {
         closeHistory,
         setAuthMode,
         refreshHistory,
+        addHistoryRecord,
       }}
     >
       {children}
